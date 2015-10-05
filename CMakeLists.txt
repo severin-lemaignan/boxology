@@ -7,7 +7,9 @@ set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3" CACHE STRING "Eigen3 include directory")
 
 #find_package(
@@ -19,45 +21,20 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5Widgets REQUIRED)
 
-set(SRC
-	main.cpp
-	mainwindow.cpp
-	node.cpp
-	edge.cpp
-	graphicsbezieredge.cpp
-	graphicsnode.cpp
-	graphicsnodeview.cpp
-	graphicsnodescene.cpp
-	graphicsnodesocket.cpp
-
-        qobjectnode.cpp
-        test_qobjects.cpp
-	)
-set(HEADERS
-	mainwindow.hpp
-	node.hpp
-	edge.hpp
-	graphicsbezieredge.hpp
-	graphicsnode.hpp
-	graphicsnodeview.hpp
-	graphicsnodescene.hpp
-	graphicsnodesocket.hpp
-	graphicsnodedefs.hpp
-
-        qobjectnode.hpp
-        test_qobjects.hpp
-)
+file(GLOB_RECURSE SRC src/*.cpp)
+file(GLOB_RECURSE HEADERS src/*.hpp)
 
 # include(${QT_USE_FILE})
 include_directories(
-	# ${EIGEN3_INCLUDE_DIR}
-	# ${Boost_INCLUDE_DIRS}
-	)
+    # ${EIGEN3_INCLUDE_DIR}
+    # ${Boost_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/include
+    )
 add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}
-	#	pthread
-	#	hdf5
-	#	hdf5_cpp
-	#	${Boost_LIBRARIES}
-)
+    #	pthread
+    #	hdf5
+    #	hdf5_cpp
+    #	${Boost_LIBRARIES}
+    )
 qt5_use_modules(${PROJECT_NAME} Widgets)
