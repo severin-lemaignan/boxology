@@ -9,6 +9,8 @@
 #include <QGraphicsPathItem>
 #include "graphicsnodedefs.hpp"
 
+#include "connection.hpp"
+
 class QGraphicsDropShadowEffect;
 class QGraphicsSceneMouseEvent;
 class GraphicsNode;
@@ -20,73 +22,81 @@ class GraphicsNodeSocket;
 
 class GraphicsDirectedEdge : public QObject, public QGraphicsPathItem
 {
-    Q_OBJECT
+Q_OBJECT
 public:
-	// GraphicsDirectedEdge(qreal factor=0.5f);
-	explicit GraphicsDirectedEdge(qreal factor=0.5f);
-	GraphicsDirectedEdge(int x0, int y0, int x1, int y1, qreal factor=0.5f);
-	GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor=0.5f);
-	GraphicsDirectedEdge(QPointF start, QPointF stop, qreal factor=0.5f);
-	GraphicsDirectedEdge(GraphicsNode *n1, int sourceid, GraphicsNode *n2, int sinkid, qreal factor=0.5f);
-	GraphicsDirectedEdge(GraphicsNodeSocket *source, GraphicsNodeSocket *sink, qreal factor=0.5f);
+    // GraphicsDirectedEdge(qreal factor=0.5f);
+    explicit GraphicsDirectedEdge(qreal factor=0.5f);
+    GraphicsDirectedEdge(int x0, int y0, int x1, int y1, qreal factor=0.5f);
+    GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor=0.5f);
+    GraphicsDirectedEdge(QPointF start, QPointF stop, qreal factor=0.5f);
+    GraphicsDirectedEdge(GraphicsNode *n1, int sourceid, GraphicsNode *n2, int sinkid, qreal factor=0.5f);
+    GraphicsDirectedEdge(GraphicsNodeSocket *source, GraphicsNodeSocket *sink, qreal factor=0.5f);
 
-	~GraphicsDirectedEdge();
+    ~GraphicsDirectedEdge();
 
-	void connect(GraphicsNodeSocket *source, GraphicsNodeSocket *sink);
-	void connect(GraphicsNode *n1, int sourceid, GraphicsNode *n2, int sinkid);
+    ConstConnectionPtr connection() const {
+        return _connection;
+    }
+    operator ConstConnectionPtr() const {return connection();}
 
-	void connect_source(GraphicsNodeSocket *source);
-	void connect_sink(GraphicsNodeSocket *sink);
+    void connect(GraphicsNodeSocket *source, GraphicsNodeSocket *sink);
+    void connect(GraphicsNode *n1, int sourceid, GraphicsNode *n2, int sinkid);
 
-	void disconnect();
-	void disconnect_sink();
-	void disconnect_source();
+    void connect_source(GraphicsNodeSocket *source);
+    void connect_sink(GraphicsNodeSocket *sink);
 
-	// methods to manually set a position
-	void set_start(int x0, int y0);
-	void set_stop(int x1, int y1);
+    void disconnect();
+    void disconnect_sink();
+    void disconnect_source();
 
-	void set_start(QPoint p);
-	void set_stop(QPoint p);
+    // methods to manually set a position
+    void set_start(int x0, int y0);
+    void set_stop(int x1, int y1);
 
-	void set_start(QPointF p);
-	void set_stop(QPointF p);
+    void set_start(QPoint p);
+    void set_stop(QPoint p);
 
-	// virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+    void set_start(QPointF p);
+    void set_stop(QPointF p);
 
-	int type() const override {
-		return GraphicsNodeItemTypes::TypeBezierEdge;
-	}
+    // virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+
+    int type() const override {
+        return GraphicsNodeItemTypes::TypeBezierEdge;
+    }
 
 protected:
-	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 protected slots:
-	void onSourceDataChange(); // cant use QVariant argument, since it might be another type
+    void onSourceDataChange(); // cant use QVariant argument, since it might be another type
+
+private:
+    ConnectionPtr _connection;
 
 protected:
-	virtual void update_path() = 0;
+    virtual void update_path() = 0;
 
-	QPen _pen;
-	QGraphicsDropShadowEffect *_effect;
-	QPoint _start;
-	QPoint _stop;
-	qreal _factor;
+    QPen _pen;
+    QGraphicsDropShadowEffect *_effect;
+    QPoint _start;
+    QPoint _stop;
+    qreal _factor;
 
-	GraphicsNodeSocket *_source;
-	GraphicsNodeSocket *_sink;
+    GraphicsNodeSocket *_source;
+    GraphicsNodeSocket *_sink;
 };
 
 
 class GraphicsBezierEdge : public GraphicsDirectedEdge
 {
-	virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
-	int type() const override {
-		return GraphicsNodeItemTypes::TypeBezierEdge;
-	}
+    virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+    int type() const override {
+        return GraphicsNodeItemTypes::TypeBezierEdge;
+    }
 
 protected:
-	virtual void update_path() override;
+    virtual void update_path() override;
 };
 
 

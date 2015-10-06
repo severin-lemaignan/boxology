@@ -29,6 +29,8 @@
 #include "../graphicsbezieredge.hpp"
 #include "../qobjectnode.hpp"
 
+#include "../json_visitor.hpp"
+
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 #include "test_qobjects.hpp"
@@ -36,9 +38,9 @@
 using namespace std;
 
 MainWindow::MainWindow()
-: _view(nullptr),
-  _scene(nullptr),
-  ui(new Ui::MainWindow)
+  : ui(new Ui::MainWindow),
+    _view(nullptr),
+    _scene(nullptr)
 {
 
     ui->setupUi(this);
@@ -70,7 +72,7 @@ resizeEvent(QResizeEvent *event)
 }
 
 
-
+/*
 void MainWindow::
 addFakeContent()
 {
@@ -101,7 +103,7 @@ addFakeContent()
     auto proxy2 = _scene->addWidget(widget2);
     proxy2->setPos(0, 60);
 }
-
+*/
 
 void MainWindow::
 addNodeViews()
@@ -130,23 +132,34 @@ addNodeViews()
     _scene->addItem(n1);
     n1->setPos(0,0);
 
+    arch.addNode(*n1);
+
     t1 = new testnode1();
     qObjectnode* n2 = new qObjectnode(t1);
     _scene->addItem(n2);
     n2->setPos(0+n1->width()*1.5,0);
 
+    arch.addNode(*n2);
+
     GraphicsDirectedEdge* e12 = new GraphicsBezierEdge();
     e12->connect(n1,0,n2,0);
     _scene->addItem(e12);
+
+    arch.addConnection(*e12);
 
     t1 = new QLineEdit();
     qObjectnode* n3 = new qObjectnode(t1);
     _scene->addItem(n3);
     n3->setPos(n2->pos().x()+n2->width()*1.5,0);
+    n3->setTitle("test");
+
+    arch.addNode(*n3);
 
     GraphicsDirectedEdge* e23 = new GraphicsBezierEdge();
     e23->connect(n2,0,n3,0);
     _scene->addItem(e23);
+
+    arch.addConnection(*e23);
 }
 
 
@@ -154,13 +167,19 @@ void MainWindow::on_actionAdd_node_triggered()
 {
 
     QObject* t1 = new testnode1();
-    qObjectnode* n2 = new qObjectnode(t1);
-    _scene->addItem(n2);
-    n2->setPos(0,0);
+    qObjectnode* n = new qObjectnode(t1);
+    _scene->addItem(n);
+    n->setPos(0,0);
+    n->setTitle("new node");
+
+    arch.addNode(*n);
 
 }
 
 void MainWindow::on_actionToJson_triggered()
 {
-    cout << "Hello" << endl;
+
+    JsonVisitor json(arch);
+    json.visit();
+
 }

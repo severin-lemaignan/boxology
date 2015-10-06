@@ -12,12 +12,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3" CACHE STRING "Eigen3 include directory")
 
-#find_package(
-#	Boost 1.55.0
-#	COMPONENTS
-#		system
-#		program_options
-#	REQUIRED)
+find_package(
+    Boost 1.55.0
+    #COMPONENTS
+    #system
+    #program_options
+    REQUIRED)
 
 find_package(Qt5Widgets REQUIRED)
 
