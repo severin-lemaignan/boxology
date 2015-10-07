@@ -51,6 +51,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
         p->setWidth(0);
     }
 
+    setFlag(QGraphicsItem::ItemIsFocusable);
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
@@ -463,4 +464,18 @@ mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+void GraphicsNode::keyPressEvent(QKeyEvent *event) {
+
+    if (event->key() == Qt::Key_X) {
+        _node->to_be_deleted = true;
+        scene()->removeItem(this);
+        // the node should be deleted right away via the smart pointer that contains it
+    }
+    if ((event->key() == Qt::Key_D) && (event->modifiers() == Qt::ControlModifier)) {
+            qWarning() << "Duplicate this node";
+    }
+    else {
+        QGraphicsItem::keyPressEvent(event);
+    }
+}
 
