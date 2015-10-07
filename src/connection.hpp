@@ -11,7 +11,6 @@
 
 #include "node.hpp"
 
-enum class ConnectionType {EVENT, OTHER};
 
 /**
  * representation of a connection  between two nodes.
@@ -32,7 +31,6 @@ public:
 
     std::string name;
     Port from, to;
-    ConnectionType type;
     std::string desc;
 };
 typedef std::shared_ptr<Connection> ConnectionPtr;

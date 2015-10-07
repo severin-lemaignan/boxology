@@ -3,12 +3,18 @@
 #ifndef __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF
 #define __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF
 
-#include<string>
-#include<memory>
-#include<set>
+#include <string>
+#include <memory>
+#include <set>
+#include <tuple>
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+
+
+enum class PortDirection {OUT, IN};
+
+enum class PortType {EXPLICIT, LATENT, OTHER};
 
 template <typename S, typename T>
 class node_socket {
@@ -23,18 +29,18 @@ struct Node
 {
 public:
     // Port: (name, is_input)
-    typedef std::pair<std::string, bool> Port;
+    typedef std::tuple<std::string, PortDirection, PortType> Port;
 
 
-    Node():
-        uuid(boost::uuids::random_generator()()),
-        to_be_deleted(false) {};
+    Node();
 
     boost::uuids::uuid uuid;
     bool to_be_deleted; // used to mark node for deletion in the architecture
 
     std::string name;
     std::set<Port> ports;
+
+    void addPort(const Port port) {ports.insert(port);}
 
 };
 

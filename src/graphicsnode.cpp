@@ -13,19 +13,21 @@
 #include <QTextDocument>
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsProxyWidget>
+#include <QDebug>
 
 #include <algorithm>
 #include <iostream>
-
+#include <tuple>
 #include <memory>
 
 #include "graphicsbezieredge.hpp"
 #include "graphicsnodesocket.hpp"
 
+using namespace std;
 
-GraphicsNode::GraphicsNode(QGraphicsItem *parent)
+GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     : QGraphicsItem(parent)
-        , _node(std::make_shared<Node>())
+        , _node(node)
         , _changed(false)
         , _width(150)
         , _height(120)
@@ -64,6 +66,23 @@ GraphicsNode::GraphicsNode(QGraphicsItem *parent)
     _effect->setColor(QColor("#99121212"));
     setGraphicsEffect(_effect);
 
+
+    if(_node) {
+        setTitle(QString::fromStdString(_node->name));
+
+        int sinkId = 0, sourceId = 0;
+        for (auto port : _node->ports) {
+            if (get<1>(port) == PortDirection::IN) {
+                add_sink(QString::fromStdString(get<0>(port)));
+                sinkId++;
+            }
+            else {
+                add_source(QString::fromStdString(get<0>(port)));
+                sourceId++;
+            }
+        }
+    }
+
 }
 
 
@@ -72,14 +91,13 @@ setTitle(const QString &title)
 {
     _title = title;
     _title_item->setPlainText(title);
-
-    _node->name = title.toStdString();
 }
 
 
 GraphicsNode::
 ~GraphicsNode()
 {
+    qWarning() << "Widget for Node " << QString::fromStdString(_node->name) << " deleted";
     if (_central_proxy) delete _central_proxy;
     delete _title_item;
     delete _effect;
@@ -208,8 +226,6 @@ const GraphicsNodeSocket* GraphicsNode::
 add_sink(const QString &text,QObject *data,int id)
 {
 
-    _node->ports.insert({text.toStdString(), true});
-
     auto s = new GraphicsNodeSocket(GraphicsNodeSocket::SINK, text, this,data,id);
     _sinks.push_back(s);
     _changed = true;
@@ -222,7 +238,6 @@ add_sink(const QString &text,QObject *data,int id)
 const GraphicsNodeSocket* GraphicsNode::
 add_source(const QString &text,QObject *data,int id)
 {
-    _node->ports.insert({text.toStdString(), false});
 
     auto s = new GraphicsNodeSocket(GraphicsNodeSocket::SOURCE, text, this,data,id);
     _sources.push_back(s);
@@ -236,6 +251,10 @@ add_source(const QString &text,QObject *data,int id)
 void GraphicsNode::
 connect_source(int i, GraphicsDirectedEdge *edge)
 {
+    if ((int)_sources.size() < (i + 1)) {
+        qWarning() << "Trying to connect source " << i << " of node " << _title << ", but it does not exist.";
+        return;
+    }
     _sources[i]->set_edge(edge);
 }
 
@@ -243,6 +262,10 @@ connect_source(int i, GraphicsDirectedEdge *edge)
 void GraphicsNode::
 connect_sink(int i, GraphicsDirectedEdge *edge)
 {
+    if ((int)_sinks.size() < (i + 1)) {
+        qWarning() << "Trying to connect sink " << i << " of node " << _title << ", but it does not exist.";
+        return;
+    }
     _sinks[i]->set_edge(edge);
 }
 

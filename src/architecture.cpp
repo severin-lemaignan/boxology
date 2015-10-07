@@ -1,10 +1,5 @@
 #include "architecture.hpp"
 
-Architecture::Architecture()
-{
-
-}
-
 void Architecture::collect() {
 
     for (auto node=_nodes.begin(); node!=_nodes.end();) {

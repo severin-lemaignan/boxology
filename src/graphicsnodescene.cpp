@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
+
 // TODO: move to graphicsnodeview. use graphicsnodescene for management
 
 GraphicsNodeScene::GraphicsNodeScene(QObject *parent)
@@ -32,6 +34,16 @@ GraphicsNodeScene::GraphicsNodeScene(QObject *parent)
 	auto nulltext = this->addText("(0,0)", QFont("Ubuntu Mono"));
 	nulltext->setPos(0, 0);
 	nulltext->setDefaultTextColor(_color_null);
+}
+
+
+shared_ptr<GraphicsNode> GraphicsNodeScene::addNode(NodePtr node)
+{
+
+     auto gNode = make_shared<GraphicsNode>(node);
+     _nodes.insert(gNode);
+     addItem(gNode.get());
+     return gNode;
 }
 
 /*

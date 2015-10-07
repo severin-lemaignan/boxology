@@ -3,7 +3,7 @@
 #include <QWidget>
 
 qObjectnode::
-qObjectnode(QObject *data, QGraphicsItem *parent) : GraphicsNode(parent)
+qObjectnode(NodePtr node, QObject *data, QGraphicsItem *parent) : GraphicsNode(node, parent)
 {
     m_data=data;
     if(m_data==0)

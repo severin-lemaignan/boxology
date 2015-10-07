@@ -32,8 +32,8 @@ void JsonVisitor::onNode(shared_ptr<const Node> node)
     ss << "\"name\": \"" << node->name << "\", ";
     ss << "\"ports\": [";
     for (const auto port : node->ports) {
-        ss << "{\"name\": \"" << port.first << "\",";
-        ss << " \"direction\": \"" << (port.second ? "in":"out") << "\"},";
+        ss << "{\"name\": \"" << get<0>(port) << "\",";
+        ss << " \"direction\": \"" << (get<1>(port) == PortDirection::IN ? "in":"out") << "\"},";
     }
     ss.seekp((long)(ss.tellp()) - 1); // remove the last comma
     ss << "]},";

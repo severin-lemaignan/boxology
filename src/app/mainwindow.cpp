@@ -24,7 +24,6 @@
 // node editor
 #include "../graphicsnodescene.hpp"
 #include "../graphicsnodeview.hpp"
-#include "../graphicsnodeview.hpp"
 #include "../graphicsnode.hpp"
 #include "../graphicsbezieredge.hpp"
 #include "../qobjectnode.hpp"
@@ -46,13 +45,14 @@ MainWindow::MainWindow()
     ui->setupUi(this);
 
     // create and configure scene
-    _scene = new GraphicsNodeScene(this);
+    _scene = make_shared<GraphicsNodeScene>(this);
+
     _scene->setSceneRect(-32000, -32000, 64000, 64000);
 
     //  view setup
-    _view = new GraphicsNodeView(this);
-    _view->setScene(_scene);
-    this->setCentralWidget(_view);
+    _view = make_shared<GraphicsNodeView>(this);
+    _view->setScene(_scene.get());
+    this->setCentralWidget(_view.get());
 
 
     // add some content
@@ -109,70 +109,59 @@ void MainWindow::
 addNodeViews()
 {
     /*
-       for (int i = 0; i < 5; i++) {
-       auto n = new GraphicsNode();
-       for (int j = i; j < 5; j++) {
-       n->setPos(i * 25, i * 25);
-       n->add_sink("sink");
-       n->add_source("source");
-       }
+    for (int i = 0; i < 5; i++) {
+        auto n = new GraphicsNode(nullptr);
+        for (int j = i; j < 5; j++) {
+            n->setPos(i * 25, i * 25);
+            n->add_sink("sink");
+            n->add_source("source");
+        }
 
-       if (i == 4) {
-       QTextEdit *te = new QTextEdit();
-       n->setCentralWidget(te);
-       }
+        if (i == 4) {
+            QTextEdit *te = new QTextEdit();
+            n->setCentralWidget(te);
+        }
 
-       n->setTitle(QString("GraphicsNode %1").arg(i));
+        n->setTitle(QString("GraphicsNode %1").arg(i));
 
-       _scene->addItem(n);
-       }
-       */
-    QObject* t1 = new QLineEdit();
-    qObjectnode* n1 = new qObjectnode(t1);
-    _scene->addItem(n1);
-    n1->setPos(0,0);
+        _scene->addItem(n);
+    }
+    */
 
-    arch.addNode(*n1);
+    auto node = arch.createNode();
+    node->name = "NLP";
+    node->addPort(make_tuple("output", PortDirection::OUT, PortType::EXPLICIT));
+    auto gNode = _scene->addNode(node);
+    gNode->setPos(0,0);
 
-    t1 = new testnode1();
-    qObjectnode* n2 = new qObjectnode(t1);
-    _scene->addItem(n2);
-    n2->setPos(0+n1->width()*1.5,0);
 
-    arch.addNode(*n2);
+    auto node2 = arch.createNode();
+    node2->name = "KB";
+    node2->addPort(make_tuple("input", PortDirection::IN, PortType::EXPLICIT));
+    auto gNode2 = _scene->addNode(node2);
+    gNode2->setPos(0+gNode->width()*1.5,0);
 
-    GraphicsDirectedEdge* e12 = new GraphicsBezierEdge();
-    e12->connect(n1,0,n2,0);
-    _scene->addItem(e12);
 
-    arch.addConnection(*e12);
+    //auto e12 = make_shared<GraphicsBezierEdge>();
+    //e12->connect(n1,0,n2,0);
+    //_scene->addItem(e12.get());
 
-    t1 = new QLineEdit();
-    qObjectnode* n3 = new qObjectnode(t1);
-    _scene->addItem(n3);
-    n3->setPos(n2->pos().x()+n2->width()*1.5,0);
-    n3->setTitle("test");
-
-    arch.addNode(*n3);
-
-    GraphicsDirectedEdge* e23 = new GraphicsBezierEdge();
-    e23->connect(n2,0,n3,0);
-    _scene->addItem(e23);
-
-    arch.addConnection(*e23);
+    //arch.addConnection(*e12);
 }
 
 
 void MainWindow::on_actionAdd_node_triggered()
 {
 
-    QObject* t1 = new testnode1();
-    qObjectnode* n = new qObjectnode(t1);
-    _scene->addItem(n);
-    n->setPos(0,0);
-    n->setTitle("new node");
+    auto node = arch.createNode();
 
-    arch.addNode(*n);
+    node->name = "new node";
+    node->addPort(make_tuple("input", PortDirection::IN, PortType::EXPLICIT));
+    node->addPort(make_tuple("output", PortDirection::OUT, PortType::EXPLICIT));
+
+    auto gNode = _scene->addNode(node);
+    gNode->setPos(0*1.5,0);
+
 
 }
 

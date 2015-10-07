@@ -6,6 +6,8 @@
 #include <QMainWindow>
 #include <QPainterPath>
 
+#include <memory>
+
 #include "../architecture.hpp"
 
 class QResizeEvent;
@@ -41,8 +43,8 @@ private:
 
     Ui::MainWindow *ui;
 
-    GraphicsNodeView *_view;
-    GraphicsNodeScene *_scene;
+    std::shared_ptr<GraphicsNodeView> _view;
+    std::shared_ptr<GraphicsNodeScene> _scene;
 
     QPainterPath _path;
 };

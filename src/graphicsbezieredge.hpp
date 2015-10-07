@@ -3,6 +3,8 @@
 #ifndef __GRAPHICSBEZIEREDGE_HPP__95A023FB_C28F_48F5_9B9C_04F3DB5B7DB1
 #define __GRAPHICSBEZIEREDGE_HPP__95A023FB_C28F_48F5_9B9C_04F3DB5B7DB1
 
+#include <memory>
+
 #include <QPen>
 #include <QPoint>
 #include <QPointF>
@@ -29,7 +31,8 @@ public:
     GraphicsDirectedEdge(int x0, int y0, int x1, int y1, qreal factor=0.5f);
     GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor=0.5f);
     GraphicsDirectedEdge(QPointF start, QPointF stop, qreal factor=0.5f);
-    GraphicsDirectedEdge(GraphicsNode *n1, int sourceid, GraphicsNode *n2, int sinkid, qreal factor=0.5f);
+    GraphicsDirectedEdge(std::shared_ptr<GraphicsNode> n1, int sourceid, 
+                         std::shared_ptr<GraphicsNode> n2, int sinkid, qreal factor=0.5f);
     GraphicsDirectedEdge(GraphicsNodeSocket *source, GraphicsNodeSocket *sink, qreal factor=0.5f);
 
     ~GraphicsDirectedEdge();
@@ -40,7 +43,8 @@ public:
     operator ConstConnectionPtr() const {return connection();}
 
     void connect(GraphicsNodeSocket *source, GraphicsNodeSocket *sink);
-    void connect(GraphicsNode *n1, int sourceid, GraphicsNode *n2, int sinkid);
+    void connect(std::shared_ptr<GraphicsNode> n1, int sourceid, 
+                 std::shared_ptr<GraphicsNode> n2, int sinkid);
 
     void connect_source(GraphicsNodeSocket *source);
     void connect_sink(GraphicsNodeSocket *sink);
@@ -90,7 +94,7 @@ protected:
 
 class GraphicsBezierEdge : public GraphicsDirectedEdge
 {
-    virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+    virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) override;
     int type() const override {
         return GraphicsNodeItemTypes::TypeBezierEdge;
     }
