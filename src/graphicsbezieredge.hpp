@@ -31,8 +31,8 @@ public:
     GraphicsDirectedEdge(int x0, int y0, int x1, int y1, qreal factor=0.5f);
     GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor=0.5f);
     GraphicsDirectedEdge(QPointF start, QPointF stop, qreal factor=0.5f);
-    GraphicsDirectedEdge(std::shared_ptr<GraphicsNode> n1, int sourceid, 
-                         std::shared_ptr<GraphicsNode> n2, int sinkid, qreal factor=0.5f);
+    GraphicsDirectedEdge(std::shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
+                         std::shared_ptr<GraphicsNode> n2, ConstPortPtr sink, qreal factor=0.5f);
     GraphicsDirectedEdge(GraphicsNodeSocket *source, GraphicsNodeSocket *sink, qreal factor=0.5f);
 
     ~GraphicsDirectedEdge();
@@ -43,8 +43,8 @@ public:
     operator ConstConnectionPtr() const {return connection();}
 
     void connect(GraphicsNodeSocket *source, GraphicsNodeSocket *sink);
-    void connect(std::shared_ptr<GraphicsNode> n1, int sourceid, 
-                 std::shared_ptr<GraphicsNode> n2, int sinkid);
+    void connect(std::shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
+                 std::shared_ptr<GraphicsNode> n2, ConstPortPtr sink);
 
     void connect_source(GraphicsNodeSocket *source);
     void connect_sink(GraphicsNodeSocket *sink);

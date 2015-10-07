@@ -51,11 +51,11 @@ GraphicsDirectedEdge(qreal factor)
 
 
     GraphicsDirectedEdge::
-    GraphicsDirectedEdge(shared_ptr<GraphicsNode> n1, int sourceid, 
-                         shared_ptr<GraphicsNode> n2, int sinkid, qreal factor)
+    GraphicsDirectedEdge(shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
+                         shared_ptr<GraphicsNode> n2, ConstPortPtr sink, qreal factor)
 : GraphicsDirectedEdge(0, 0, 0, 0, factor)
 {
-    connect(n1, sourceid, n2, sinkid);
+    connect(n1, source, n2, sink);
 }
 
 GraphicsDirectedEdge::
@@ -146,20 +146,15 @@ set_stop(QPoint p)
 }
 
 void GraphicsDirectedEdge::
-connect(shared_ptr<GraphicsNode> n1, int sourceid, 
-        shared_ptr<GraphicsNode> n2, int sinkid)
+connect(shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
+        shared_ptr<GraphicsNode> n2, ConstPortPtr sink)
 {
     if (_source)
         QObject::disconnect(this,SLOT(onSourceDataChange()));
 
-    n1->connect_source(sourceid, this);
-    n2->connect_sink(sinkid, this);
+    connect_source(n1->connect_source(source, this));
+    _sink = n2->connect_sink(sink, this);
 
-    connect_source(n1->get_source_socket(sourceid));
-    _sink = n2->get_sink_socket(sinkid);
-
-    //_connection->from = {n1->node(), sourceid};
-    //_connection->to = {n2->node(), sinkid};
 }
 
 void GraphicsDirectedEdge::

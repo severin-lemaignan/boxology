@@ -37,7 +37,7 @@ GraphicsNodeScene::GraphicsNodeScene(QObject *parent)
 }
 
 
-shared_ptr<GraphicsNode> GraphicsNodeScene::addNode(NodePtr node)
+shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node)
 {
 
      auto gNode = make_shared<GraphicsNode>(node);
@@ -50,6 +50,32 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::addNode(NodePtr node)
      _nodes.insert(gNode);
      addItem(gNode.get());
      return gNode;
+}
+
+shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection) {
+
+    auto edge = make_shared<GraphicsBezierEdge>();
+
+    // look for the *graphic nodes* that represent the source/sink of
+    // our connection:
+    auto source = find_if(_nodes.begin(), _nodes.end(), 
+                          [&connection](const shared_ptr<GraphicsNode> gNode) { 
+                               return gNode->node() == connection->from.first; 
+                          });
+
+    auto sink = find_if(_nodes.begin(), _nodes.end(), 
+                          [&connection](const shared_ptr<GraphicsNode> gNode) { 
+                               return gNode->node() == connection->to.first; 
+                          });
+
+    edge->connect(*source,connection->from.second,
+                  *sink,connection->to.second);
+
+    _edges.insert(edge);
+    addItem(edge.get());
+
+
+    return edge;
 }
 
 /*

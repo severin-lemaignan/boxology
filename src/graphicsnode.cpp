@@ -233,25 +233,39 @@ add_socket(shared_ptr<Port> port)
     return s;
 }
 
-void GraphicsNode::
-connect_source(int i, GraphicsDirectedEdge *edge)
+GraphicsNodeSocket* GraphicsNode::
+connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge)
 {
-    if ((int)_sources.size() < (i + 1)) {
-        qWarning() << "Trying to connect source " << i << " of node " << _title << ", but it does not exist.";
-        return;
+    auto source = find_if(_sources.begin(), _sources.end(), 
+                          [&port](const GraphicsNodeSocket* socket) { 
+                               return socket->port() == port; 
+                          });
+
+    if (source == _sources.end()) {
+        qWarning() << "Trying to connect source " << QString::fromStdString(port->name) << " of node " << _title << ", but it does not exist.";
+        return nullptr;
     }
-    _sources[i]->set_edge(edge);
+    (*source)->set_edge(edge);
+
+    return *source;
 }
 
 
-void GraphicsNode::
-connect_sink(int i, GraphicsDirectedEdge *edge)
+GraphicsNodeSocket* GraphicsNode::
+connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge)
 {
-    if ((int)_sinks.size() < (i + 1)) {
-        qWarning() << "Trying to connect sink " << i << " of node " << _title << ", but it does not exist.";
-        return;
+    auto sink = find_if(_sinks.begin(), _sinks.end(), 
+                          [&port](const GraphicsNodeSocket* socket) { 
+                               return socket->port() == port; 
+                          });
+
+    if (sink == _sinks.end()) {
+        qWarning() << "Trying to connect sink " << QString::fromStdString(port->name) << " of node " << _title << ", but it does not exist.";
+        return nullptr;
     }
-    _sinks[i]->set_edge(edge);
+    (*sink)->set_edge(edge);
+
+    return *sink;
 }
 
 void GraphicsNode::
@@ -355,25 +369,6 @@ updateGeometry()
 
     _changed = false;
     propagateChanges();
-}
-
-
-GraphicsNodeSocket* GraphicsNode::
-get_source_socket(const size_t id)
-{
-    if (id < _sources.size())
-        return _sources[id];
-    else
-        return nullptr;
-}
-
-GraphicsNodeSocket* GraphicsNode::
-get_sink_socket(const size_t id)
-{
-    if (id < _sinks.size())
-        return _sinks[id];
-    else
-        return nullptr;
 }
 
 

@@ -37,6 +37,8 @@ public:
 };
 
 typedef std::shared_ptr<Port> PortPtr;
+typedef std::shared_ptr<const Port> ConstPortPtr;
+
 /**
  * representation of a node. this may be used to form a graphical representation
  */
@@ -54,7 +56,7 @@ public:
     void name(const std::string& name);
 
     const std::set<PortPtr> ports() const {return _ports;}
-    void addPort(const Port port);
+    PortPtr createPort(const Port port);
 
 signals:
     void dirty();

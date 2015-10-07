@@ -31,7 +31,7 @@ public:
     GraphicsNodeSocket(std::shared_ptr<Port> port,
                        QGraphicsItem *parent = nullptr);
 
-    std::shared_ptr<Port> port() const {return _port;}
+    PortPtr port() const {return _port;}
 
     virtual QRectF boundingRect() const override;
 

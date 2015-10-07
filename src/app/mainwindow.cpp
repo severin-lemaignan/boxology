@@ -107,47 +107,26 @@ addFakeContent()
 void MainWindow::
 addNodeViews()
 {
-    /*
-    for (int i = 0; i < 5; i++) {
-        auto n = new GraphicsNode(nullptr);
-        for (int j = i; j < 5; j++) {
-            n->setPos(i * 25, i * 25);
-            n->add_sink("sink");
-            n->add_source("source");
-        }
-
-        if (i == 4) {
-            QTextEdit *te = new QTextEdit();
-            n->setCentralWidget(te);
-        }
-
-        n->setTitle(QString("GraphicsNode %1").arg(i));
-
-        _scene->addItem(n);
-    }
-    */
-
     auto node = arch.createNode();
     node->name("NLP");
-    node->addPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
-    auto gNode = _scene->addNode(node);
+    auto p1 = node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    auto gNode = _scene->add(node);
     gNode->setPos(0,0);
 
 
     auto node2 = arch.createNode();
     node2->name("KB");
-    node2->addPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
-    auto gNode2 = _scene->addNode(node2);
+    auto p2 = node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
+    auto gNode2 = _scene->add(node2);
     gNode2->setPos(0+gNode->width()*1.5,0);
 
-    node2->addPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    node2->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
     
 
-    //auto conn = arch.createConnection(node, node2);
+    auto conn = arch.createConnection(node, p1, node2, p2);
+    _scene->add(conn);
 
-    //auto e12 = make_shared<GraphicsBezierEdge>();
-    //e12->connect(n1,0,n2,0);
-    //_scene->addItem(e12.get());
 
     //arch.addConnection(*e12);
 }
@@ -159,10 +138,10 @@ void MainWindow::on_actionAdd_node_triggered()
     auto node = arch.createNode();
 
     node->name("new node");
-    node->addPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
-    node->addPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    node->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
+    node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
-    auto gNode = _scene->addNode(node);
+    auto gNode = _scene->add(node);
     gNode->setPos(0*1.5,0);
 
 

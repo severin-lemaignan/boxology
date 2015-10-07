@@ -41,12 +41,11 @@ public:
             QWidget *widget = 0) override;
 
 
-    GraphicsNodeSocket* get_source_socket(const size_t id);
-    GraphicsNodeSocket* get_sink_socket(const size_t id);
+    const ConstNodePtr node() const {return _node;}
 
     // connecting sources and sinks
-    void connect_source(int i, GraphicsDirectedEdge *edge);
-    void connect_sink(int i, GraphicsDirectedEdge *edge);
+    GraphicsNodeSocket* connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge);
+    GraphicsNodeSocket* connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge);
 
     int type() const override {
         return GraphicsNodeItemTypes::TypeNode;

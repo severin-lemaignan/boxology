@@ -19,7 +19,7 @@ struct Connection
 {
 public:
 
-    typedef std::pair<ConstNodePtr, size_t> Port;
+    typedef std::pair<ConstNodePtr, ConstPortPtr> Socket;
 
     Connection() :
         uuid(boost::uuids::random_generator()()),
@@ -30,7 +30,7 @@ public:
     bool to_be_deleted; // used to mark connection for deletion in the architecture
 
     std::string name;
-    Port from, to;
+    Socket from, to;
     std::string desc;
 };
 typedef std::shared_ptr<Connection> ConnectionPtr;

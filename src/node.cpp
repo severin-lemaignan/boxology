@@ -11,9 +11,11 @@ Node::Node():
 {
 }
 
-void Node::addPort(const Port port) {
-    _ports.insert(make_shared<Port>(port));
+PortPtr Node::createPort(const Port port) {
+    auto portPtr = make_shared<Port>(port);
+    _ports.insert(portPtr);
     emit dirty(); // signal update
+    return portPtr;
 }
 
 void Node::name(const std::string& name) {

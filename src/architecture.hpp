@@ -27,8 +27,14 @@ public:
     Nodes nodes() {return _nodes;}
     const Nodes nodes() const {return _nodes;}
 
-    void addConnection(ConstConnectionPtr connection) {
+    ConnectionPtr createConnection(ConstNodePtr from, ConstPortPtr from_port,
+                                   ConstNodePtr to, ConstPortPtr to_port) {
+        auto connection = std::make_shared<Connection>();
+        connection->from = {from, from_port};
+        connection->to = {to, to_port};
+
         _connections.insert(connection);
+        return connection;
     }
 
     Connections connections() {return _connections;}
