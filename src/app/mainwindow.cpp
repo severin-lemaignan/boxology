@@ -26,7 +26,6 @@
 #include "../graphicsnodeview.hpp"
 #include "../graphicsnode.hpp"
 #include "../graphicsbezieredge.hpp"
-#include "../qobjectnode.hpp"
 
 #include "../json_visitor.hpp"
 
@@ -129,18 +128,22 @@ addNodeViews()
     */
 
     auto node = arch.createNode();
-    node->name = "NLP";
-    node->addPort(make_tuple("output", PortDirection::OUT, PortType::EXPLICIT));
+    node->name("NLP");
+    node->addPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _scene->addNode(node);
     gNode->setPos(0,0);
 
 
     auto node2 = arch.createNode();
-    node2->name = "KB";
-    node2->addPort(make_tuple("input", PortDirection::IN, PortType::EXPLICIT));
+    node2->name("KB");
+    node2->addPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     auto gNode2 = _scene->addNode(node2);
     gNode2->setPos(0+gNode->width()*1.5,0);
 
+    node2->addPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    
+
+    //auto conn = arch.createConnection(node, node2);
 
     //auto e12 = make_shared<GraphicsBezierEdge>();
     //e12->connect(n1,0,n2,0);
@@ -155,9 +158,9 @@ void MainWindow::on_actionAdd_node_triggered()
 
     auto node = arch.createNode();
 
-    node->name = "new node";
-    node->addPort(make_tuple("input", PortDirection::IN, PortType::EXPLICIT));
-    node->addPort(make_tuple("output", PortDirection::OUT, PortType::EXPLICIT));
+    node->name("new node");
+    node->addPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
+    node->addPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
     auto gNode = _scene->addNode(node);
     gNode->setPos(0*1.5,0);

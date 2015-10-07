@@ -25,10 +25,12 @@ class QGraphicsDropShadowEffect;
 class QGraphicsTextItem;
 class GraphicsDirectedEdge;
 class GraphicsNodeSocket;
+class EditableLabel;
 
-
-class GraphicsNode : public QGraphicsItem
+class GraphicsNode : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
+
 public:
     GraphicsNode(NodePtr node, QGraphicsItem *parent = nullptr);
     virtual ~GraphicsNode();
@@ -38,9 +40,6 @@ public:
             const QStyleOptionGraphicsItem *option,
             QWidget *widget = 0) override;
 
-
-    const GraphicsNodeSocket* add_sink(const QString &text,QObject *data=0,int id=0);
-    const GraphicsNodeSocket* add_source(const QString &text,QObject *data=0,int id=0);
 
     GraphicsNodeSocket* get_source_socket(const size_t id);
     GraphicsNodeSocket* get_sink_socket(const size_t id);
@@ -76,16 +75,22 @@ public:
         */
     void setCentralWidget(QWidget *widget);
 
+    void refreshNode();
+    void updateNode(QString name);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
+
     void updateGeometry();
     void updatePath();
     void updateSizeHints();
     void propagateChanges();
+
+    const GraphicsNodeSocket* add_socket(std::shared_ptr<Port> port);
 
 private:
 
@@ -123,7 +128,7 @@ private:
     QBrush _brush_sinks;
 
     QGraphicsDropShadowEffect *_effect;
-    QGraphicsTextItem *_title_item;
+    EditableLabel *_title_item;
     QGraphicsProxyWidget *_central_proxy = nullptr;
 
     QString _title;

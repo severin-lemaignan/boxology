@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QTextDocument>
 #include <QGraphicsDropShadowEffect>
@@ -19,6 +20,8 @@
 #include <iostream>
 #include <tuple>
 #include <memory>
+
+#include "editablelabel.hpp"
 
 #include "graphicsbezieredge.hpp"
 #include "graphicsnodesocket.hpp"
@@ -42,7 +45,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
         , _brush_sources(QColor("#FFFF7700"))
         , _brush_sinks(QColor("#FF0077FF"))
         , _effect(new QGraphicsDropShadowEffect())
-        , _title_item(new QGraphicsTextItem(this))
+        , _title_item(new EditableLabel(this))
 {
     for (auto p : {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
         p->setWidth(0);
@@ -52,9 +55,11 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
-    _title_item->setDefaultTextColor(Qt::white);
     _title_item->setPos(0, 0);
     _title_item->setTextWidth(_width - 2*_lr_padding);
+    QObject::connect(_title_item, &EditableLabel::contentUpdated,
+            this, &GraphicsNode::updateNode);
+
     // alignment?
     /*
        auto opts = q->document()->defaultTextOption();
@@ -66,22 +71,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     _effect->setColor(QColor("#99121212"));
     setGraphicsEffect(_effect);
 
-
-    if(_node) {
-        setTitle(QString::fromStdString(_node->name));
-
-        int sinkId = 0, sourceId = 0;
-        for (auto port : _node->ports) {
-            if (get<1>(port) == PortDirection::IN) {
-                add_sink(QString::fromStdString(get<0>(port)));
-                sinkId++;
-            }
-            else {
-                add_source(QString::fromStdString(get<0>(port)));
-                sourceId++;
-            }
-        }
-    }
+    refreshNode();
 
 }
 
@@ -97,7 +87,7 @@ setTitle(const QString &title)
 GraphicsNode::
 ~GraphicsNode()
 {
-    qWarning() << "Widget for Node " << QString::fromStdString(_node->name) << " deleted";
+    qWarning() << "Widget for Node " << QString::fromStdString(_node->name()) << " deleted";
     if (_central_proxy) delete _central_proxy;
     delete _title_item;
     delete _effect;
@@ -223,30 +213,25 @@ itemChange(GraphicsItemChange change, const QVariant &value)
 
 
 const GraphicsNodeSocket* GraphicsNode::
-add_sink(const QString &text,QObject *data,int id)
+add_socket(shared_ptr<Port> port)
 {
 
-    auto s = new GraphicsNodeSocket(GraphicsNodeSocket::SINK, text, this,data,id);
-    _sinks.push_back(s);
+    GraphicsNodeSocket* s;
+
+    if (port->direction == Port::Direction::IN) {
+        s = new GraphicsNodeSocket(port, this);
+        _sinks.push_back(s);
+    }
+    else {
+        s = new GraphicsNodeSocket(port, this);
+        _sources.push_back(s);
+    }
+
     _changed = true;
     prepareGeometryChange();
     updateGeometry();
     return s;
 }
-
-
-const GraphicsNodeSocket* GraphicsNode::
-add_source(const QString &text,QObject *data,int id)
-{
-
-    auto s = new GraphicsNodeSocket(GraphicsNodeSocket::SOURCE, text, this,data,id);
-    _sources.push_back(s);
-    _changed = true;
-    prepareGeometryChange();
-    updateGeometry();
-    return s;
-}
-
 
 void GraphicsNode::
 connect_source(int i, GraphicsDirectedEdge *edge)
@@ -269,6 +254,63 @@ connect_sink(int i, GraphicsDirectedEdge *edge)
     _sinks[i]->set_edge(edge);
 }
 
+void GraphicsNode::
+refreshNode()
+{
+    setTitle(QString::fromStdString(_node->name()));
+
+
+    set<PortPtr> in_node = _node->ports();
+    set<PortPtr> existing;
+    set<PortPtr> to_add;
+    set<PortPtr> to_remove;
+
+    for(auto s : _sinks) {
+        existing.insert(s->port());
+    }
+    for(auto s : _sources) {
+        existing.insert(s->port());
+    }
+
+    set_difference(in_node.begin(), in_node.end(), 
+                   existing.begin(), existing.end(), 
+                   inserter(to_add, to_add.begin()));
+
+    set_difference(existing.begin(), existing.end(),
+                   in_node.begin(), in_node.end(), 
+                   inserter(to_remove, to_remove.begin()));
+
+    for(auto it=_sinks.begin(); it < _sinks.end();) {
+        if(to_remove.count((*it)->port())) {
+            scene()->removeItem(*it);
+            delete(*it);
+            it = _sinks.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+    for(auto it=_sources.begin(); it < _sources.end();) {
+        if(to_remove.count((*it)->port())) {
+            scene()->removeItem(*it);
+            delete(*it);
+            it = _sources.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    for (auto port : to_add) {
+        add_socket(port);
+    }
+}
+
+void GraphicsNode::
+updateNode(QString name)
+{
+    _node->name(name.toStdString());
+}
 
 void GraphicsNode::
 updateGeometry()
@@ -411,3 +453,19 @@ propagateChanges()
     for (auto source: _sources)
         source->notifyPositionChange();
 }
+
+
+
+void GraphicsNode::
+mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    qWarning() << "Double clicked!";
+
+    //auto popup = make_shared<QLineEdit>();
+    //popup->show();
+
+    QGraphicsItem::mouseDoubleClickEvent(event);
+}
+
+
+

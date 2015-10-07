@@ -15,8 +15,9 @@
 #include "graphicsnodedefs.hpp"
 #include "graphicsbezieredge.hpp"
 
+#include "node.hpp"
 
-    GraphicsNodeView::GraphicsNodeView(QWidget *parent)
+   GraphicsNodeView::GraphicsNodeView(QWidget *parent)
 : GraphicsNodeView(nullptr, parent)
 { }
 
@@ -241,7 +242,7 @@ leftMouseButtonPress(QMouseEvent *event)
                                                         _drag_event = new EdgeDragEvent();
                                                         if ((_tmp_edge = sock->get_edge())) {
                                                             _drag_event->e = _tmp_edge;
-                                                            if (sock->socket_type() == GraphicsNodeSocket::SINK) {
+                                                            if (sock->socket_type() == Port::Direction::IN) {
                                                                 _drag_event->e->disconnect_sink();
                                                                 _drag_event->e->set_stop(mapToScene(event->pos()));
                                                                 _drag_event->mode = EdgeDragEvent::move_to_sink;
@@ -253,7 +254,7 @@ leftMouseButtonPress(QMouseEvent *event)
                                                         }
                                                         else {
                                                             _drag_event->e = new GraphicsBezierEdge();
-                                                            if (sock->socket_type() == GraphicsNodeSocket::SINK) {
+                                                            if (sock->socket_type() == Port::Direction::IN) {
                                                                 _drag_event->e->set_start(mapToScene(event->pos()));
                                                                 _drag_event->e->connect_sink(sock);
                                                                 _drag_event->mode = EdgeDragEvent::connect_to_source;

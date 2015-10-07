@@ -8,40 +8,60 @@
 #include <set>
 #include <tuple>
 
+#include <QObject>
+
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
 
-enum class PortDirection {OUT, IN};
+struct Port
+{
+public:
+    enum class Direction {OUT, IN};
+    enum class Type {EXPLICIT, LATENT, OTHER};
 
-enum class PortType {EXPLICIT, LATENT, OTHER};
+    Port() : uuid(boost::uuids::random_generator()()) {}
+    Port(std::string name, Direction direction, Type type) : 
+        uuid(boost::uuids::random_generator()()),
+        name(name),
+        direction(direction),
+        type(type) {}
 
-template <typename S, typename T>
-class node_socket {
+    friend bool operator<(const Port& l, const Port& r) {return l.uuid < r.uuid;}
 
+    boost::uuids::uuid uuid;
+
+    std::string name;
+    Direction direction;
+    Type type;
 };
 
-
+typedef std::shared_ptr<Port> PortPtr;
 /**
  * representation of a node. this may be used to form a graphical representation
  */
-struct Node
+struct Node : public QObject
 {
+Q_OBJECT
 public:
-    // Port: (name, is_input)
-    typedef std::tuple<std::string, PortDirection, PortType> Port;
-
 
     Node();
 
     boost::uuids::uuid uuid;
     bool to_be_deleted; // used to mark node for deletion in the architecture
 
-    std::string name;
-    std::set<Port> ports;
+    std::string name() const {return _name;}
+    void name(const std::string& name);
 
-    void addPort(const Port port) {ports.insert(port);}
+    const std::set<PortPtr> ports() const {return _ports;}
+    void addPort(const Port port);
 
+signals:
+    void dirty();
+
+private:
+    std::string _name;
+    std::set<PortPtr> _ports;
 };
 
 typedef std::shared_ptr<Node> NodePtr;

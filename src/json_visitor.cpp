@@ -29,11 +29,11 @@ void JsonVisitor::onNode(shared_ptr<const Node> node)
 {
 
     ss << endl << "{\"node\": \"" << node->uuid << "\", ";
-    ss << "\"name\": \"" << node->name << "\", ";
+    ss << "\"name\": \"" << node->name() << "\", ";
     ss << "\"ports\": [";
-    for (const auto port : node->ports) {
-        ss << "{\"name\": \"" << get<0>(port) << "\",";
-        ss << " \"direction\": \"" << (get<1>(port) == PortDirection::IN ? "in":"out") << "\"},";
+    for (const auto port : node->ports()) {
+        ss << "{\"name\": \"" << port->name << "\",";
+        ss << " \"direction\": \"" << (port->direction == Port::Direction::IN ? "in":"out") << "\"},";
     }
     ss.seekp((long)(ss.tellp()) - 1); // remove the last comma
     ss << "]},";

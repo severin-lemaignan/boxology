@@ -41,6 +41,12 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::addNode(NodePtr node)
 {
 
      auto gNode = make_shared<GraphicsNode>(node);
+
+     // connecting the node controller with the node view, so that
+     // updates to the node controller are reflected in the widget.
+     connect(node.get(), &Node::dirty,
+             gNode.get(), &GraphicsNode::refreshNode);
+
      _nodes.insert(gNode);
      addItem(gNode.get());
      return gNode;
