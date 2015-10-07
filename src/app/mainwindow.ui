@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Boxology</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QToolBar" name="toolBar">
@@ -46,7 +46,9 @@
   </action>
   <action name="actionAdd_node">
    <property name="icon">
-    <iconset theme="list-add"/>
+    <iconset theme="list-add">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Add node</string>
@@ -54,7 +56,9 @@
   </action>
   <action name="actionToJson">
    <property name="icon">
-    <iconset theme="document-save"/>
+    <iconset theme="document-save">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>ToJson</string>
