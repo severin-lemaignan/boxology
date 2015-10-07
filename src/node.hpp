@@ -42,6 +42,10 @@ typedef std::shared_ptr<const Port> ConstPortPtr;
 /**
  * representation of a node. this may be used to form a graphical representation
  */
+struct Node;
+typedef std::shared_ptr<Node> NodePtr;
+typedef std::shared_ptr<const Node> ConstNodePtr;
+
 struct Node : public QObject
 {
 Q_OBJECT
@@ -51,6 +55,8 @@ public:
 
     boost::uuids::uuid uuid;
     bool to_be_deleted; // used to mark node for deletion in the architecture
+
+    NodePtr duplicate() const;
 
     std::string name() const {return _name;}
     void name(const std::string& name);
@@ -65,10 +71,6 @@ private:
     std::string _name;
     std::set<PortPtr> _ports;
 };
-
-typedef std::shared_ptr<Node> NodePtr;
-typedef std::shared_ptr<const Node> ConstNodePtr;
-
 
 #endif /* __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF */
 

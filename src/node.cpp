@@ -11,6 +11,20 @@ Node::Node():
 {
 }
 
+/* Performs a deep-copy of the current Node, with however a different UUID
+ */
+NodePtr Node::duplicate() const {
+
+    auto node = make_shared<Node>();
+    node->name(_name);
+
+    for (const auto p : _ports) {
+        node->createPort(*p);
+    }
+
+    return node;
+}
+
 PortPtr Node::createPort(const Port port) {
     auto portPtr = make_shared<Port>(port);
     _ports.insert(portPtr);
