@@ -18,26 +18,23 @@ namespace Ui {
 class MainWindow;
 }
 
+class MainWindow : public QMainWindow {
+    Q_OBJECT
 
-
-class MainWindow : public QMainWindow
-{
-Q_OBJECT
-
-public:
+   public:
     MainWindow();
     ~MainWindow();
 
     void read_architecture();
 
-protected:
+   protected:
     virtual void resizeEvent(QResizeEvent *event);
 
-private slots:
+   private slots:
     void on_actionAdd_node_triggered();
     void on_actionToJson_triggered();
 
-private:
+   private:
     void addNodeViews();
     void addFakeContent();
 
@@ -52,4 +49,3 @@ private:
 };
 
 #endif /* __MAINWINDOW_HPP__0E042426_E73E_4382_BC86_DE7F000B57CC */
-

@@ -29,37 +29,38 @@
 using namespace std;
 
 GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
-    : QGraphicsItem(parent)
-        , _node(node)
-        , _changed(false)
-        , _width(150)
-        , _height(120)
-        , _pen_default(QColor("#7F000000"))
-        , _pen_selected(QColor("#FFFF36A7"))
-        // , _pen_selected(QColor("#FFFFA836"))
-        // , _pen_selected(QColor("#FF00FF27"))
-        , _pen_sources(QColor("#FF000000"))
-        , _pen_sinks(QColor("#FF000000"))
-        , _brush_title(QColor("#E3212121"))
-        , _brush_background(QColor("#E31a1a1a"))
-        , _brush_sources(QColor("#FFFF7700"))
-        , _brush_sinks(QColor("#FF0077FF"))
-        , _effect(new QGraphicsDropShadowEffect())
-        , _title_item(new EditableLabel(this))
-{
-    for (auto p : {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
+    : QGraphicsItem(parent),
+      _node(node),
+      _changed(false),
+      _width(150),
+      _height(120),
+      _pen_default(QColor("#7F000000")),
+      _pen_selected(QColor("#FFFF36A7"))
+      // , _pen_selected(QColor("#FFFFA836"))
+      // , _pen_selected(QColor("#FF00FF27"))
+      ,
+      _pen_sources(QColor("#FF000000")),
+      _pen_sinks(QColor("#FF000000")),
+      _brush_title(QColor("#E3212121")),
+      _brush_background(QColor("#E31a1a1a")),
+      _brush_sources(QColor("#FFFF7700")),
+      _brush_sinks(QColor("#FF0077FF")),
+      _effect(new QGraphicsDropShadowEffect()),
+      _title_item(new EditableLabel(this)) {
+    for (auto p :
+         {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
         p->setWidth(0);
     }
 
-    //setFlag(QGraphicsItem::ItemIsFocusable); // for keystrokes
+    // setFlag(QGraphicsItem::ItemIsFocusable); // for keystrokes
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 
     _title_item->setPos(0, 0);
-    _title_item->setTextWidth(_width - 2*_lr_padding);
-    QObject::connect(_title_item, &EditableLabel::contentUpdated,
-                     this, &GraphicsNode::updateNode);
+    _title_item->setTextWidth(_width - 2 * _lr_padding);
+    QObject::connect(_title_item, &EditableLabel::contentUpdated, this,
+                     &GraphicsNode::updateNode);
 
     // alignment?
     /*
@@ -73,50 +74,44 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     setGraphicsEffect(_effect);
 
     refreshNode();
-
 }
 
-
-void GraphicsNode::setTitle(const QString &title)
-{
+void GraphicsNode::setTitle(const QString &title) {
     _title = title;
     _title_item->setPlainText(title);
 }
 
-
-GraphicsNode::~GraphicsNode()
-{
+GraphicsNode::~GraphicsNode() {
     if (_central_proxy) delete _central_proxy;
     delete _title_item;
     delete _effect;
 
-    if(_node.expired())
+    if (_node.expired())
         qWarning() << "Widget deleted (node already dead)";
     else
-        qWarning() << "Widget deleted (node " << QString::fromStdString(_node.lock()->name()) << ")";
+        qWarning() << "Widget deleted (node "
+                   << QString::fromStdString(_node.lock()->name()) << ")";
 }
 
-
-QRectF GraphicsNode::boundingRect() const
-{
-    return QRectF(-_pen_width/2.0 - _socket_size,
-            -_pen_width/2.0,
-            _width + _pen_width/2.0 + 2.0 * _socket_size,
-            _height + _pen_width/2.0).normalized();
+QRectF GraphicsNode::boundingRect() const {
+    return QRectF(-_pen_width / 2.0 - _socket_size, -_pen_width / 2.0,
+                  _width + _pen_width / 2.0 + 2.0 * _socket_size,
+                  _height + _pen_width / 2.0).normalized();
 }
 
-
-void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
-{
+void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
+                         QWidget *) {
     const qreal edge_size = 10.0;
     const qreal title_height = 20.0;
 
     // path for the caption of this node
     QPainterPath path_title;
     path_title.setFillRule(Qt::WindingFill);
-    path_title.addRoundedRect(QRect(0, 0, _width, title_height), edge_size, edge_size);
+    path_title.addRoundedRect(QRect(0, 0, _width, title_height), edge_size,
+                              edge_size);
     path_title.addRect(0, title_height - edge_size, edge_size, edge_size);
-    path_title.addRect(_width - edge_size, title_height - edge_size, edge_size, edge_size);
+    path_title.addRect(_width - edge_size, title_height - edge_size, edge_size,
+                       edge_size);
     painter->setPen(Qt::NoPen);
     painter->setBrush(_brush_title);
     painter->drawPath(path_title.simplified());
@@ -124,21 +119,25 @@ void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
     // path for the content of this node
     QPainterPath path_content;
     path_content.setFillRule(Qt::WindingFill);
-    path_content.addRoundedRect(QRect(0, title_height, _width, _height - title_height), edge_size, edge_size);
+    path_content.addRoundedRect(
+        QRect(0, title_height, _width, _height - title_height), edge_size,
+        edge_size);
     path_content.addRect(0, title_height, edge_size, edge_size);
-    path_content.addRect(_width - edge_size, title_height, edge_size, edge_size);
+    path_content.addRect(_width - edge_size, title_height, edge_size,
+                         edge_size);
     painter->setPen(Qt::NoPen);
     painter->setBrush(_brush_background);
     painter->drawPath(path_content.simplified());
 
     // path for the outline
     QPainterPath path_outline = QPainterPath();
-    path_outline.addRoundedRect(QRect(0, 0, _width, _height), edge_size, edge_size);
+    path_outline.addRoundedRect(QRect(0, 0, _width, _height), edge_size,
+                                edge_size);
     painter->setPen(isSelected() ? _pen_selected : _pen_default);
     painter->setBrush(Qt::NoBrush);
     painter->drawPath(path_outline.simplified());
 
-    // debug bounding box
+// debug bounding box
 #if 0
     QPen debugPen = QPen(QColor(Qt::red));
     debugPen.setWidth(0);
@@ -151,10 +150,7 @@ void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
 #endif
 }
 
-
-void GraphicsNode::
-mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
+void GraphicsNode::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     // TODO: ordering after selection/deselection cycle
     QGraphicsItem::mousePressEvent(event);
     if (isSelected())
@@ -163,24 +159,15 @@ mousePressEvent(QGraphicsSceneMouseEvent *event)
         setZValue(0);
 }
 
-
-void GraphicsNode::
-setSize(const qreal width, const qreal height)
-{
+void GraphicsNode::setSize(const qreal width, const qreal height) {
     setSize(QPointF(width, height));
 }
 
-
-void GraphicsNode::
-setSize(const QPointF size)
-{
+void GraphicsNode::setSize(const QPointF size) {
     setSize(QSizeF(size.x(), size.y()));
 }
 
-
-void GraphicsNode::
-setSize(const QSizeF size)
-{
+void GraphicsNode::setSize(const QSizeF size) {
     _width = size.width();
     _height = size.height();
     _changed = true;
@@ -188,33 +175,32 @@ setSize(const QSizeF size)
     updateGeometry();
 }
 
-
-QVariant GraphicsNode::itemChange(GraphicsItemChange change, const QVariant &value)
-{
+QVariant GraphicsNode::itemChange(GraphicsItemChange change,
+                                  const QVariant &value) {
     switch (change) {
         case QGraphicsItem::ItemSelectedChange: {
-                                                    if (value == true)
-                                                        setZValue(1);
-                                                    else
-                                                        setZValue(0);
-                                                    break;
-                                                }
+            if (value == true)
+                setZValue(1);
+            else
+                setZValue(0);
+            break;
+        }
         case QGraphicsItem::ItemPositionChange:
         case QGraphicsItem::ItemPositionHasChanged:
-                                                propagateChanges();
-                                                break;
+            propagateChanges();
+            break;
 
         default:
-                                                break;
+            break;
     }
 
     return QGraphicsItem::itemChange(change, value);
 }
 
-
-shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port)
-{
-    if(_node.expired()) {throw logic_error("We should not be accessing a dead node!");}
+shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port) {
+    if (_node.expired()) {
+        throw logic_error("We should not be accessing a dead node!");
+    }
 
     shared_ptr<GraphicsNodeSocket> s;
 
@@ -223,8 +209,7 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port)
     if (port->direction == Port::Direction::IN) {
         s = make_shared<GraphicsNodeSocket>(socket, this);
         _sinks.push_back(s);
-    }
-    else {
+    } else {
         s = make_shared<GraphicsNodeSocket>(socket, this);
         _sources.push_back(s);
     }
@@ -235,15 +220,18 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port)
     return s;
 }
 
-GraphicsNodeSocket* GraphicsNode::connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge)
-{
-    auto source = find_if(_sources.begin(), _sources.end(), 
-                          [&port](shared_ptr<const GraphicsNodeSocket> gsocket) { 
-                               return gsocket->socket().port.lock() == port; 
-                          });
+GraphicsNodeSocket *GraphicsNode::connect_source(ConstPortPtr port,
+                                                 GraphicsDirectedEdge *edge) {
+    auto source =
+        find_if(_sources.begin(), _sources.end(),
+                [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
+                    return gsocket->socket().port.lock() == port;
+                });
 
     if (source == _sources.end()) {
-        qWarning() << "Trying to connect source " << QString::fromStdString(port->name) << " of node " << _title << ", but it does not exist.";
+        qWarning() << "Trying to connect source "
+                   << QString::fromStdString(port->name) << " of node "
+                   << _title << ", but it does not exist.";
         return nullptr;
     }
     (*source)->set_edge(edge);
@@ -251,16 +239,17 @@ GraphicsNodeSocket* GraphicsNode::connect_source(ConstPortPtr port, GraphicsDire
     return (*source).get();
 }
 
-
-GraphicsNodeSocket* GraphicsNode::connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge)
-{
-    auto sink = find_if(_sinks.begin(), _sinks.end(), 
-                          [&port](shared_ptr<const GraphicsNodeSocket> gsocket) { 
-                               return gsocket->socket().port.lock() == port; 
-                          });
+GraphicsNodeSocket *GraphicsNode::connect_sink(ConstPortPtr port,
+                                               GraphicsDirectedEdge *edge) {
+    auto sink = find_if(_sinks.begin(), _sinks.end(),
+                        [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
+                            return gsocket->socket().port.lock() == port;
+                        });
 
     if (sink == _sinks.end()) {
-        qWarning() << "Trying to connect sink " << QString::fromStdString(port->name) << " of node " << _title << ", but it does not exist.";
+        qWarning() << "Trying to connect sink "
+                   << QString::fromStdString(port->name) << " of node "
+                   << _title << ", but it does not exist.";
         return nullptr;
     }
     (*sink)->set_edge(edge);
@@ -268,50 +257,46 @@ GraphicsNodeSocket* GraphicsNode::connect_sink(ConstPortPtr port, GraphicsDirect
     return (*sink).get();
 }
 
-void GraphicsNode::refreshNode()
-{
-    if(_node.expired()) {throw logic_error("We should not be accessing a dead node!");}
+void GraphicsNode::refreshNode() {
+    if (_node.expired()) {
+        throw logic_error("We should not be accessing a dead node!");
+    }
 
     auto node = _node.lock();
 
     setTitle(QString::fromStdString(node->name()));
-
 
     set<PortPtr> in_node = node->ports();
     set<PortPtr> existing;
     set<PortPtr> to_add;
     set<PortPtr> to_remove;
 
-    for(auto s : _sinks) {
+    for (auto s : _sinks) {
         existing.insert(s->socket().port.lock());
     }
-    for(auto s : _sources) {
+    for (auto s : _sources) {
         existing.insert(s->socket().port.lock());
     }
 
-    set_difference(in_node.begin(), in_node.end(), 
-                   existing.begin(), existing.end(), 
-                   inserter(to_add, to_add.begin()));
+    set_difference(in_node.begin(), in_node.end(), existing.begin(),
+                   existing.end(), inserter(to_add, to_add.begin()));
 
-    set_difference(existing.begin(), existing.end(),
-                   in_node.begin(), in_node.end(), 
-                   inserter(to_remove, to_remove.begin()));
+    set_difference(existing.begin(), existing.end(), in_node.begin(),
+                   in_node.end(), inserter(to_remove, to_remove.begin()));
 
-    for(auto it=_sinks.begin(); it < _sinks.end();) {
-        if(to_remove.count((*it)->socket().port.lock())) {
+    for (auto it = _sinks.begin(); it < _sinks.end();) {
+        if (to_remove.count((*it)->socket().port.lock())) {
             scene()->removeItem((*it).get());
             it = _sinks.erase(it);
-        }
-        else {
+        } else {
             ++it;
         }
     }
-    for(auto it=_sources.begin(); it < _sources.end();) {
-        if(to_remove.count((*it)->socket().port.lock())) {
+    for (auto it = _sources.begin(); it < _sources.end();) {
+        if (to_remove.count((*it)->socket().port.lock())) {
             scene()->removeItem((*it).get());
             it = _sources.erase(it);
-        }
-        else {
+        } else {
             ++it;
         }
     }
@@ -321,15 +306,15 @@ void GraphicsNode::refreshNode()
     }
 }
 
-void GraphicsNode::updateNode(QString name)
-{
-    if(_node.expired()) {throw logic_error("We should not be accessing a dead node!");}
+void GraphicsNode::updateNode(QString name) {
+    if (_node.expired()) {
+        throw logic_error("We should not be accessing a dead node!");
+    }
 
     _node.lock()->name(name.toStdString());
 }
 
-void GraphicsNode::updateGeometry()
-{
+void GraphicsNode::updateGeometry() {
     if (!_changed) return;
 
     // compute if we have reached the minimum size
@@ -346,25 +331,25 @@ void GraphicsNode::updateGeometry()
         auto size = s->getSize();
 
         // sockets are centered around 0/0
-        s->setPos(0, ypos1 + size.height()/2.0);
+        s->setPos(0, ypos1 + size.height() / 2.0);
         ypos1 += size.height() + _item_padding;
     }
 
     // sources are placed bottom/right
     qreal ypos2 = _height - _bottom_margin;
     for (size_t i = _sources.size(); i > 0; i--) {
-        auto s = _sources[i-1];
+        auto s = _sources[i - 1];
         auto size = s->getSize();
 
         ypos2 -= size.height();
-        s->setPos(_width, ypos2 + size.height()/2.0);
+        s->setPos(_width, ypos2 + size.height() / 2.0);
         ypos2 -= _item_padding;
     }
 
-
     // central widget
     if (_central_proxy != nullptr) {
-        QRectF geom(_lr_padding, ypos1, _width - 2.0 * _lr_padding, ypos2 - ypos1);
+        QRectF geom(_lr_padding, ypos1, _width - 2.0 * _lr_padding,
+                    ypos2 - ypos1);
         _central_proxy->setGeometry(geom);
     }
 
@@ -372,11 +357,8 @@ void GraphicsNode::updateGeometry()
     propagateChanges();
 }
 
-
-void GraphicsNode::setCentralWidget (QWidget *widget)
-{
-    if (_central_proxy)
-        delete _central_proxy;
+void GraphicsNode::setCentralWidget(QWidget *widget) {
+    if (_central_proxy) delete _central_proxy;
     _central_proxy = new QGraphicsProxyWidget(this);
     _central_proxy->setWidget(widget);
     _changed = true;
@@ -384,10 +366,9 @@ void GraphicsNode::setCentralWidget (QWidget *widget)
     updateGeometry();
 }
 
-
 void GraphicsNode::updateSizeHints() {
-    qreal min_width = 0.0;// _hard_min_width;
-    qreal min_height = _top_margin + _bottom_margin; // _hard_min_height;
+    qreal min_width = 0.0;                            // _hard_min_width;
+    qreal min_height = _top_margin + _bottom_margin;  // _hard_min_height;
 
     // sinks
     for (size_t i = 0; i < _sinks.size(); i++) {
@@ -414,12 +395,15 @@ void GraphicsNode::updateSizeHints() {
                     min_height += sh.height();
 
                 if (sz.width() > 0)
-                    min_width = std::max(qreal(sz.width()) + 2.0*_lr_padding, min_width);
+                    min_width = std::max(qreal(sz.width()) + 2.0 * _lr_padding,
+                                         min_width);
                 else
-                    min_width = std::max(qreal(sh.width()) + 2.0*_lr_padding, min_width);
+                    min_width = std::max(qreal(sh.width()) + 2.0 * _lr_padding,
+                                         min_width);
             } else {
                 min_height += sh.height();
-                min_width = std::max(qreal(sh.width()) + 2.0*_lr_padding, min_width);
+                min_width =
+                    std::max(qreal(sh.width()) + 2.0 * _lr_padding, min_width);
             }
         }
     }
@@ -437,25 +421,17 @@ void GraphicsNode::updateSizeHints() {
     _min_height = std::max(min_height, _hard_min_height);
 }
 
+void GraphicsNode::propagateChanges() {
+    for (auto sink : _sinks) sink->notifyPositionChange();
 
-void GraphicsNode::propagateChanges()
-{
-    for (auto sink: _sinks)
-        sink->notifyPositionChange();
-
-    for (auto source: _sources)
-        source->notifyPositionChange();
+    for (auto source : _sources) source->notifyPositionChange();
 }
 
-
-
-void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
+void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     qWarning() << "Double clicked!";
 
-    //auto popup = make_shared<QLineEdit>();
-    //popup->show();
+    // auto popup = make_shared<QLineEdit>();
+    // popup->show();
 
     QGraphicsItem::mouseDoubleClickEvent(event);
 }
-

@@ -37,12 +37,10 @@
 using namespace std;
 
 MainWindow::MainWindow()
-  : arch(new Architecture),
-    ui(new Ui::MainWindow),
-    _view(nullptr),
-    _scene(nullptr)
-{
-
+    : arch(new Architecture),
+      ui(new Ui::MainWindow),
+      _view(nullptr),
+      _scene(nullptr) {
     ui->setupUi(this);
 
     // create and configure scene
@@ -56,21 +54,15 @@ MainWindow::MainWindow()
     this->setCentralWidget(_view.get());
 
     // add some content
-    //addFakeContent();
+    // addFakeContent();
     addNodeViews();
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
+MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::
-resizeEvent(QResizeEvent *event)
-{
+void MainWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
 }
-
 
 /*
 void MainWindow::
@@ -105,37 +97,32 @@ addFakeContent()
 }
 */
 
-void MainWindow::addNodeViews()
-{
+void MainWindow::addNodeViews() {
     read_architecture();
     auto node = arch->createNode();
     node->name("NLP");
-    auto p1 = node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    auto p1 = node->createPort(
+        {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _scene->add(node);
-    gNode->setPos(0,0);
-
+    gNode->setPos(0, 0);
 
     auto node2 = arch->createNode();
     node2->name("KB");
-    auto p2 = node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
+    auto p2 =
+        node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     auto gNode2 = _scene->add(node2);
-    gNode2->setPos(0+gNode->width()*1.5,0);
+    gNode2->setPos(0 + gNode->width() * 1.5, 0);
 
     node2->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
-    
 
     auto conn = arch->createConnection({node, p1}, {node2, p2});
     _scene->add(conn);
 
-
-    //arch.addConnection(*e12);
+    // arch.addConnection(*e12);
 }
 
-
-void MainWindow::on_actionAdd_node_triggered()
-{
-
+void MainWindow::on_actionAdd_node_triggered() {
     auto node = arch->createNode();
 
     node->name("new node");
@@ -143,24 +130,18 @@ void MainWindow::on_actionAdd_node_triggered()
     node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
     auto gNode = _scene->add(node);
-    gNode->setPos(0,0);
-
-
+    gNode->setPos(0, 0);
 }
 
-void MainWindow::on_actionToJson_triggered()
-{
-
+void MainWindow::on_actionToJson_triggered() {
     JsonVisitor json(*arch);
     json.visit();
-
 }
 
-void MainWindow::read_architecture()
-{
+void MainWindow::read_architecture() {
     Json::Value root;
 
-    ifstream myfile ("test.json");
+    ifstream myfile("test.json");
 
     myfile >> root;
 

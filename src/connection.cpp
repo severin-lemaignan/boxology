@@ -3,9 +3,6 @@
 #include "connection.hpp"
 #include <QDebug>
 
-Connection::~Connection()
-{
+Connection::~Connection() {
     qWarning() << "Connection " << QString::fromStdString(name) << " deleted!!";
 }
-
-

@@ -20,25 +20,23 @@ class QGraphicsSceneMouseEvent;
 class QGraphicsSceneDragDropEvent;
 class GraphicsDirectedEdge;
 
-
 /**
  * visual representation of a socket. the visual representation consists of a
  * circle for User Interaction and a label
  */
-class GraphicsNodeSocket : public QGraphicsItem
-{
-friend class GraphicsDirectedEdge;
-public:
-    GraphicsNodeSocket(Socket socket,
-                       QGraphicsItem *parent = nullptr);
+class GraphicsNodeSocket : public QGraphicsItem {
+    friend class GraphicsDirectedEdge;
+
+   public:
+    GraphicsNodeSocket(Socket socket, QGraphicsItem *parent = nullptr);
 
     virtual QRectF boundingRect() const override;
 
     /*
     */
     virtual void paint(QPainter *painter,
-            const QStyleOptionGraphicsItem *option,
-            QWidget *widget = 0) override;
+                       const QStyleOptionGraphicsItem *option,
+                       QWidget *widget = 0) override;
 
     /**
      * set the edge for this socket
@@ -69,9 +67,7 @@ public:
      * type of the class. usefull within a QGraphicsScene to distinguish
      * what is really behind a pointer
      */
-    int type() const override {
-        return GraphicsNodeItemTypes::TypeSocket;
-    };
+    int type() const override { return GraphicsNodeItemTypes::TypeSocket; };
 
     /**
      * determine if a point is actually within the socket circle.
@@ -82,20 +78,18 @@ public:
     // is living in
     QPointF sceneAnchorPos() const;
 
+    Socket socket() const { return _socket; }
 
-    Socket socket() const {return _socket;}
-
-protected:
+   protected:
     // event handling
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 
-private:
+   private:
     void drawAlignedText(QPainter *painter);
 
-
-private:
+   private:
     Socket _socket;
 
     const Port::Direction _socket_type;
@@ -109,8 +103,8 @@ private:
      */
     GraphicsDirectedEdge *_edge;
 
-
-    private:// some constants. TODO: need to be defined somewhere else (customizable?)
+   private:  // some constants. TODO: need to be defined somewhere else
+             // (customizable?)
     const qreal _pen_width = 1.0;
     const qreal _circle_radius = 6.0;
     const qreal _text_offset = 3.0;
@@ -120,4 +114,3 @@ private:
 };
 
 #endif /* __GRAPHICSNODESOCKET_HPP__99275D3E_35A8_4D63_8E10_995E5DC83C8C */
-

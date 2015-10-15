@@ -27,47 +27,38 @@ class GraphicsDirectedEdge;
 class GraphicsNodeSocket;
 class EditableLabel;
 
-class GraphicsNode : public QObject, public QGraphicsItem
-{
+class GraphicsNode : public QObject, public QGraphicsItem {
     Q_OBJECT
 
-public:
+   public:
     GraphicsNode(NodePtr node, QGraphicsItem *parent = nullptr);
     virtual ~GraphicsNode();
 
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter *painter,
-            const QStyleOptionGraphicsItem *option,
-            QWidget *widget = 0) override;
+                       const QStyleOptionGraphicsItem *option,
+                       QWidget *widget = 0) override;
 
-
-    const NodeWeakPtr node() {return _node;}
+    const NodeWeakPtr node() { return _node; }
 
     // connecting sources and sinks
-    GraphicsNodeSocket* connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge);
-    GraphicsNodeSocket* connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge);
+    GraphicsNodeSocket *connect_source(ConstPortPtr port,
+                                       GraphicsDirectedEdge *edge);
+    GraphicsNodeSocket *connect_sink(ConstPortPtr port,
+                                     GraphicsDirectedEdge *edge);
 
-    int type() const override {
-        return GraphicsNodeItemTypes::TypeNode;
-    };
+    int type() const override { return GraphicsNodeItemTypes::TypeNode; };
 
-    qreal width() const {
-        return _width;
-    }
+    qreal width() const { return _width; }
 
-    qreal height() const {
-        return _height;
-    }
+    qreal height() const { return _height; }
 
     void setTitle(const QString &title);
-    QString title() const {
-        return _title;
-    }
+    QString title() const { return _title; }
 
     void setSize(const qreal width, const qreal height);
     void setSize(const QSizeF size);
     void setSize(const QPointF size);
-
 
     /**
         * set a regular QWidget as central widget
@@ -77,13 +68,14 @@ public:
     void refreshNode();
     void updateNode(QString name);
 
-protected:
+   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    virtual void mouseDoubleClickEvent(
+        QGraphicsSceneMouseEvent *event) override;
+    virtual QVariant itemChange(GraphicsItemChange change,
+                                const QVariant &value) override;
 
-private:
-
+   private:
     void updateGeometry();
     void updatePath();
     void updateSizeHints();
@@ -91,8 +83,7 @@ private:
 
     std::shared_ptr<const GraphicsNodeSocket> add_socket(PortPtr port);
 
-private:
-
+   private:
     NodeWeakPtr _node;
 
     // TODO: change pairs of sizes to QPointF, QSizeF, or quadrupels to QRectF
@@ -137,4 +128,3 @@ private:
 };
 
 #endif /* __GRAPHICSNODE_HPP__0707C377_95A2_4E0B_B98B_7E4813001982 */
-

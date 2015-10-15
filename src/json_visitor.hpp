@@ -4,12 +4,11 @@
 #include <sstream>
 #include <memory>
 
-#include "architecture.hpp" // Node
+#include "architecture.hpp"  // Node
 #include "visitor.hpp"
 
-
 class JsonVisitor : public Visitor {
-    using Visitor::Visitor; // inheriting Visitor's ctor
+    using Visitor::Visitor;  // inheriting Visitor's ctor
 
     void startUp();
     void onNode(std::shared_ptr<const Node>);
@@ -17,9 +16,8 @@ class JsonVisitor : public Visitor {
     void onConnection(std::shared_ptr<const Connection>);
     void tearDown();
 
-private:
+   private:
     std::stringstream ss;
-
 };
 
 #endif

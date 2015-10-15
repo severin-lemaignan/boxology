@@ -3,23 +3,20 @@
 #ifndef __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843
 #define __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843
 
-#include<string>
-#include<memory>
+#include <string>
+#include <memory>
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "node.hpp"
 
-struct Socket
-{
-
+struct Socket {
     NodeWeakPtr node;
     PortWeakPtr port;
 };
 
-inline bool operator==(const Socket& l, const Socket& r)
-{
+inline bool operator==(const Socket& l, const Socket& r) {
     if (l.node.expired() || r.node.expired()) return false;
     if (l.node.lock() == r.node.lock()) return l.port.lock() == r.port.lock();
     return l.node.lock() == r.node.lock();
@@ -28,12 +25,9 @@ inline bool operator==(const Socket& l, const Socket& r)
 /**
  * representation of a connection  between two nodes.
  */
-struct Connection
-{
-public:
-
-
-    Connection() : uuid(boost::uuids::random_generator()()) {};
+struct Connection {
+   public:
+    Connection() : uuid(boost::uuids::random_generator()()){};
 
     ~Connection();
 
@@ -48,4 +42,3 @@ typedef std::weak_ptr<Connection> ConnectionWeakPtr;
 typedef std::shared_ptr<const Connection> ConstConnectionPtr;
 
 #endif /* __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843 */
-

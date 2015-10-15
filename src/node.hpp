@@ -13,21 +13,21 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-
-struct Port
-{
-public:
-    enum class Direction {OUT, IN};
-    enum class Type {EXPLICIT, LATENT, OTHER};
+struct Port {
+   public:
+    enum class Direction { OUT, IN };
+    enum class Type { EXPLICIT, LATENT, OTHER };
 
     Port() : uuid(boost::uuids::random_generator()()) {}
-    Port(std::string name, Direction direction, Type type) : 
-        uuid(boost::uuids::random_generator()()),
-        name(name),
-        direction(direction),
-        type(type) {}
+    Port(std::string name, Direction direction, Type type)
+        : uuid(boost::uuids::random_generator()()),
+          name(name),
+          direction(direction),
+          type(type) {}
 
-    friend bool operator<(const Port& l, const Port& r) {return l.uuid < r.uuid;}
+    friend bool operator<(const Port& l, const Port& r) {
+        return l.uuid < r.uuid;
+    }
 
     boost::uuids::uuid uuid;
 
@@ -48,11 +48,9 @@ typedef std::shared_ptr<Node> NodePtr;
 typedef std::weak_ptr<Node> NodeWeakPtr;
 typedef std::shared_ptr<const Node> ConstNodePtr;
 
-struct Node : public QObject
-{
-Q_OBJECT
-public:
-
+struct Node : public QObject {
+    Q_OBJECT
+   public:
     Node();
     ~Node();
 
@@ -60,19 +58,18 @@ public:
 
     NodePtr duplicate() const;
 
-    std::string name() const {return _name;}
+    std::string name() const { return _name; }
     void name(const std::string& name);
 
-    const std::set<PortPtr> ports() const {return _ports;}
+    const std::set<PortPtr> ports() const { return _ports; }
     PortPtr createPort(const Port port);
 
 signals:
     void dirty();
 
-private:
+   private:
     std::string _name;
     std::set<PortPtr> _ports;
 };
 
 #endif /* __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF */
-
