@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+#include "graphicsnodescene.hpp"
 #include "graphicsnode.hpp"
 #include "graphicsnodesocket.hpp"
 #include "graphicsnodedefs.hpp"
@@ -253,7 +254,10 @@ leftMouseButtonPress(QMouseEvent *event)
                     }
                 }
                 else {
+                    GraphicsNodeScene* gscene = dynamic_cast<GraphicsNodeScene*>(scene());
                     _drag_event->e = new GraphicsBezierEdge();
+                    connect(_drag_event->e, &GraphicsDirectedEdge::connectionEstablished,
+                            gscene, &GraphicsNodeScene::onConnectionEstablished);
                     if (sock->socket_type() == Port::Direction::IN) {
                         _drag_event->e->set_start(mapToScene(event->pos()));
                         _drag_event->e->connect_sink(sock);
