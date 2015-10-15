@@ -16,26 +16,19 @@ public:
 
     Architecture() {};
 
-    NodePtr createNode() {
-        auto node = std::make_shared<Node>();
-        _nodes.insert(node);
-
-        return node;
-    }
-
+    NodePtr createNode();
+    void addNode(NodePtr node);
+    void removeNode(NodePtr node);
 
     Nodes nodes() {return _nodes;}
     const Nodes nodes() const {return _nodes;}
 
-    ConnectionPtr createConnection(ConstNodePtr from, ConstPortPtr from_port,
-                                   ConstNodePtr to, ConstPortPtr to_port) {
-        auto connection = std::make_shared<Connection>();
-        connection->from = {from, from_port};
-        connection->to = {to, to_port};
-
-        _connections.insert(connection);
-        return connection;
-    }
+    ConnectionPtr createConnection(ConstNodePtr from,
+                                   ConstPortPtr from_port,
+                                   ConstNodePtr to, 
+                                   ConstPortPtr to_port);
+    void addConnection(ConnectionPtr connection);
+    void removeConnection(ConnectionPtr connection);
 
     Connections connections() {return _connections;}
     const Connections connections() const {return _connections;}
@@ -44,9 +37,6 @@ private:
 
     Nodes _nodes;
     Connections _connections;
-
-    // remove nodes/connections marked for deletion
-    void collect();
 
 };
 

@@ -36,7 +36,8 @@
 using namespace std;
 
 MainWindow::MainWindow()
-  : ui(new Ui::MainWindow),
+  : arch(new Architecture),
+    ui(new Ui::MainWindow),
     _view(nullptr),
     _scene(nullptr)
 {
@@ -44,7 +45,7 @@ MainWindow::MainWindow()
     ui->setupUi(this);
 
     // create and configure scene
-    _scene = make_shared<GraphicsNodeScene>(this);
+    _scene = make_shared<GraphicsNodeScene>(arch.get(), this);
 
     _scene->setSceneRect(-32000, -32000, 64000, 64000);
 
@@ -53,6 +54,9 @@ MainWindow::MainWindow()
     _view->setScene(_scene.get());
     this->setCentralWidget(_view.get());
 
+
+    connect(_scene.get(), &GraphicsNodeScene::nodeDeleted,
+            this, &MainWindow::onNodeDeleted);
 
     // add some content
     //addFakeContent();
@@ -104,17 +108,16 @@ addFakeContent()
 }
 */
 
-void MainWindow::
-addNodeViews()
+void MainWindow::addNodeViews()
 {
-    auto node = arch.createNode();
+    auto node = arch->createNode();
     node->name("NLP");
     auto p1 = node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _scene->add(node);
     gNode->setPos(0,0);
 
 
-    auto node2 = arch.createNode();
+    auto node2 = arch->createNode();
     node2->name("KB");
     auto p2 = node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     auto gNode2 = _scene->add(node2);
@@ -124,7 +127,7 @@ addNodeViews()
     node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
     
 
-    auto conn = arch.createConnection(node, p1, node2, p2);
+    auto conn = arch->createConnection(node, p1, node2, p2);
     _scene->add(conn);
 
 
@@ -135,14 +138,14 @@ addNodeViews()
 void MainWindow::on_actionAdd_node_triggered()
 {
 
-    auto node = arch.createNode();
+    auto node = arch->createNode();
 
     node->name("new node");
     node->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
     auto gNode = _scene->add(node);
-    gNode->setPos(0*1.5,0);
+    gNode->setPos(0,0);
 
 
 }
@@ -150,7 +153,27 @@ void MainWindow::on_actionAdd_node_triggered()
 void MainWindow::on_actionToJson_triggered()
 {
 
-    JsonVisitor json(arch);
+    JsonVisitor json(*arch);
     json.visit();
 
 }
+
+
+void MainWindow::onNodeAdded(NodePtr node)
+{
+    arch->addNode(node);
+}
+void MainWindow::onNodeDeleted(NodePtr node)
+{
+    arch->removeNode(node);
+}
+
+void MainWindow::onConnectionAdded(ConnectionPtr connection)
+{
+    arch->addConnection(connection);
+}
+void MainWindow::onConnectionDeleted(ConnectionPtr connection)
+{
+    arch->removeConnection(connection);
+}
+

@@ -232,67 +232,67 @@ leftMouseButtonPress(QMouseEvent *event)
     switch (item->type())
     {
         case GraphicsNodeItemTypes::TypeSocket: {
-                                                    QPointF scenePos = mapToScene(event->pos());
-                                                    QPointF itemPos = item->mapFromScene(scenePos);
-                                                    GraphicsNodeSocket *sock = static_cast<GraphicsNodeSocket*>(item);
-                                                    if (sock->isInSocketCircle(itemPos)) {
-                                                        viewport()->setCursor(Qt::ClosedHandCursor);
+            QPointF scenePos = mapToScene(event->pos());
+            QPointF itemPos = item->mapFromScene(scenePos);
+            GraphicsNodeSocket *sock = static_cast<GraphicsNodeSocket*>(item);
+            if (sock->isInSocketCircle(itemPos)) {
+                viewport()->setCursor(Qt::ClosedHandCursor);
 
-                                                        // initialize a new drag mode event
-                                                        _drag_event = new EdgeDragEvent();
-                                                        if ((_tmp_edge = sock->get_edge())) {
-                                                            _drag_event->e = _tmp_edge;
-                                                            if (sock->socket_type() == Port::Direction::IN) {
-                                                                _drag_event->e->disconnect_sink();
-                                                                _drag_event->e->set_stop(mapToScene(event->pos()));
-                                                                _drag_event->mode = EdgeDragEvent::move_to_sink;
-                                                            } else {
-                                                                _drag_event->e->disconnect_source();
-                                                                _drag_event->e->set_start(mapToScene(event->pos()));
-                                                                _drag_event->mode = EdgeDragEvent::move_to_source;
-                                                            }
-                                                        }
-                                                        else {
-                                                            _drag_event->e = new GraphicsBezierEdge();
-                                                            if (sock->socket_type() == Port::Direction::IN) {
-                                                                _drag_event->e->set_start(mapToScene(event->pos()));
-                                                                _drag_event->e->connect_sink(sock);
-                                                                _drag_event->mode = EdgeDragEvent::connect_to_source;
-                                                            }
-                                                            else {
-                                                                _drag_event->e->connect_source(sock);
-                                                                _drag_event->e->set_stop(mapToScene(event->pos()));
-                                                                _drag_event->mode = EdgeDragEvent::connect_to_sink;
-                                                            }
-                                                            scene()->addItem(_drag_event->e);
-                                                        }
-                                                        event->ignore();
-                                                    }
-                                                    else {
-                                                        QGraphicsView::mousePressEvent(event);
-                                                    }
-                                                    break;
-                                                }
+                // initialize a new drag mode event
+                _drag_event = new EdgeDragEvent();
+                if ((_tmp_edge = sock->get_edge())) {
+                    _drag_event->e = _tmp_edge;
+                    if (sock->socket_type() == Port::Direction::IN) {
+                        _drag_event->e->disconnect_sink();
+                        _drag_event->e->set_stop(mapToScene(event->pos()));
+                        _drag_event->mode = EdgeDragEvent::move_to_sink;
+                    } else {
+                        _drag_event->e->disconnect_source();
+                        _drag_event->e->set_start(mapToScene(event->pos()));
+                        _drag_event->mode = EdgeDragEvent::move_to_source;
+                    }
+                }
+                else {
+                    _drag_event->e = new GraphicsBezierEdge();
+                    if (sock->socket_type() == Port::Direction::IN) {
+                        _drag_event->e->set_start(mapToScene(event->pos()));
+                        _drag_event->e->connect_sink(sock);
+                        _drag_event->mode = EdgeDragEvent::connect_to_source;
+                    }
+                    else {
+                        _drag_event->e->connect_source(sock);
+                        _drag_event->e->set_stop(mapToScene(event->pos()));
+                        _drag_event->mode = EdgeDragEvent::connect_to_sink;
+                    }
+                    scene()->addItem(_drag_event->e);
+                }
+                event->ignore();
+            }
+            else {
+                QGraphicsView::mousePressEvent(event);
+            }
+            break;
+        }
 
         case GraphicsNodeItemTypes::TypeNode: {
-                                                  QPointF scenePos = mapToScene(event->pos());
-                                                  QPointF itemPos = item->mapFromScene(scenePos);
-                                                  GraphicsNode *node = static_cast<GraphicsNode*>(item);
+            QPointF scenePos = mapToScene(event->pos());
+            QPointF itemPos = item->mapFromScene(scenePos);
+            GraphicsNode *node = static_cast<GraphicsNode*>(item);
 
-                                                  if (itemPos.x() > (node->width() - 10) && (itemPos.y() > (node->height() - 10))) {
-                                                      setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-                                                      _resize_event = new NodeResizeEvent();
-                                                      _resize_event->node = node;
-                                                      _resize_event->orig_width = node->width();
-                                                      _resize_event->orig_height = node->height();
-                                                      _resize_event->pos = event->pos();
-                                                      event->ignore();
-                                                  }
-                                                  else {
-                                                      QGraphicsView::mousePressEvent(event);
-                                                  }
-                                                  break;
-                                              }
+            if (itemPos.x() > (node->width() - 10) && (itemPos.y() > (node->height() - 10))) {
+                setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+                _resize_event = new NodeResizeEvent();
+                _resize_event->node = node;
+                _resize_event->orig_width = node->width();
+                _resize_event->orig_height = node->height();
+                _resize_event->pos = event->pos();
+                event->ignore();
+            }
+            else {
+                QGraphicsView::mousePressEvent(event);
+            }
+            break;
+        }
 
         default:
                                               QGraphicsView::mousePressEvent(event);

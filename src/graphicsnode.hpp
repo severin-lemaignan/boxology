@@ -41,7 +41,7 @@ public:
             QWidget *widget = 0) override;
 
 
-    const ConstNodePtr node() const {return _node;}
+    const NodeWeakPtr node() {return _node;}
 
     // connecting sources and sinks
     GraphicsNodeSocket* connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge);
@@ -80,7 +80,6 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-    virtual void keyPressEvent(QKeyEvent *event) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
@@ -90,11 +89,11 @@ private:
     void updateSizeHints();
     void propagateChanges();
 
-    const GraphicsNodeSocket* add_socket(std::shared_ptr<Port> port);
+    std::shared_ptr<const GraphicsNodeSocket> add_socket(PortPtr port);
 
 private:
 
-    NodePtr _node;
+    NodeWeakPtr _node;
 
     // TODO: change pairs of sizes to QPointF, QSizeF, or quadrupels to QRectF
 
@@ -133,8 +132,8 @@ private:
 
     QString _title;
 
-    std::vector<GraphicsNodeSocket*> _sources;
-    std::vector<GraphicsNodeSocket*> _sinks;
+    std::vector<std::shared_ptr<GraphicsNodeSocket>> _sources;
+    std::vector<std::shared_ptr<GraphicsNodeSocket>> _sinks;
 };
 
 #endif /* __GRAPHICSNODE_HPP__0707C377_95A2_4E0B_B98B_7E4813001982 */

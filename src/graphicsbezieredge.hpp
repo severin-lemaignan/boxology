@@ -28,21 +28,14 @@ Q_OBJECT
 public:
     // GraphicsDirectedEdge(qreal factor=0.5f);
     explicit GraphicsDirectedEdge(qreal factor=0.5f);
-    GraphicsDirectedEdge(int x0, int y0, int x1, int y1, qreal factor=0.5f);
     GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor=0.5f);
-    GraphicsDirectedEdge(QPointF start, QPointF stop, qreal factor=0.5f);
-    GraphicsDirectedEdge(std::shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
-                         std::shared_ptr<GraphicsNode> n2, ConstPortPtr sink, qreal factor=0.5f);
-    GraphicsDirectedEdge(GraphicsNodeSocket *source, GraphicsNodeSocket *sink, qreal factor=0.5f);
 
     ~GraphicsDirectedEdge();
 
-    ConstConnectionPtr connection() const {
+    ConnectionWeakPtr connection() const {
         return _connection;
     }
-    operator ConstConnectionPtr() const {return connection();}
 
-    void connect(GraphicsNodeSocket *source, GraphicsNodeSocket *sink);
     void connect(std::shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
                  std::shared_ptr<GraphicsNode> n2, ConstPortPtr sink);
 
@@ -76,7 +69,7 @@ protected slots:
     void onSourceDataChange(); // cant use QVariant argument, since it might be another type
 
 private:
-    ConnectionPtr _connection;
+    ConnectionWeakPtr _connection;
 
 protected:
     virtual void update_path() = 0;

@@ -51,7 +51,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
         p->setWidth(0);
     }
 
-    setFlag(QGraphicsItem::ItemIsFocusable);
+    //setFlag(QGraphicsItem::ItemIsFocusable); // for keystrokes
     setFlag(QGraphicsItem::ItemIsMovable);
     setFlag(QGraphicsItem::ItemIsSelectable);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
@@ -59,7 +59,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     _title_item->setPos(0, 0);
     _title_item->setTextWidth(_width - 2*_lr_padding);
     QObject::connect(_title_item, &EditableLabel::contentUpdated,
-            this, &GraphicsNode::updateNode);
+                     this, &GraphicsNode::updateNode);
 
     // alignment?
     /*
@@ -77,26 +77,27 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
 }
 
 
-void GraphicsNode::
-setTitle(const QString &title)
+void GraphicsNode::setTitle(const QString &title)
 {
     _title = title;
     _title_item->setPlainText(title);
 }
 
 
-GraphicsNode::
-~GraphicsNode()
+GraphicsNode::~GraphicsNode()
 {
-    qWarning() << "Widget for Node " << QString::fromStdString(_node->name()) << " deleted";
     if (_central_proxy) delete _central_proxy;
     delete _title_item;
     delete _effect;
+
+    if(_node.expired())
+        qWarning() << "Widget deleted (node already dead)";
+    else
+        qWarning() << "Widget deleted (node " << QString::fromStdString(_node.lock()->name()) << ")";
 }
 
 
-QRectF GraphicsNode::
-boundingRect() const
+QRectF GraphicsNode::boundingRect() const
 {
     return QRectF(-_pen_width/2.0 - _socket_size,
             -_pen_width/2.0,
@@ -105,8 +106,7 @@ boundingRect() const
 }
 
 
-void GraphicsNode::
-paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     const qreal edge_size = 10.0;
     const qreal title_height = 20.0;
@@ -189,8 +189,7 @@ setSize(const QSizeF size)
 }
 
 
-QVariant GraphicsNode::
-itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant GraphicsNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     switch (change) {
         case QGraphicsItem::ItemSelectedChange: {
@@ -213,18 +212,17 @@ itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 
-const GraphicsNodeSocket* GraphicsNode::
-add_socket(shared_ptr<Port> port)
+shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port)
 {
 
-    GraphicsNodeSocket* s;
+    shared_ptr<GraphicsNodeSocket> s;
 
     if (port->direction == Port::Direction::IN) {
-        s = new GraphicsNodeSocket(port, this);
+        s = make_shared<GraphicsNodeSocket>(port, this);
         _sinks.push_back(s);
     }
     else {
-        s = new GraphicsNodeSocket(port, this);
+        s = make_shared<GraphicsNodeSocket>(port, this);
         _sources.push_back(s);
     }
 
@@ -234,11 +232,10 @@ add_socket(shared_ptr<Port> port)
     return s;
 }
 
-GraphicsNodeSocket* GraphicsNode::
-connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge)
+GraphicsNodeSocket* GraphicsNode::connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge)
 {
     auto source = find_if(_sources.begin(), _sources.end(), 
-                          [&port](const GraphicsNodeSocket* socket) { 
+                          [&port](shared_ptr<const GraphicsNodeSocket> socket) { 
                                return socket->port() == port; 
                           });
 
@@ -248,15 +245,14 @@ connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge)
     }
     (*source)->set_edge(edge);
 
-    return *source;
+    return (*source).get();
 }
 
 
-GraphicsNodeSocket* GraphicsNode::
-connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge)
+GraphicsNodeSocket* GraphicsNode::connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge)
 {
     auto sink = find_if(_sinks.begin(), _sinks.end(), 
-                          [&port](const GraphicsNodeSocket* socket) { 
+                          [&port](shared_ptr<const GraphicsNodeSocket> socket) { 
                                return socket->port() == port; 
                           });
 
@@ -266,16 +262,19 @@ connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge)
     }
     (*sink)->set_edge(edge);
 
-    return *sink;
+    return (*sink).get();
 }
 
-void GraphicsNode::
-refreshNode()
+void GraphicsNode::refreshNode()
 {
-    setTitle(QString::fromStdString(_node->name()));
+    if(_node.expired()) {throw logic_error("We should not be accessing a dead node!");}
+
+    auto node = _node.lock();
+
+    setTitle(QString::fromStdString(node->name()));
 
 
-    set<PortPtr> in_node = _node->ports();
+    set<PortPtr> in_node = node->ports();
     set<PortPtr> existing;
     set<PortPtr> to_add;
     set<PortPtr> to_remove;
@@ -297,8 +296,7 @@ refreshNode()
 
     for(auto it=_sinks.begin(); it < _sinks.end();) {
         if(to_remove.count((*it)->port())) {
-            scene()->removeItem(*it);
-            delete(*it);
+            scene()->removeItem((*it).get());
             it = _sinks.erase(it);
         }
         else {
@@ -307,8 +305,7 @@ refreshNode()
     }
     for(auto it=_sources.begin(); it < _sources.end();) {
         if(to_remove.count((*it)->port())) {
-            scene()->removeItem(*it);
-            delete(*it);
+            scene()->removeItem((*it).get());
             it = _sources.erase(it);
         }
         else {
@@ -321,14 +318,14 @@ refreshNode()
     }
 }
 
-void GraphicsNode::
-updateNode(QString name)
+void GraphicsNode::updateNode(QString name)
 {
-    _node->name(name.toStdString());
+    if(_node.expired()) {throw logic_error("We should not be accessing a dead node!");}
+
+    _node.lock()->name(name.toStdString());
 }
 
-void GraphicsNode::
-updateGeometry()
+void GraphicsNode::updateGeometry()
 {
     if (!_changed) return;
 
@@ -373,8 +370,7 @@ updateGeometry()
 }
 
 
-void GraphicsNode::
-setCentralWidget (QWidget *widget)
+void GraphicsNode::setCentralWidget (QWidget *widget)
 {
     if (_central_proxy)
         delete _central_proxy;
@@ -386,8 +382,7 @@ setCentralWidget (QWidget *widget)
 }
 
 
-void GraphicsNode::
-updateSizeHints() {
+void GraphicsNode::updateSizeHints() {
     qreal min_width = 0.0;// _hard_min_width;
     qreal min_height = _top_margin + _bottom_margin; // _hard_min_height;
 
@@ -440,8 +435,7 @@ updateSizeHints() {
 }
 
 
-void GraphicsNode::
-propagateChanges()
+void GraphicsNode::propagateChanges()
 {
     for (auto sink: _sinks)
         sink->notifyPositionChange();
@@ -452,8 +446,7 @@ propagateChanges()
 
 
 
-void GraphicsNode::
-mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     qWarning() << "Double clicked!";
 
@@ -461,21 +454,5 @@ mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //popup->show();
 
     QGraphicsItem::mouseDoubleClickEvent(event);
-}
-
-
-void GraphicsNode::keyPressEvent(QKeyEvent *event) {
-
-    if (event->key() == Qt::Key_X) {
-        _node->to_be_deleted = true;
-        scene()->removeItem(this);
-        // the node should be deleted right away via the smart pointer that contains it
-    }
-    if ((event->key() == Qt::Key_D) && (event->modifiers() == Qt::ControlModifier)) {
-            qWarning() << "Duplicate this node";
-    }
-    else {
-        QGraphicsItem::keyPressEvent(event);
-    }
 }
 

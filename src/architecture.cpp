@@ -1,14 +1,45 @@
+#include <QDebug>
+
 #include "architecture.hpp"
 
-void Architecture::collect() {
+NodePtr Architecture::createNode()
+{
+    auto node = std::make_shared<Node>();
+    _nodes.insert(node);
 
-    for (auto node=_nodes.begin(); node!=_nodes.end();) {
-        if ((*node)->to_be_deleted) node = _nodes.erase(node);
-        else ++node;
-    }
-
-    for (auto connection=_connections.begin(); connection!=_connections.end();) {
-        if ((*connection)->to_be_deleted) connection = _connections.erase(connection);
-        else ++connection;
-    }
+    return node;
 }
+
+void Architecture::addNode(NodePtr node)
+{
+    _nodes.insert(node);
+}
+void Architecture::removeNode(NodePtr node)
+{
+    qWarning() << "Attempting to delete node " << QString::fromStdString(node->name()) <<  "...";
+    _nodes.erase(node);
+}
+
+
+ConnectionPtr Architecture::createConnection(ConstNodePtr from,
+                                             ConstPortPtr from_port,
+                                             ConstNodePtr to, 
+                                             ConstPortPtr to_port)
+{
+    auto connection = std::make_shared<Connection>();
+    connection->from = {from, from_port};
+    connection->to = {to, to_port};
+
+    _connections.insert(connection);
+    return connection;
+}
+
+void Architecture::addConnection(ConnectionPtr connection)
+{
+    _connections.insert(connection);
+}
+void Architecture::removeConnection(ConnectionPtr connection)
+{
+    _connections.erase(connection);
+}
+

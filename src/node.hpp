@@ -44,6 +44,7 @@ typedef std::shared_ptr<const Port> ConstPortPtr;
  */
 struct Node;
 typedef std::shared_ptr<Node> NodePtr;
+typedef std::weak_ptr<Node> NodeWeakPtr;
 typedef std::shared_ptr<const Node> ConstNodePtr;
 
 struct Node : public QObject
@@ -52,9 +53,9 @@ Q_OBJECT
 public:
 
     Node();
+    ~Node();
 
     boost::uuids::uuid uuid;
-    bool to_be_deleted; // used to mark node for deletion in the architecture
 
     NodePtr duplicate() const;
 

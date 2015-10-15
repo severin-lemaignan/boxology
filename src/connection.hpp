@@ -34,6 +34,7 @@ public:
     std::string desc;
 };
 typedef std::shared_ptr<Connection> ConnectionPtr;
+typedef std::weak_ptr<Connection> ConnectionWeakPtr;
 typedef std::shared_ptr<const Connection> ConstConnectionPtr;
 
 #endif /* __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843 */

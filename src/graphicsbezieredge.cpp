@@ -12,15 +12,14 @@
 #include <QDebug>
 
 
+#include "graphicsnodescene.hpp"
 #include "graphicsnode.hpp"
 #include "graphicsnodesocket.hpp"
 
 using namespace std;
 
-GraphicsDirectedEdge::
-GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor)
-    : _connection(std::make_shared<Connection>())
-    , _pen(QColor("#00FF00"))
+GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor)
+    :_pen(QColor("#00FF00"))
     , _effect(new QGraphicsDropShadowEffect())
     , _start(start)
     , _stop(stop)
@@ -34,36 +33,7 @@ GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor)
     setGraphicsEffect(_effect);
 }
 
-
-GraphicsDirectedEdge::
-GraphicsDirectedEdge(QPointF start, QPointF stop, qreal factor)
-    : GraphicsDirectedEdge(start.toPoint(), stop.toPoint(), factor) {}
-
-
-    GraphicsDirectedEdge::
-GraphicsDirectedEdge(int x0, int y0, int x1, int y1, qreal factor)
-    : GraphicsDirectedEdge(QPoint(x0, y0), QPoint(x1, y1), factor) {}
-
-
-    GraphicsDirectedEdge::
-GraphicsDirectedEdge(qreal factor)
-    : GraphicsDirectedEdge(0, 0, 0, 0, factor) {}
-
-
-    GraphicsDirectedEdge::
-    GraphicsDirectedEdge(shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
-                         shared_ptr<GraphicsNode> n2, ConstPortPtr sink, qreal factor)
-: GraphicsDirectedEdge(0, 0, 0, 0, factor)
-{
-    connect(n1, source, n2, sink);
-}
-
-GraphicsDirectedEdge::
-    GraphicsDirectedEdge(GraphicsNodeSocket *source, GraphicsNodeSocket *sink, qreal factor)
-: GraphicsDirectedEdge(0, 0, 0, 0, factor)
-{
-    connect(source, sink);
-}
+GraphicsDirectedEdge::GraphicsDirectedEdge(qreal factor) : GraphicsDirectedEdge(QPoint(0, 0), QPoint(0, 0), factor) {}
 
 
 GraphicsDirectedEdge::
@@ -158,21 +128,6 @@ connect(shared_ptr<GraphicsNode> n1, ConstPortPtr source,
 }
 
 void GraphicsDirectedEdge::
-connect(GraphicsNodeSocket *source, GraphicsNodeSocket *sink)
-{
-    if (_source) {
-        QObject* data = _source->m_data;
-        if(data!=0)
-            QObject::disconnect(data,0,this,0);
-    }
-
-    source->set_edge(this);
-    sink->set_edge(this);
-    _source = source;
-    _sink = sink;
-}
-
-void GraphicsDirectedEdge::
 disconnect()
 {
     if (_source) {
@@ -211,12 +166,10 @@ connect_sink(GraphicsNodeSocket *sink)
     if (_sink) _sink->set_edge(this);
 }
 
-void GraphicsDirectedEdge::
-connect_source(GraphicsNodeSocket *source)
+void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket *source)
 {
     if (_source){
         _source->set_edge(nullptr);
-
         QObject* data = _source->m_data;
         if(data!=0)
             QObject::disconnect(data,0,this,0);
@@ -240,7 +193,6 @@ connect_source(GraphicsNodeSocket *source)
         }
     }
 }
-
 
 void GraphicsBezierEdge::
 update_path()
@@ -275,3 +227,6 @@ paint(QPainter * painter, const QStyleOptionGraphicsItem * /*option*/, QWidget *
     painter->setPen(_pen);
     painter->drawPath(path());
 }
+
+
+

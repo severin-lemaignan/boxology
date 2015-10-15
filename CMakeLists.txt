@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.8)
-project(node-editor)
+project(boxology)
 
 add_definitions(-std=c++11) 
 set(CMAKE_BUILD_TYPE DEBUG)
@@ -30,7 +30,7 @@ include_directories(
     # ${Boost_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
     )
-add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI})
 target_link_libraries(${PROJECT_NAME}
     #	pthread
     #	hdf5

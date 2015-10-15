@@ -3,12 +3,18 @@
 #include "graphicsnode.hpp"
 #include "node.hpp"
 
+#include <QDebug>
+
 using namespace std;
 
 Node::Node():
-        uuid(boost::uuids::random_generator()()),
-        to_be_deleted(false)
+        uuid(boost::uuids::random_generator()())
 {
+}
+
+Node::~Node()
+{
+    //qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
 }
 
 /* Performs a deep-copy of the current Node, with however a different UUID
@@ -16,7 +22,7 @@ Node::Node():
 NodePtr Node::duplicate() const {
 
     auto node = make_shared<Node>();
-    node->name(_name);
+    node->name(_name + " (copy)");
 
     for (const auto p : _ports) {
         node->createPort(*p);
