@@ -49,29 +49,6 @@ mousePressEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 
-void GraphicsDirectedEdge::onSourceDataChange()
-{
-    QVariant var;
-    // get Source Data
-
-    QObject* data1 = _source->m_data;
-    const QMetaObject* mo1 = data1->metaObject();
-    QMetaProperty mp1 = mo1->property(_source->m_index);
-    const char *name1 = mp1.name();
-
-    var = data1->property(name1);
-
-    // set sink
-    QObject* data2 = _sink->m_data;
-    const QMetaObject* mo2 = data2->metaObject();
-    QMetaProperty mp2 = mo2->property(_sink->m_index);
-    const char * name2 = mp2.name();
-
-    if(!data2->setProperty(name2,var))
-        qWarning() << "Error Writing QVariant "<< var << "[ " <<name1<<" -> " <<name2<<" ]";
-}
-
-
 void GraphicsDirectedEdge::
 set_start(int x0, int y0)
 {
@@ -119,8 +96,6 @@ void GraphicsDirectedEdge::
 connect(shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
         shared_ptr<GraphicsNode> n2, ConstPortPtr sink)
 {
-    if (_source)
-        QObject::disconnect(this,SLOT(onSourceDataChange()));
 
     connect_source(n1->connect_source(source, this));
     _sink = n2->connect_sink(sink, this);
@@ -132,9 +107,6 @@ disconnect()
 {
     if (_source) {
         _source->set_edge(nullptr);
-        QObject* data = _source->m_data;
-        if(data!=0)
-            QObject::disconnect(data,0,this,0);
     }
     if (_sink) _sink->set_edge(nullptr);
 }
@@ -149,12 +121,7 @@ disconnect_sink()
 void GraphicsDirectedEdge::
 disconnect_source()
 {
-    if (_source) {
-        _source->set_edge(nullptr);
-        QObject* data = _source->m_data;
-        if(data!=0)
-            QObject::disconnect(data,0,this,0);
-    }
+    if (_source) _source->set_edge(nullptr);
 }
 
 
@@ -168,30 +135,9 @@ connect_sink(GraphicsNodeSocket *sink)
 
 void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket *source)
 {
-    if (_source){
-        _source->set_edge(nullptr);
-        QObject* data = _source->m_data;
-        if(data!=0)
-            QObject::disconnect(data,0,this,0);
-    }
-
+    if (_source) _source->set_edge(nullptr);
     _source = source;
-
-    if (_source){
-        _source->set_edge(this);
-
-        QObject* data = _source->m_data;
-        if(data!=0) {
-            const QMetaObject* mo = data->metaObject();
-            QMetaProperty mp = mo->property(_source->m_index);
-            QMetaMethod notifySignal = mp.notifySignal();
-
-            int functionIndex = metaObject()->indexOfSlot("onSourceDataChange()");
-            QMetaMethod edgeInternalSlot = metaObject()->method(functionIndex);
-
-            QObject::connect(data,notifySignal,this,edgeInternalSlot);
-        }
-    }
+    if (_source) _source->set_edge(this);
 }
 
 void GraphicsBezierEdge::

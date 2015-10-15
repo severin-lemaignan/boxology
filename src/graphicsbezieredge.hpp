@@ -65,9 +65,6 @@ public:
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
-protected slots:
-    void onSourceDataChange(); // cant use QVariant argument, since it might be another type
-
 private:
     ConnectionWeakPtr _connection;
 

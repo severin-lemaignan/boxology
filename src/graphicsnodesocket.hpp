@@ -108,8 +108,6 @@ private:
      * edge with which this socket is connected
      */
     GraphicsDirectedEdge *_edge;
-    QObject* m_data;
-    int m_index;
 
 
     private:// some constants. TODO: need to be defined somewhere else (customizable?)

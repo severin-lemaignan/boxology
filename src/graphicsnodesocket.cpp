@@ -41,9 +41,7 @@ GraphicsNodeSocket::GraphicsNodeSocket(shared_ptr<Port> port,
           _pen_text(PEN_COLOR_TEXT),
           _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK : BRUSH_COLOR_SOURCE),
           _text(QString::fromStdString(port->name)),
-          _edge(nullptr),
-          m_data(0),
-          m_index(0)
+          _edge(nullptr)
 {
     _pen_circle.setWidth(0);
     setAcceptDrops(true);
