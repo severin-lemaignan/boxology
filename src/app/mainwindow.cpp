@@ -19,7 +19,8 @@
 #include <QLineEdit>
 
 #include <iostream>
-
+#include <fstream>
+#include <json/json.h>
 
 // node editor
 #include "../graphicsnodescene.hpp"
@@ -106,6 +107,7 @@ addFakeContent()
 
 void MainWindow::addNodeViews()
 {
+    read_architecture();
     auto node = arch->createNode();
     node->name("NLP");
     auto p1 = node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
@@ -154,3 +156,13 @@ void MainWindow::on_actionToJson_triggered()
 
 }
 
+void MainWindow::read_architecture()
+{
+    Json::Value root;
+
+    ifstream myfile ("test.json");
+
+    myfile >> root;
+
+    cout << root << endl;
+}

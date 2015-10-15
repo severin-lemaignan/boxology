@@ -28,6 +28,8 @@ public:
     MainWindow();
     ~MainWindow();
 
+    void read_architecture();
+
 protected:
     virtual void resizeEvent(QResizeEvent *event);
 

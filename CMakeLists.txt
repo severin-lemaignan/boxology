@@ -12,6 +12,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3" CACHE STRING "Eigen3 include directory")
 
+find_package(PkgConfig)
+pkg_check_modules(JSONCPP jsoncpp)
+include_directories(${JSONCPP_INCLUDE_DIRS})
+
+# for UUIDs
 find_package(
     Boost 1.55.0
     #COMPONENTS
@@ -31,7 +36,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     )
 add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI})
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES}
     #	pthread
     #	hdf5
     #	hdf5_cpp
