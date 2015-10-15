@@ -31,6 +31,7 @@ public:
 
     // slots
     void onConnectionEstablished(GraphicsDirectedEdge* edge);
+    void onConnectionDisrupted(GraphicsDirectedEdge* edge);
 
 protected:
     virtual void drawBackground(QPainter *painter, const QRectF &rect) override;

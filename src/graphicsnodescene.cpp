@@ -77,6 +77,11 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection
     edge->connect(*source, connection->from.port,
                   *sink, connection->to.port);
 
+    connect(edge.get(), &GraphicsDirectedEdge::connectionEstablished,
+            this, &GraphicsNodeScene::onConnectionEstablished);
+    connect(edge.get(), &GraphicsDirectedEdge::connectionDisrupted,
+            this, &GraphicsNodeScene::onConnectionDisrupted);
+
     _edges.insert(edge);
     addItem(edge.get());
     return edge;
@@ -85,6 +90,14 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection
 void GraphicsNodeScene::onConnectionEstablished(GraphicsDirectedEdge* edge)
 {
     architecture->createConnection(edge->source()->socket(),
+                                   edge->sink()->socket());
+
+}
+
+void GraphicsNodeScene::onConnectionDisrupted(GraphicsDirectedEdge* edge)
+{
+    qWarning() << "Connection disrupted!";
+    architecture->removeConnection(edge->source()->socket(),
                                    edge->sink()->socket());
 
 }

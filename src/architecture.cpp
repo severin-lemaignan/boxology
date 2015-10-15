@@ -34,8 +34,15 @@ void Architecture::addConnection(ConnectionPtr connection)
 {
     _connections.insert(connection);
 }
-void Architecture::removeConnection(ConnectionPtr connection)
+
+void Architecture::removeConnection(Socket from, Socket to)
 {
-    _connections.erase(connection);
+    for (auto c : _connections) {
+        if (c->to == to && c->from == from)
+        {
+            _connections.erase(c);
+            break;
+        }
+    }
 }
 

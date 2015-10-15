@@ -25,7 +25,7 @@ public:
 
     ConnectionPtr createConnection(Socket from, Socket to);
     void addConnection(ConnectionPtr connection);
-    void removeConnection(ConnectionPtr connection);
+    void removeConnection(Socket from, Socket to);
 
     Connections connections() {return _connections;}
     const Connections connections() const {return _connections;}

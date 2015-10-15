@@ -13,9 +13,17 @@
 
 struct Socket
 {
+
     NodeWeakPtr node;
     PortWeakPtr port;
 };
+
+inline bool operator==(const Socket& l, const Socket& r)
+{
+    if (l.node.expired() || r.node.expired()) return false;
+    if (l.node.lock() == r.node.lock()) return l.port.lock() == r.port.lock();
+    return l.node.lock() == r.node.lock();
+}
 
 /**
  * representation of a connection  between two nodes.
@@ -27,6 +35,7 @@ public:
 
     Connection() : uuid(boost::uuids::random_generator()()) {};
 
+    ~Connection();
 
     boost::uuids::uuid uuid;
 

@@ -88,14 +88,16 @@ void GraphicsDirectedEdge::disconnect()
 
 void GraphicsDirectedEdge::disconnect_sink()
 {
-    if (_sink && _source) emit connectionDisrupted(this);
+    if (_sink && _sink->get_edge() && _source && _source->get_edge())
+        emit connectionDisrupted(this);
 
     if (_sink) _sink->set_edge(nullptr);
 }
 
 void GraphicsDirectedEdge::disconnect_source()
 {
-    if (_sink && _source) emit connectionDisrupted(this);
+    if (_sink && _sink->get_edge() && _source && _source->get_edge())
+        emit connectionDisrupted(this);
 
     if (_source) _source->set_edge(nullptr);
 

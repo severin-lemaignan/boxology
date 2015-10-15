@@ -114,7 +114,7 @@ leftMouseButtonRelease(QMouseEvent *event)
         if (!sock || !can_accept_edge(sock)) {
             scene()->removeItem(_drag_event->e);
             _drag_event->e->disconnect();
-            delete _drag_event->e;
+            //delete _drag_event->e;
         } else {
             switch (_drag_event->mode) {
                 case EdgeDragEvent::move_to_source:
@@ -258,6 +258,8 @@ leftMouseButtonPress(QMouseEvent *event)
                     _drag_event->e = new GraphicsBezierEdge();
                     connect(_drag_event->e, &GraphicsDirectedEdge::connectionEstablished,
                             gscene, &GraphicsNodeScene::onConnectionEstablished);
+                    connect(_drag_event->e, &GraphicsDirectedEdge::connectionDisrupted,
+                            gscene, &GraphicsNodeScene::onConnectionDisrupted);
                     if (sock->socket_type() == Port::Direction::IN) {
                         _drag_event->e->set_start(mapToScene(event->pos()));
                         _drag_event->e->connect_sink(sock);
