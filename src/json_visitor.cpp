@@ -4,6 +4,7 @@
 #include "json_visitor.hpp"
 using namespace std;
 
+
 void JsonVisitor::startUp() { ss << "{\"nodes\":["; }
 
 void JsonVisitor::endNodes() {
@@ -19,7 +20,7 @@ void JsonVisitor::tearDown() {
        << "]" << endl
        << "}" << endl;
 
-    cout << ss.str();
+    _content = ss.str();
 }
 
 void JsonVisitor::onNode(shared_ptr<const Node> node) {

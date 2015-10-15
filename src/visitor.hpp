@@ -2,15 +2,18 @@
 #define VISITOR_HPP
 
 #include <memory>
-
+#include <string>
 #include "architecture.hpp"
 
+template <class T>
 class Visitor {
+
    public:
     Visitor(const Architecture& architecture);
 
-    void visit();
+    T visit();
 
+   protected:
     virtual void startUp(){};
     virtual void beginNodes(){};
     virtual void onNode(std::shared_ptr<const Node>) = 0;
@@ -20,8 +23,12 @@ class Visitor {
     virtual void endConnections(){};
     virtual void tearDown(){};
 
+    T _content;
+
    private:
     const Architecture& _architecture;
 };
+
+template class Visitor<std::string>;
 
 #endif  // VISITOR_HPP

@@ -17,6 +17,7 @@
 #include <QButtonGroup>
 #include <QString>
 #include <QLineEdit>
+#include <QFileDialog>
 
 #include <iostream>
 #include <fstream>
@@ -98,7 +99,7 @@ addFakeContent()
 */
 
 void MainWindow::addNodeViews() {
-    read_architecture();
+
     auto node = arch->createNode();
     node->name("NLP");
     auto p1 = node->createPort(
@@ -135,15 +136,24 @@ void MainWindow::on_actionAdd_node_triggered() {
 
 void MainWindow::on_actionToJson_triggered() {
     JsonVisitor json(*arch);
-    json.visit();
+    auto output = json.visit();
+
+    auto filename = QFileDialog::getSaveFileName(this,"Save architecture to json", "", "*.json");
+
+    ofstream json_file(filename.toStdString(), std::ofstream::out);
+
+    json_file << output;
 }
 
-void MainWindow::read_architecture() {
+void MainWindow::on_actionFromJson_triggered() {
+
     Json::Value root;
 
-    ifstream myfile("test.json");
+    auto filename = QFileDialog::getOpenFileName(this,"Select an architecture to open", "", "*.json");
 
-    myfile >> root;
+    ifstream json_file(filename.toStdString());
+
+    json_file >> root;
 
     cout << root << endl;
 }

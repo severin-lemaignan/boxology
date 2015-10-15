@@ -2,10 +2,12 @@
 
 using namespace std;
 
-Visitor::Visitor(const Architecture& architecture)
+template<class T>
+Visitor<T>::Visitor(const Architecture& architecture)
     : _architecture(architecture) {}
 
-void Visitor::visit() {
+template<class T>
+T Visitor<T>::visit() {
     startUp();
 
     beginNodes();
@@ -21,4 +23,8 @@ void Visitor::visit() {
     endConnections();
 
     tearDown();
+
+    return _content;
 }
+
+

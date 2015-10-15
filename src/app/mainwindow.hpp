@@ -25,14 +25,13 @@ class MainWindow : public QMainWindow {
     MainWindow();
     ~MainWindow();
 
-    void read_architecture();
-
    protected:
     virtual void resizeEvent(QResizeEvent *event);
 
    private slots:
     void on_actionAdd_node_triggered();
     void on_actionToJson_triggered();
+    void on_actionFromJson_triggered();
 
    private:
     void addNodeViews();

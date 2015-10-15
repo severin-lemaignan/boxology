@@ -1,13 +1,14 @@
 #ifndef JSONVISITOR_HPP
 #define JSONVISITOR_HPP
 
+#include <string>
 #include <sstream>
 #include <memory>
 
 #include "architecture.hpp"  // Node
 #include "visitor.hpp"
 
-class JsonVisitor : public Visitor {
+class JsonVisitor : public Visitor<std::string> {
     using Visitor::Visitor;  // inheriting Visitor's ctor
 
     void startUp();

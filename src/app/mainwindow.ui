@@ -32,6 +32,7 @@
    </attribute>
    <addaction name="actionAdd_node"/>
    <addaction name="separator"/>
+   <addaction name="actionFromJson"/>
    <addaction name="actionToJson"/>
    <addaction name="separator"/>
   </widget>
@@ -56,6 +57,17 @@
    </property>
    <property name="toolTip">
     <string>Save to JSON</string>
+   </property>
+  </action>
+  <action name="actionFromJson">
+   <property name="icon">
+    <iconset theme="document-open"/>
+   </property>
+   <property name="text">
+    <string>FromJson</string>
+   </property>
+   <property name="toolTip">
+    <string>Load from JSON</string>
    </property>
   </action>
  </widget>
