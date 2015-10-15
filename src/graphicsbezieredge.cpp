@@ -18,12 +18,13 @@
 
 using namespace std;
 
-GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor)
-    :_pen(QColor("#00FF00"))
-    , _effect(new QGraphicsDropShadowEffect())
-    , _start(start)
-    , _stop(stop)
-      , _factor(factor)
+GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop, 
+                                           qreal factor)
+    :_pen(QColor("#00FF00")),
+     _effect(new QGraphicsDropShadowEffect()),
+     _start(start),
+     _stop(stop),
+     _factor(factor)
 {
     _pen.setWidth(2);
     setZValue(-1);
@@ -33,13 +34,19 @@ GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop, qreal fact
     setGraphicsEffect(_effect);
 }
 
-GraphicsDirectedEdge::GraphicsDirectedEdge(qreal factor) : GraphicsDirectedEdge(QPoint(0, 0), QPoint(0, 0), factor) {}
+GraphicsDirectedEdge::GraphicsDirectedEdge() : GraphicsDirectedEdge(QPoint(0, 0), QPoint(0, 0))
+{
+}
 
 
-GraphicsDirectedEdge::
-~GraphicsDirectedEdge()
+GraphicsDirectedEdge::~GraphicsDirectedEdge()
 {
     delete _effect;
+
+    if(_connection.expired())
+        qWarning() << "Edge deleted (connection already dead)";
+    else
+        qWarning() << "Edge deleted (connection " << QString::fromStdString(_connection.lock()->name) << ")";
 }
 
 
@@ -47,35 +54,6 @@ void GraphicsDirectedEdge::
 mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsPathItem::mousePressEvent(event);
 }
-
-
-void GraphicsDirectedEdge::
-set_start(int x0, int y0)
-{
-    set_start(QPoint(x0, y0));
-}
-
-
-void GraphicsDirectedEdge::
-set_stop(int x1, int y1)
-{
-    set_stop(QPoint(x1, y1));
-}
-
-
-void GraphicsDirectedEdge::
-set_start(QPointF p)
-{
-    set_start(p.toPoint());
-}
-
-
-void GraphicsDirectedEdge::
-set_stop(QPointF p)
-{
-    set_stop(p.toPoint());
-}
-
 
 void GraphicsDirectedEdge::
 set_start(QPoint p)
@@ -92,56 +70,64 @@ set_stop(QPoint p)
     update_path();
 }
 
-void GraphicsDirectedEdge::
-connect(shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
-        shared_ptr<GraphicsNode> n2, ConstPortPtr sink)
+void GraphicsDirectedEdge::connect(shared_ptr<GraphicsNode> n1, PortWeakPtr source, 
+                                   shared_ptr<GraphicsNode> n2, PortWeakPtr sink)
 {
 
-    connect_source(n1->connect_source(source, this));
-    _sink = n2->connect_sink(sink, this);
+    connect_source(n1->connect_source(source.lock(), this));
+    connect_sink(n2->connect_sink(sink.lock(), this));
 
 }
 
-void GraphicsDirectedEdge::
-disconnect()
+void GraphicsDirectedEdge::disconnect()
 {
-    if (_source) {
-        _source->set_edge(nullptr);
-    }
+    disconnect_source();
+    disconnect_sink();
+}
+
+
+void GraphicsDirectedEdge::disconnect_sink()
+{
+    if (_sink && _source) emit connectionDisrupted(this);
+
     if (_sink) _sink->set_edge(nullptr);
 }
 
-
-void GraphicsDirectedEdge::
-disconnect_sink()
+void GraphicsDirectedEdge::disconnect_source()
 {
-    if (_sink) _sink->set_edge(nullptr);
-}
+    if (_sink && _source) emit connectionDisrupted(this);
 
-void GraphicsDirectedEdge::
-disconnect_source()
-{
     if (_source) _source->set_edge(nullptr);
+
 }
 
 
-void GraphicsDirectedEdge::
-connect_sink(GraphicsNodeSocket *sink)
+void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket *sink)
 {
-    if (_sink) _sink->set_edge(nullptr);
+    if (_sink == sink) return;
+
+
+    if (_sink) disconnect_sink();
+
     _sink = sink;
     if (_sink) _sink->set_edge(this);
+
+    if (_source) emit connectionEstablished(this);
 }
 
 void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket *source)
 {
-    if (_source) _source->set_edge(nullptr);
+    if (_source == source) return;
+
+    if (_source) disconnect_source();
+
     _source = source;
     if (_source) _source->set_edge(this);
+
+    if (_sink) emit connectionEstablished(this);
 }
 
-void GraphicsBezierEdge::
-update_path()
+void GraphicsBezierEdge::update_path()
 {
     QPoint c1, c2;
     QPainterPath path(_start);
@@ -167,8 +153,7 @@ update_path()
     setPath(path);
 }
 
-void GraphicsBezierEdge::
-paint(QPainter * painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
+void GraphicsBezierEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setPen(_pen);
     painter->drawPath(path());

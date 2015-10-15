@@ -27,7 +27,7 @@ class GraphicsDirectedEdge : public QObject, public QGraphicsPathItem
 Q_OBJECT
 public:
     // GraphicsDirectedEdge(qreal factor=0.5f);
-    explicit GraphicsDirectedEdge(qreal factor=0.5f);
+    explicit GraphicsDirectedEdge();
     GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor=0.5f);
 
     ~GraphicsDirectedEdge();
@@ -36,8 +36,8 @@ public:
         return _connection;
     }
 
-    void connect(std::shared_ptr<GraphicsNode> n1, ConstPortPtr source, 
-                 std::shared_ptr<GraphicsNode> n2, ConstPortPtr sink);
+    void connect(std::shared_ptr<GraphicsNode> n1, PortWeakPtr source, 
+                 std::shared_ptr<GraphicsNode> n2, PortWeakPtr sink);
 
     void connect_source(GraphicsNodeSocket *source);
     void connect_sink(GraphicsNodeSocket *sink);
@@ -47,20 +47,24 @@ public:
     void disconnect_source();
 
     // methods to manually set a position
-    void set_start(int x0, int y0);
-    void set_stop(int x1, int y1);
-
     void set_start(QPoint p);
     void set_stop(QPoint p);
 
-    void set_start(QPointF p);
-    void set_stop(QPointF p);
+    void set_start(QPointF p) {set_start(p.toPoint());}
+    void set_stop(QPointF p) {set_stop(p.toPoint());}
 
     // virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
 
     int type() const override {
         return GraphicsNodeItemTypes::TypeBezierEdge;
     }
+
+    GraphicsNodeSocket* source() {return _source;}
+    GraphicsNodeSocket* sink() {return _sink;}
+
+signals:
+    void connectionEstablished(GraphicsDirectedEdge* edge);
+    void connectionDisrupted(GraphicsDirectedEdge* edge);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

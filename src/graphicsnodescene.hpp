@@ -27,8 +27,10 @@ public:
 
     std::set<std::shared_ptr<GraphicsNode>> selected();
 
-signals:
-    void nodeDeleted(NodePtr node) const;
+    Architecture* architecture;
+
+    // slots
+    void onConnectionEstablished(GraphicsDirectedEdge* edge);
 
 protected:
     virtual void drawBackground(QPainter *painter, const QRectF &rect) override;
@@ -48,7 +50,6 @@ private:
 
     QBrush _brush_background;
 
-    Architecture* architecture;
 
     std::set<std::shared_ptr<GraphicsNode>> _nodes;
     std::set<std::shared_ptr<GraphicsBezierEdge>> _edges;

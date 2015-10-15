@@ -54,10 +54,6 @@ MainWindow::MainWindow()
     _view->setScene(_scene.get());
     this->setCentralWidget(_view.get());
 
-
-    connect(_scene.get(), &GraphicsNodeScene::nodeDeleted,
-            this, &MainWindow::onNodeDeleted);
-
     // add some content
     //addFakeContent();
     addNodeViews();
@@ -127,7 +123,7 @@ void MainWindow::addNodeViews()
     node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
     
 
-    auto conn = arch->createConnection(node, p1, node2, p2);
+    auto conn = arch->createConnection({node, p1}, {node2, p2});
     _scene->add(conn);
 
 
@@ -156,24 +152,5 @@ void MainWindow::on_actionToJson_triggered()
     JsonVisitor json(*arch);
     json.visit();
 
-}
-
-
-void MainWindow::onNodeAdded(NodePtr node)
-{
-    arch->addNode(node);
-}
-void MainWindow::onNodeDeleted(NodePtr node)
-{
-    arch->removeNode(node);
-}
-
-void MainWindow::onConnectionAdded(ConnectionPtr connection)
-{
-    arch->addConnection(connection);
-}
-void MainWindow::onConnectionDeleted(ConnectionPtr connection)
-{
-    arch->removeConnection(connection);
 }
 

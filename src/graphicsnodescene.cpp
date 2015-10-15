@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "graphicsnodescene.hpp"
+#include "graphicsnodesocket.hpp"
 
 using namespace std;
 
@@ -65,20 +66,27 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection
     // our connection:
     auto source = find_if(_nodes.begin(), _nodes.end(), 
             [&connection](const shared_ptr<GraphicsNode> gNode) { 
-            return gNode->node().lock() == connection->from.first; 
+                return gNode->node().lock() == connection->from.node.lock(); 
             });
 
     auto sink = find_if(_nodes.begin(), _nodes.end(), 
             [&connection](const shared_ptr<GraphicsNode> gNode) { 
-            return gNode->node().lock() == connection->to.first; 
+                return gNode->node().lock() == connection->to.node.lock(); 
             });
 
-    edge->connect(*source,connection->from.second,
-                  *sink,connection->to.second);
+    edge->connect(*source, connection->from.port,
+                  *sink, connection->to.port);
 
     _edges.insert(edge);
     addItem(edge.get());
     return edge;
+}
+
+void GraphicsNodeScene::onConnectionEstablished(GraphicsDirectedEdge* edge)
+{
+    architecture->createConnection(edge->source()->socket(),
+                                   edge->sink()->socket());
+
 }
 
 set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected()

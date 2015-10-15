@@ -16,19 +16,15 @@ void Architecture::addNode(NodePtr node)
 }
 void Architecture::removeNode(NodePtr node)
 {
-    qWarning() << "Attempting to delete node " << QString::fromStdString(node->name()) <<  "...";
     _nodes.erase(node);
 }
 
 
-ConnectionPtr Architecture::createConnection(ConstNodePtr from,
-                                             ConstPortPtr from_port,
-                                             ConstNodePtr to, 
-                                             ConstPortPtr to_port)
+ConnectionPtr Architecture::createConnection(Socket from, Socket to)
 {
     auto connection = std::make_shared<Connection>();
-    connection->from = {from, from_port};
-    connection->to = {to, to_port};
+    connection->from = from;
+    connection->to = to;
 
     _connections.insert(connection);
     return connection;

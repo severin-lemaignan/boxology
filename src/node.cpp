@@ -14,7 +14,7 @@ Node::Node():
 
 Node::~Node()
 {
-    //qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
+    qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
 }
 
 /* Performs a deep-copy of the current Node, with however a different UUID

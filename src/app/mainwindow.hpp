@@ -28,12 +28,6 @@ public:
     MainWindow();
     ~MainWindow();
 
-    // slots for the UI
-    void onNodeAdded(NodePtr node);
-    void onNodeDeleted(NodePtr node);
-    void onConnectionAdded(ConnectionPtr node);
-    void onConnectionDeleted(ConnectionPtr node);
-
 protected:
     virtual void resizeEvent(QResizeEvent *event);
 

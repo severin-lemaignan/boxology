@@ -214,15 +214,18 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change, const QVariant &val
 
 shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port)
 {
+    if(_node.expired()) {throw logic_error("We should not be accessing a dead node!");}
 
     shared_ptr<GraphicsNodeSocket> s;
 
+    Socket socket{_node.lock(), port};
+
     if (port->direction == Port::Direction::IN) {
-        s = make_shared<GraphicsNodeSocket>(port, this);
+        s = make_shared<GraphicsNodeSocket>(socket, this);
         _sinks.push_back(s);
     }
     else {
-        s = make_shared<GraphicsNodeSocket>(port, this);
+        s = make_shared<GraphicsNodeSocket>(socket, this);
         _sources.push_back(s);
     }
 
@@ -235,8 +238,8 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port)
 GraphicsNodeSocket* GraphicsNode::connect_source(ConstPortPtr port, GraphicsDirectedEdge *edge)
 {
     auto source = find_if(_sources.begin(), _sources.end(), 
-                          [&port](shared_ptr<const GraphicsNodeSocket> socket) { 
-                               return socket->port() == port; 
+                          [&port](shared_ptr<const GraphicsNodeSocket> gsocket) { 
+                               return gsocket->socket().port.lock() == port; 
                           });
 
     if (source == _sources.end()) {
@@ -252,8 +255,8 @@ GraphicsNodeSocket* GraphicsNode::connect_source(ConstPortPtr port, GraphicsDire
 GraphicsNodeSocket* GraphicsNode::connect_sink(ConstPortPtr port, GraphicsDirectedEdge *edge)
 {
     auto sink = find_if(_sinks.begin(), _sinks.end(), 
-                          [&port](shared_ptr<const GraphicsNodeSocket> socket) { 
-                               return socket->port() == port; 
+                          [&port](shared_ptr<const GraphicsNodeSocket> gsocket) { 
+                               return gsocket->socket().port.lock() == port; 
                           });
 
     if (sink == _sinks.end()) {
@@ -280,10 +283,10 @@ void GraphicsNode::refreshNode()
     set<PortPtr> to_remove;
 
     for(auto s : _sinks) {
-        existing.insert(s->port());
+        existing.insert(s->socket().port.lock());
     }
     for(auto s : _sources) {
-        existing.insert(s->port());
+        existing.insert(s->socket().port.lock());
     }
 
     set_difference(in_node.begin(), in_node.end(), 
@@ -295,7 +298,7 @@ void GraphicsNode::refreshNode()
                    inserter(to_remove, to_remove.begin()));
 
     for(auto it=_sinks.begin(); it < _sinks.end();) {
-        if(to_remove.count((*it)->port())) {
+        if(to_remove.count((*it)->socket().port.lock())) {
             scene()->removeItem((*it).get());
             it = _sinks.erase(it);
         }
@@ -304,7 +307,7 @@ void GraphicsNode::refreshNode()
         }
     }
     for(auto it=_sources.begin(); it < _sources.end();) {
-        if(to_remove.count((*it)->port())) {
+        if(to_remove.count((*it)->socket().port.lock())) {
             scene()->removeItem((*it).get());
             it = _sources.erase(it);
         }

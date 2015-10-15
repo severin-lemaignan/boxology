@@ -14,6 +14,7 @@
 
 #include "graphicsnodedefs.hpp"
 #include "node.hpp"
+#include "connection.hpp"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneDragDropEvent;
@@ -28,10 +29,8 @@ class GraphicsNodeSocket : public QGraphicsItem
 {
 friend class GraphicsDirectedEdge;
 public:
-    GraphicsNodeSocket(std::shared_ptr<Port> port,
+    GraphicsNodeSocket(Socket socket,
                        QGraphicsItem *parent = nullptr);
-
-    PortPtr port() const {return _port;}
 
     virtual QRectF boundingRect() const override;
 
@@ -84,6 +83,7 @@ public:
     QPointF sceneAnchorPos() const;
 
 
+    Socket socket() const {return _socket;}
 
 protected:
     // event handling
@@ -96,7 +96,7 @@ private:
 
 
 private:
-    std::shared_ptr<Port> _port;
+    Socket _socket;
 
     const Port::Direction _socket_type;
     QPen _pen_circle;

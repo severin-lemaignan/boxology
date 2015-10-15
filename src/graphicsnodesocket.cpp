@@ -32,15 +32,15 @@ using namespace std;
 // const qreal width = 30.0;
 
 
-GraphicsNodeSocket::GraphicsNodeSocket(shared_ptr<Port> port,
+GraphicsNodeSocket::GraphicsNodeSocket(Socket socket,
                                        QGraphicsItem *parent)
-        : _port(port),
+        : _socket(socket),
           QGraphicsItem(parent),
-          _socket_type(port->direction),
+          _socket_type(socket.port.lock()->direction),
           _pen_circle(PEN_COLOR_CIRCLE),
           _pen_text(PEN_COLOR_TEXT),
           _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK : BRUSH_COLOR_SOURCE),
-          _text(QString::fromStdString(port->name)),
+          _text(QString::fromStdString(socket.port.lock()->name)),
           _edge(nullptr)
 {
     _pen_circle.setWidth(0);
@@ -182,8 +182,7 @@ mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-void GraphicsNodeSocket::
-set_edge(GraphicsDirectedEdge *edge) {
+void GraphicsNodeSocket::set_edge(GraphicsDirectedEdge *edge) {
     // TODO: handle edge conflict
     _edge = edge;
     notifyPositionChange();

@@ -37,6 +37,7 @@ public:
 };
 
 typedef std::shared_ptr<Port> PortPtr;
+typedef std::weak_ptr<Port> PortWeakPtr;
 typedef std::shared_ptr<const Port> ConstPortPtr;
 
 /**

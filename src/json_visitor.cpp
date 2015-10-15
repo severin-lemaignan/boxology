@@ -45,8 +45,8 @@ void JsonVisitor::onConnection(shared_ptr<const Connection> connection)
 
     ss << endl << "{\"connection\": \"" << connection->uuid << "\", ";
     ss << "\"name\": \"" << connection->name << "\", ";
-    ss << "\"from\": \"" << connection->from.first->uuid << ":" << connection->from.second << "\", ";
-    ss << "\"to\": \"" << connection->to.first->uuid << ":" << connection->to.second << "\"},";
+    ss << "\"from\": \"" << connection->from.node.lock()->uuid << ":" << connection->from.port.lock() << "\", ";
+    ss << "\"to\": \"" << connection->to.node.lock()->uuid << ":" << connection->to.port.lock() << "\"},";
     //cout << "\"type\": \"" << connection->type << "\"" << endl;
 
 }

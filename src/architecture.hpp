@@ -23,10 +23,7 @@ public:
     Nodes nodes() {return _nodes;}
     const Nodes nodes() const {return _nodes;}
 
-    ConnectionPtr createConnection(ConstNodePtr from,
-                                   ConstPortPtr from_port,
-                                   ConstNodePtr to, 
-                                   ConstPortPtr to_port);
+    ConnectionPtr createConnection(Socket from, Socket to);
     void addConnection(ConnectionPtr connection);
     void removeConnection(ConnectionPtr connection);
 

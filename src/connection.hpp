@@ -11,6 +11,11 @@
 
 #include "node.hpp"
 
+struct Socket
+{
+    NodeWeakPtr node;
+    PortWeakPtr port;
+};
 
 /**
  * representation of a connection  between two nodes.
@@ -19,15 +24,11 @@ struct Connection
 {
 public:
 
-    typedef std::pair<ConstNodePtr, ConstPortPtr> Socket;
 
-    Connection() :
-        uuid(boost::uuids::random_generator()()),
-        to_be_deleted(false) {};
+    Connection() : uuid(boost::uuids::random_generator()()) {};
 
 
     boost::uuids::uuid uuid;
-    bool to_be_deleted; // used to mark connection for deletion in the architecture
 
     std::string name;
     Socket from, to;
