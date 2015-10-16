@@ -8,6 +8,7 @@
 using namespace std;
 
 Node::Node() : uuid(boost::uuids::random_generator()()) {}
+Node::Node(boost::uuids::uuid uuid) : uuid(uuid) {}
 
 Node::~Node() {
     qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";

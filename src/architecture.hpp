@@ -4,9 +4,14 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <boost/uuid/uuid.hpp>
 
 #include "node.hpp"
 #include "connection.hpp"
+
+namespace Json {
+    class Value;
+}
 
 class Architecture {
    public:
@@ -15,7 +20,14 @@ class Architecture {
 
     Architecture(){};
 
+    std::set<NodePtr> update(const Json::Value& json, 
+                             bool clearFirst = false, 
+                             bool recreateUUIDs = false);
+
+
     NodePtr createNode();
+    NodePtr createNode(boost::uuids::uuid uuid);
+
     void addNode(NodePtr node);
     void removeNode(NodePtr node);
 

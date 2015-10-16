@@ -155,5 +155,10 @@ void MainWindow::on_actionFromJson_triggered() {
 
     json_file >> root;
 
-    cout << root << endl;
+    auto newnodes = arch->update(root);
+
+    for (auto n : newnodes) {
+        _scene->add(n);
+    }
+
 }

@@ -25,7 +25,7 @@ void JsonVisitor::tearDown() {
 
 void JsonVisitor::onNode(shared_ptr<const Node> node) {
     ss << endl
-       << "{\"node\": \"" << node->uuid << "\", ";
+       << "{\"uuid\": \"" << node->uuid << "\", ";
     ss << "\"name\": \"" << node->name() << "\", ";
     ss << "\"ports\": [";
     for (const auto port : node->ports()) {
@@ -39,7 +39,7 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
 
 void JsonVisitor::onConnection(shared_ptr<const Connection> connection) {
     ss << endl
-       << "{\"connection\": \"" << connection->uuid << "\", ";
+       << "{\"uuid\": \"" << connection->uuid << "\", ";
     ss << "\"name\": \"" << connection->name << "\", ";
     ss << "\"from\": \"" << connection->from.node.lock()->uuid << ":"
        << connection->from.port.lock() << "\", ";

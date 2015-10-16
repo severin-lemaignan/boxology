@@ -52,6 +52,7 @@ struct Node : public QObject {
     Q_OBJECT
    public:
     Node();
+    Node(boost::uuids::uuid uuid);
     ~Node();
 
     boost::uuids::uuid uuid;
