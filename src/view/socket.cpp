@@ -9,6 +9,7 @@
 #include <QList>
 #include <QDrag>
 #include <QMimeData>
+#include <QDebug>
 
 #include <iostream>
 #include <algorithm>
@@ -45,6 +46,11 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
     _pen_circle.setWidth(0);
     setAcceptDrops(true);
 }
+
+GraphicsNodeSocket::~GraphicsNodeSocket() {
+    qWarning() << "Port deleted";
+}
+
 
 Port::Direction GraphicsNodeSocket::socket_type() const { return _socket_type; }
 
@@ -145,11 +151,13 @@ void GraphicsNodeSocket::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mousePressEvent(event);
 }
 
-void GraphicsNodeSocket::set_edge(GraphicsDirectedEdge *edge) {
+void GraphicsNodeSocket::set_edge(shared_ptr<GraphicsDirectedEdge> edge) {
     // TODO: handle edge conflict
     _edge = edge;
     notifyPositionChange();
 }
+
+shared_ptr<GraphicsDirectedEdge> GraphicsNodeSocket::get_edge() { return _edge; }
 
 void GraphicsNodeSocket::notifyPositionChange() {
     if (!_edge) return;
@@ -164,4 +172,4 @@ void GraphicsNodeSocket::notifyPositionChange() {
     }
 }
 
-GraphicsDirectedEdge *GraphicsNodeSocket::get_edge() { return _edge; }
+

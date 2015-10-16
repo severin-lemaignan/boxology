@@ -14,6 +14,7 @@
 #include <QVariant>
 #include <QString>
 
+#include "edge.hpp"
 #include "graphicsnodedefs.hpp"
 #include "../node.hpp"
 
@@ -43,9 +44,11 @@ class GraphicsNode : public QObject, public QGraphicsItem {
 
     // connecting sources and sinks
     GraphicsNodeSocket *connect_source(ConstPortPtr port,
-                                       GraphicsDirectedEdge *edge);
+                                       std::shared_ptr<GraphicsDirectedEdge> edge);
     GraphicsNodeSocket *connect_sink(ConstPortPtr port,
-                                     GraphicsDirectedEdge *edge);
+                                     std::shared_ptr<GraphicsDirectedEdge> edge);
+
+    std::set<std::shared_ptr<GraphicsDirectedEdge>> disconnect();
 
     int type() const override { return GraphicsNodeItemTypes::TypeNode; };
 

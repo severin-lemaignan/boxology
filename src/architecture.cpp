@@ -25,7 +25,21 @@ NodePtr Architecture::createNode(const boost::uuids::uuid& uuid) {
 
 
 void Architecture::addNode(NodePtr node) { _nodes.insert(node); }
-void Architecture::removeNode(NodePtr node) { _nodes.erase(node); }
+
+void Architecture::removeNode(NodePtr node) {
+
+    // first, delete all connections involving this node
+    set<ConnectionPtr> to_remove;
+    for (auto c : _connections) {
+        if (   c->from.node.lock() == node
+            || c->to.node.lock() == node) {
+            to_remove.insert(c);
+        }
+    }
+    for (auto c : to_remove) _connections.erase(c);
+
+    _nodes.erase(node);
+}
 
 NodePtr Architecture::node(const boost::uuids::uuid& uuid) {
     for (auto n : _nodes) {

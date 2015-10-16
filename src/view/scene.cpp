@@ -84,6 +84,21 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
     return edge;
 }
 
+shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::make_edge() {
+
+    auto edge = make_shared<GraphicsBezierEdge>();
+
+    connect(edge.get(), &GraphicsDirectedEdge::connectionEstablished, this,
+            &GraphicsNodeScene::onConnectionEstablished);
+    connect(edge.get(), &GraphicsDirectedEdge::connectionDisrupted, this,
+            &GraphicsNodeScene::onConnectionDisrupted);
+
+    _edges.insert(edge);
+    addItem(edge.get());
+    return edge;
+}
+
+
 void GraphicsNodeScene::onConnectionEstablished(GraphicsDirectedEdge *edge) {
     architecture->createConnection(edge->source()->socket(),
                                    edge->sink()->socket());
@@ -177,8 +192,14 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
                     break;
                 }
                 graphicNode.get()->setSelected(false);
+                auto disconnected_edges = graphicNode.get()->disconnect();
+
                 architecture->removeNode(node.lock());
                 _nodes.erase(graphicNode);
+
+                for(auto e : disconnected_edges) {
+                    _edges.erase(e);
+                }
             }
             break;
         }

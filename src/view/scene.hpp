@@ -23,6 +23,7 @@ class GraphicsNodeScene : public QGraphicsScene {
 
     std::shared_ptr<GraphicsNode> add(NodePtr node);
     std::shared_ptr<GraphicsDirectedEdge> add(ConnectionPtr connection);
+    std::shared_ptr<GraphicsDirectedEdge> make_edge();
 
     std::set<std::shared_ptr<GraphicsNode>> selected();
 
@@ -49,7 +50,7 @@ class GraphicsNodeScene : public QGraphicsScene {
     QBrush _brush_background;
 
     std::set<std::shared_ptr<GraphicsNode>> _nodes;
-    std::set<std::shared_ptr<GraphicsBezierEdge>> _edges;
+    std::set<std::shared_ptr<GraphicsDirectedEdge>> _edges;
 };
 
 #endif /* __GRAPHICSNODESCENE_HPP__7F9E4C1E_8F4E_4BD2_BDF7_3D4ECEC206B5 */

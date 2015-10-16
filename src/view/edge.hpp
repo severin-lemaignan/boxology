@@ -58,8 +58,8 @@ class GraphicsDirectedEdge : public QObject, public QGraphicsPathItem {
     GraphicsNodeSocket *sink() { return _sink; }
 
 signals:
-    void connectionEstablished(GraphicsDirectedEdge *edge);
-    void connectionDisrupted(GraphicsDirectedEdge *edge);
+    void connectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
+    void connectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
 
    protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

@@ -62,7 +62,7 @@ struct Node : public QObject {
 
     const std::set<PortPtr> ports() const { return _ports; }
 
-signals:
+  signals:
     void dirty();
 
    private:

@@ -84,6 +84,9 @@ void GraphicsNode::setTitle(const QString &title) {
 }
 
 GraphicsNode::~GraphicsNode() {
+
+    disconnect();
+
     if (_central_proxy) delete _central_proxy;
     delete _title_item;
     delete _effect;
@@ -223,7 +226,7 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port) {
 }
 
 GraphicsNodeSocket *GraphicsNode::connect_source(ConstPortPtr port,
-                                                 GraphicsDirectedEdge *edge) {
+                                                 shared_ptr<GraphicsDirectedEdge> edge) {
     auto source =
         find_if(_sources.begin(), _sources.end(),
                 [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
@@ -242,7 +245,7 @@ GraphicsNodeSocket *GraphicsNode::connect_source(ConstPortPtr port,
 }
 
 GraphicsNodeSocket *GraphicsNode::connect_sink(ConstPortPtr port,
-                                               GraphicsDirectedEdge *edge) {
+                                               shared_ptr<GraphicsDirectedEdge> edge) {
     auto sink = find_if(_sinks.begin(), _sinks.end(),
                         [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
                             return gsocket->socket().port.lock() == port;
@@ -257,6 +260,24 @@ GraphicsNodeSocket *GraphicsNode::connect_sink(ConstPortPtr port,
     (*sink)->set_edge(edge);
 
     return (*sink).get();
+}
+
+set<shared_ptr<GraphicsDirectedEdge>> GraphicsNode::disconnect() {
+
+    set<shared_ptr<GraphicsDirectedEdge>> disconnected;
+
+    for (auto s : _sinks) {
+        auto edge = s->get_edge();
+        if(edge) edge->disconnect();
+        disconnected.insert(edge);
+    }
+    for (auto s : _sources) {
+        auto edge = s->get_edge();
+        if(edge) edge->disconnect();
+        disconnected.insert(edge);
+    }
+
+    return disconnected;
 }
 
 void GraphicsNode::refreshNode() {

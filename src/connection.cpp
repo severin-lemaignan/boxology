@@ -4,5 +4,6 @@
 #include <QDebug>
 
 Connection::~Connection() {
+
     qWarning() << "Connection " << QString::fromStdString(name) << " deleted!!";
 }

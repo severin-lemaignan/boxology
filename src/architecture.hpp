@@ -17,7 +17,7 @@ namespace Json {
 class Architecture {
    public:
     typedef std::set<NodePtr> Nodes;
-    typedef std::set<ConstConnectionPtr> Connections;
+    typedef std::set<ConnectionPtr> Connections;
     typedef std::pair<std::set<NodePtr>, std::set<ConnectionPtr>> NodesAndConnections;
 
     Architecture(){};

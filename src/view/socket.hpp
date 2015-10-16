@@ -29,6 +29,7 @@ class GraphicsNodeSocket : public QGraphicsItem {
 
    public:
     GraphicsNodeSocket(Socket socket, QGraphicsItem *parent = nullptr);
+    virtual ~GraphicsNodeSocket();
 
     virtual QRectF boundingRect() const override;
 
@@ -41,9 +42,9 @@ class GraphicsNodeSocket : public QGraphicsItem {
     /**
      * set the edge for this socket
      */
-    void set_edge(GraphicsDirectedEdge *edge);
+    void set_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
 
-    GraphicsDirectedEdge *get_edge();
+    std::shared_ptr<GraphicsDirectedEdge> get_edge();
 
     /**
      * notify the socket that its position has changed. this may be either
@@ -101,7 +102,7 @@ class GraphicsNodeSocket : public QGraphicsItem {
     /*
      * edge with which this socket is connected
      */
-    GraphicsDirectedEdge *_edge;
+    std::shared_ptr<GraphicsDirectedEdge> _edge;
 
    private:  // some constants. TODO: need to be defined somewhere else
              // (customizable?)

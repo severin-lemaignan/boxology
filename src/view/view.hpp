@@ -3,6 +3,7 @@
 #ifndef __GRAPHICSNODEVIEW_HPP__59C6610F_3283_42A1_9102_38A7065DB718
 #define __GRAPHICSNODEVIEW_HPP__59C6610F_3283_42A1_9102_38A7065DB718
 
+#include <memory>
 #include <QGraphicsView>
 #include <QPoint>
 
@@ -23,7 +24,7 @@ struct EdgeDragEvent {
         move_to_sink
     };
 
-    GraphicsDirectedEdge *e;
+    std::shared_ptr<GraphicsDirectedEdge> e;
     drag_mode mode;
 };
 
@@ -60,7 +61,7 @@ class GraphicsNodeView : public QGraphicsView {
     bool _panning;
     QPoint _pan_cursor_pos;
 
-    GraphicsDirectedEdge *_tmp_edge;
+    std::shared_ptr<GraphicsDirectedEdge> _tmp_edge;
     GraphicsNodeSocket *_sock_source;
     GraphicsNodeSocket *_sock_sink;
 
