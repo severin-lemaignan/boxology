@@ -29,9 +29,22 @@ NodePtr Node::duplicate() const {
 
 PortPtr Node::createPort(const Port port) {
     auto portPtr = make_shared<Port>(port);
+
+    // check that we do not already have this port
+    for (auto p : _ports) {
+        if (p == portPtr) return nullptr;
+    }
+
     _ports.insert(portPtr);
     emit dirty();  // signal update
     return portPtr;
+}
+
+PortPtr Node::port(const string& name) {
+    for (auto p : _ports) {
+        if (p->name == name) return p;
+    }
+    return nullptr;
 }
 
 void Node::name(const std::string& name) {

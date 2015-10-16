@@ -28,6 +28,7 @@ inline bool operator==(const Socket& l, const Socket& r) {
 struct Connection {
    public:
     Connection() : uuid(boost::uuids::random_generator()()){};
+    Connection(const boost::uuids::uuid& uuid) : uuid(uuid) {};
 
     ~Connection();
 

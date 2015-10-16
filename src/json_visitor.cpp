@@ -5,7 +5,10 @@
 using namespace std;
 
 
-void JsonVisitor::startUp() { ss << "{\"nodes\":["; }
+void JsonVisitor::startUp() {
+    ss << "{\"version\":\"0.1\"," << endl;
+    ss << "\"nodes\":[";
+}
 
 void JsonVisitor::endNodes() {
     ss.seekp((long)(ss.tellp()) - 1);  // remove the last comma
@@ -42,8 +45,8 @@ void JsonVisitor::onConnection(shared_ptr<const Connection> connection) {
        << "{\"uuid\": \"" << connection->uuid << "\", ";
     ss << "\"name\": \"" << connection->name << "\", ";
     ss << "\"from\": \"" << connection->from.node.lock()->uuid << ":"
-       << connection->from.port.lock() << "\", ";
+       << connection->from.port.lock()->name << "\", ";
     ss << "\"to\": \"" << connection->to.node.lock()->uuid << ":"
-       << connection->to.port.lock() << "\"},";
+       << connection->to.port.lock()->name << "\"},";
     // cout << "\"type\": \"" << connection->type << "\"" << endl;
 }

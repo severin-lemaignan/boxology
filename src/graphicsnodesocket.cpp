@@ -98,6 +98,7 @@ void GraphicsNodeSocket::drawAlignedText(QPainter *painter) {
     }
     QRectF rect(corner, QSizeF(size, size));
     painter->setPen(_pen_text);
+
     painter->drawText(rect, flags, _text, 0);
 }
 

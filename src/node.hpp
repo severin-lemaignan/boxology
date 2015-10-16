@@ -1,7 +1,5 @@
-/* See LICENSE file for copyright and license details. */
-
-#ifndef __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF
-#define __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF
+#ifndef __NODE_HPP
+#define __NODE_HPP
 
 #include <string>
 #include <memory>
@@ -18,18 +16,15 @@ struct Port {
     enum class Direction { OUT, IN };
     enum class Type { EXPLICIT, LATENT, OTHER };
 
-    Port() : uuid(boost::uuids::random_generator()()) {}
+    Port() {}
     Port(std::string name, Direction direction, Type type)
-        : uuid(boost::uuids::random_generator()()),
-          name(name),
+         : name(name),
           direction(direction),
           type(type) {}
 
     friend bool operator<(const Port& l, const Port& r) {
-        return l.uuid < r.uuid;
+        return l.name < r.name;
     }
-
-    boost::uuids::uuid uuid;
 
     std::string name;
     Direction direction;
@@ -62,8 +57,10 @@ struct Node : public QObject {
     std::string name() const { return _name; }
     void name(const std::string& name);
 
-    const std::set<PortPtr> ports() const { return _ports; }
     PortPtr createPort(const Port port);
+    PortPtr port(const std::string& name);
+
+    const std::set<PortPtr> ports() const { return _ports; }
 
 signals:
     void dirty();
@@ -73,4 +70,4 @@ signals:
     std::set<PortPtr> _ports;
 };
 
-#endif /* __NODE_HPP__B106B138_3E21_47E2_A975_3E5CC0EEB0BF */
+#endif // __NODE_HPP

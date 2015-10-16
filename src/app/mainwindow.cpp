@@ -155,10 +155,14 @@ void MainWindow::on_actionFromJson_triggered() {
 
     json_file >> root;
 
-    auto newnodes = arch->update(root);
+    auto newstuff = arch->update(root);
 
-    for (auto n : newnodes) {
+    for (auto n : newstuff.first) {
         _scene->add(n);
     }
+    for (auto c : newstuff.second) {
+        _scene->add(c);
+    }
+
 
 }
