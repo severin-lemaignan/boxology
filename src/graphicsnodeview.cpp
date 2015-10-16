@@ -53,7 +53,7 @@ void GraphicsNodeView::wheelEvent(QWheelEvent *event) {
     if (event->modifiers() & Qt::ControlModifier) {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         double scaleFactor = 1.25;
-        if (event->delta() < 0) {
+        if (event->delta() > 0) {
             // zoom in
             scale(scaleFactor, scaleFactor);
         } else {
