@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#include "graphicsnodesocket.hpp"
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneDragDropEvent>
@@ -14,7 +13,9 @@
 #include <iostream>
 #include <algorithm>
 
-#include "graphicsbezieredge.hpp"
+#include "edge.hpp"
+
+#include "socket.hpp"
 
 using namespace std;
 

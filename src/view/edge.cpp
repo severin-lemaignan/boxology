@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#include "graphicsbezieredge.hpp"
 #include <QPoint>
 #include <utility>
 #include <algorithm>
@@ -11,9 +10,11 @@
 #include <QMetaProperty>
 #include <QDebug>
 
-#include "graphicsnodescene.hpp"
+#include "scene.hpp"
 #include "graphicsnode.hpp"
-#include "graphicsnodesocket.hpp"
+#include "socket.hpp"
+
+#include "edge.hpp"
 
 using namespace std;
 

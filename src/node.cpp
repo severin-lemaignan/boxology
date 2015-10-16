@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#include "graphicsnode.hpp"
 #include "node.hpp"
 
 #include <QDebug>

@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#include "graphicsnodeview.hpp"
 #include <QWheelEvent>
 #include <QScrollBar>
 #include <QResizeEvent>
@@ -10,13 +9,15 @@
 
 #include <iostream>
 
-#include "graphicsnodescene.hpp"
+#include "scene.hpp"
 #include "graphicsnode.hpp"
-#include "graphicsnodesocket.hpp"
+#include "socket.hpp"
 #include "graphicsnodedefs.hpp"
-#include "graphicsbezieredge.hpp"
+#include "edge.hpp"
 
-#include "node.hpp"
+#include "../node.hpp"
+
+#include "view.hpp"
 
 GraphicsNodeView::GraphicsNodeView(QWidget *parent)
     : GraphicsNodeView(nullptr, parent) {}

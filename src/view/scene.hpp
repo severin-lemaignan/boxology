@@ -9,11 +9,11 @@
 #include <QRectF>
 #include <QGraphicsScene>
 
-#include "architecture.hpp"
-#include "node.hpp"
-#include "connection.hpp"
+#include "../architecture.hpp"
+#include "../node.hpp"
+#include "../connection.hpp"
 #include "graphicsnode.hpp"
-#include "graphicsbezieredge.hpp"
+#include "edge.hpp"
 
 class GraphicsNodeScene : public QGraphicsScene {
     Q_OBJECT

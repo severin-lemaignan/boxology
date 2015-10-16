@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "graphicsnodescene.hpp"
-#include "graphicsnodesocket.hpp"
+#include "scene.hpp"
+#include "socket.hpp"
 
 using namespace std;
 

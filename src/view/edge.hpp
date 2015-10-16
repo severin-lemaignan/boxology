@@ -11,7 +11,7 @@
 #include <QGraphicsPathItem>
 #include "graphicsnodedefs.hpp"
 
-#include "connection.hpp"
+#include "../connection.hpp"
 
 class QGraphicsDropShadowEffect;
 class QGraphicsSceneMouseEvent;

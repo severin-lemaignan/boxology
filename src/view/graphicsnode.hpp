@@ -15,7 +15,7 @@
 #include <QString>
 
 #include "graphicsnodedefs.hpp"
-#include "node.hpp"
+#include "../node.hpp"
 
 class QWidget;
 class QPushButton;

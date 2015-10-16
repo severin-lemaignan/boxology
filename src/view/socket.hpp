@@ -13,8 +13,8 @@
 #include <QSizeF>
 
 #include "graphicsnodedefs.hpp"
-#include "node.hpp"
-#include "connection.hpp"
+#include "../node.hpp"
+#include "../connection.hpp"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneDragDropEvent;

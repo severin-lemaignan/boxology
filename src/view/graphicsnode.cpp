@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#include "graphicsnode.hpp"
 #include <QPushButton>
 #include <QPen>
 #include <QPainter>
@@ -21,10 +20,13 @@
 #include <tuple>
 #include <memory>
 
+
 #include "editablelabel.hpp"
 
-#include "graphicsbezieredge.hpp"
-#include "graphicsnodesocket.hpp"
+#include "edge.hpp"
+#include "socket.hpp"
+
+#include "graphicsnode.hpp"
 
 using namespace std;
 

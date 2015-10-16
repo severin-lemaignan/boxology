@@ -24,10 +24,10 @@
 #include <json/json.h>
 
 // node editor
-#include "../graphicsnodescene.hpp"
-#include "../graphicsnodeview.hpp"
-#include "../graphicsnode.hpp"
-#include "../graphicsbezieredge.hpp"
+#include "../view/scene.hpp"
+#include "../view/view.hpp"
+#include "../view/graphicsnode.hpp"
+#include "../view/edge.hpp"
 
 #include "../json_visitor.hpp"
 
