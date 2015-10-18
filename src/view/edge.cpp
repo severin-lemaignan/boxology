@@ -60,53 +60,56 @@ void GraphicsDirectedEdge::set_stop(QPoint p) {
     update_path();
 }
 
-void GraphicsDirectedEdge::connect(shared_ptr<GraphicsNode> n1,
-                                   PortWeakPtr source,
-                                   shared_ptr<GraphicsNode> n2,
-                                   PortWeakPtr sink) {
-    connect_source(n1->connect_source(source.lock(), this));
-    connect_sink(n2->connect_sink(sink.lock(), this));
+void GraphicsDirectedEdge::connect(shared_ptr<GraphicsDirectedEdge> shared_this,
+                                   shared_ptr<GraphicsNode> source_node,
+                                   PortWeakPtr source_port,
+                                   shared_ptr<GraphicsNode> sink_node,
+                                   PortWeakPtr sink_port) {
+    connect_source(shared_this, source_node->getPort(source_port.lock()).get()); // non-owning access to the socket
+    connect_sink(shared_this, sink_node->getPort(sink_port.lock()).get()); // non-owning access to the socket
 }
 
-void GraphicsDirectedEdge::disconnect() {
-    disconnect_source();
-    disconnect_sink();
+void GraphicsDirectedEdge::connect_sink(shared_ptr<GraphicsDirectedEdge> shared_this,
+                                        GraphicsNodeSocket* sink) {
+    if (_sink == sink) return;
+
+    if (_sink) disconnect_sink(shared_this);
+
+    _sink = sink;
+    if (_sink) _sink->set_edge(shared_this);
+
+    if (_source) emit connectionEstablished(shared_this);
 }
 
-void GraphicsDirectedEdge::disconnect_sink() {
+void GraphicsDirectedEdge::connect_source(shared_ptr<GraphicsDirectedEdge> shared_this,
+                                          GraphicsNodeSocket* source) {
+    if (_source == source) return;
+
+    if (_source) disconnect_source(shared_this);
+
+    _source = source;
+    if (_source) _source->set_edge(shared_this);
+
+    if (_sink) emit connectionEstablished(shared_this);
+}
+
+void GraphicsDirectedEdge::disconnect(shared_ptr<GraphicsDirectedEdge> shared_this) {
+    disconnect_source(shared_this);
+    disconnect_sink(shared_this);
+}
+
+void GraphicsDirectedEdge::disconnect_sink(shared_ptr<GraphicsDirectedEdge> shared_this) {
     if (_sink && _sink->get_edge() && _source && _source->get_edge())
-        emit connectionDisrupted(this);
+        emit connectionDisrupted(shared_this);
 
     if (_sink) _sink->set_edge(nullptr);
 }
 
-void GraphicsDirectedEdge::disconnect_source() {
+void GraphicsDirectedEdge::disconnect_source(shared_ptr<GraphicsDirectedEdge> shared_this) {
     if (_sink && _sink->get_edge() && _source && _source->get_edge())
-        emit connectionDisrupted(this);
+        emit connectionDisrupted(shared_this);
 
     if (_source) _source->set_edge(nullptr);
-}
-
-void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket *sink) {
-    if (_sink == sink) return;
-
-    if (_sink) disconnect_sink();
-
-    _sink = sink;
-    if (_sink) _sink->set_edge(this);
-
-    if (_source) emit connectionEstablished(this);
-}
-
-void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket *source) {
-    if (_source == source) return;
-
-    if (_source) disconnect_source();
-
-    _source = source;
-    if (_source) _source->set_edge(this);
-
-    if (_sink) emit connectionEstablished(this);
 }
 
 void GraphicsBezierEdge::update_path() {

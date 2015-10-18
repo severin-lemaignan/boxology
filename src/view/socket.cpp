@@ -157,8 +157,6 @@ void GraphicsNodeSocket::set_edge(shared_ptr<GraphicsDirectedEdge> edge) {
     notifyPositionChange();
 }
 
-shared_ptr<GraphicsDirectedEdge> GraphicsNodeSocket::get_edge() { return _edge; }
-
 void GraphicsNodeSocket::notifyPositionChange() {
     if (!_edge) return;
 

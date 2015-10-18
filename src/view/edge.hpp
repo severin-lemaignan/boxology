@@ -23,24 +23,34 @@ class GraphicsNodeSocket;
 
 class GraphicsDirectedEdge : public QObject, public QGraphicsPathItem {
     Q_OBJECT
+
+    friend class GraphicsNodeScene;
+
    public:
+    // only GraphicsNodeScene (+descendants of GraphicsDirectedEdge) is 
+    // authorized to create instances of GraphicsDirectedEdge
+    
     // GraphicsDirectedEdge(qreal factor=0.5f);
     explicit GraphicsDirectedEdge();
     GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor = 0.5f);
 
+   public:
     ~GraphicsDirectedEdge();
 
     ConnectionWeakPtr connection() const { return _connection; }
 
-    void connect(std::shared_ptr<GraphicsNode> n1, PortWeakPtr source,
+    void connect(std::shared_ptr<GraphicsDirectedEdge> shared_this,
+                 std::shared_ptr<GraphicsNode> n1, PortWeakPtr source,
                  std::shared_ptr<GraphicsNode> n2, PortWeakPtr sink);
 
-    void connect_source(GraphicsNodeSocket *source);
-    void connect_sink(GraphicsNodeSocket *sink);
+    void connect_source(std::shared_ptr<GraphicsDirectedEdge> shared_this,
+                        GraphicsNodeSocket* source);
+    void connect_sink(std::shared_ptr<GraphicsDirectedEdge> shared_this,
+                      GraphicsNodeSocket* sink);
 
-    void disconnect();
-    void disconnect_sink();
-    void disconnect_source();
+    void disconnect(std::shared_ptr<GraphicsDirectedEdge> shared_this);
+    void disconnect_sink(std::shared_ptr<GraphicsDirectedEdge> shared_this);
+    void disconnect_source(std::shared_ptr<GraphicsDirectedEdge> shared_this);
 
     // methods to manually set a position
     void set_start(QPoint p);
@@ -54,8 +64,8 @@ class GraphicsDirectedEdge : public QObject, public QGraphicsPathItem {
 
     int type() const override { return GraphicsNodeItemTypes::TypeBezierEdge; }
 
-    GraphicsNodeSocket *source() { return _source; }
-    GraphicsNodeSocket *sink() { return _sink; }
+    GraphicsNodeSocket* source() { return _source; }
+    GraphicsNodeSocket* sink() { return _sink; }
 
 signals:
     void connectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
@@ -76,8 +86,8 @@ signals:
     QPoint _stop;
     qreal _factor;
 
-    GraphicsNodeSocket *_source;
-    GraphicsNodeSocket *_sink;
+    GraphicsNodeSocket* _source;
+    GraphicsNodeSocket* _sink;
 };
 
 class GraphicsBezierEdge : public GraphicsDirectedEdge {

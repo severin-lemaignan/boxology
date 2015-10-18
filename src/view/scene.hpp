@@ -30,8 +30,8 @@ class GraphicsNodeScene : public QGraphicsScene {
     Architecture* architecture;
 
     // slots
-    void onConnectionEstablished(GraphicsDirectedEdge* edge);
-    void onConnectionDisrupted(GraphicsDirectedEdge* edge);
+    void onConnectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
+    void onConnectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
 
    protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;

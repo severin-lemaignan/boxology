@@ -56,7 +56,7 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
 
 shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
     ConnectionPtr connection) {
-    auto edge = make_shared<GraphicsBezierEdge>();
+    auto edge = make_edge();
 
     // look for the *graphic nodes* that represent the source/sink of
     // our connection:
@@ -72,15 +72,10 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
                     return gNode->node().lock() == connection->to.node.lock();
                 });
 
-    edge->connect(*source, connection->from.port, *sink, connection->to.port);
+    edge->connect(edge,
+                  *source, connection->from.port, 
+                  *sink, connection->to.port);
 
-    connect(edge.get(), &GraphicsDirectedEdge::connectionEstablished, this,
-            &GraphicsNodeScene::onConnectionEstablished);
-    connect(edge.get(), &GraphicsDirectedEdge::connectionDisrupted, this,
-            &GraphicsNodeScene::onConnectionDisrupted);
-
-    _edges.insert(edge);
-    addItem(edge.get());
     return edge;
 }
 
@@ -99,12 +94,12 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::make_edge() {
 }
 
 
-void GraphicsNodeScene::onConnectionEstablished(GraphicsDirectedEdge *edge) {
+void GraphicsNodeScene::onConnectionEstablished(shared_ptr<GraphicsDirectedEdge> edge) {
     architecture->createConnection(edge->source()->socket(),
                                    edge->sink()->socket());
 }
 
-void GraphicsNodeScene::onConnectionDisrupted(GraphicsDirectedEdge *edge) {
+void GraphicsNodeScene::onConnectionDisrupted(shared_ptr<GraphicsDirectedEdge> edge) {
     qWarning() << "Connection disrupted!";
     architecture->removeConnection(edge->source()->socket(),
                                    edge->sink()->socket());

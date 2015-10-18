@@ -44,7 +44,7 @@ class GraphicsNodeSocket : public QGraphicsItem {
      */
     void set_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
 
-    std::shared_ptr<GraphicsDirectedEdge> get_edge();
+    std::shared_ptr<GraphicsDirectedEdge> get_edge() {return _edge;}
 
     /**
      * notify the socket that its position has changed. this may be either

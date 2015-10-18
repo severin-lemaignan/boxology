@@ -225,8 +225,7 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port) {
     return s;
 }
 
-GraphicsNodeSocket *GraphicsNode::connect_source(ConstPortPtr port,
-                                                 shared_ptr<GraphicsDirectedEdge> edge) {
+shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(ConstPortPtr port) {
     auto source =
         find_if(_sources.begin(), _sources.end(),
                 [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
@@ -234,32 +233,25 @@ GraphicsNodeSocket *GraphicsNode::connect_source(ConstPortPtr port,
                 });
 
     if (source == _sources.end()) {
-        qWarning() << "Trying to connect source "
-                   << QString::fromStdString(port->name) << " of node "
-                   << _title << ", but it does not exist.";
-        return nullptr;
-    }
-    (*source)->set_edge(edge);
 
-    return (*source).get();
-}
-
-GraphicsNodeSocket *GraphicsNode::connect_sink(ConstPortPtr port,
-                                               shared_ptr<GraphicsDirectedEdge> edge) {
     auto sink = find_if(_sinks.begin(), _sinks.end(),
                         [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
                             return gsocket->socket().port.lock() == port;
                         });
 
     if (sink == _sinks.end()) {
-        qWarning() << "Trying to connect sink "
+        qWarning() << "Trying to connect to port "
                    << QString::fromStdString(port->name) << " of node "
                    << _title << ", but it does not exist.";
         return nullptr;
     }
-    (*sink)->set_edge(edge);
-
-    return (*sink).get();
+    else {
+        return *sink;
+    }
+    }
+    else {
+        return *source;
+    }
 }
 
 set<shared_ptr<GraphicsDirectedEdge>> GraphicsNode::disconnect() {
@@ -268,12 +260,12 @@ set<shared_ptr<GraphicsDirectedEdge>> GraphicsNode::disconnect() {
 
     for (auto s : _sinks) {
         auto edge = s->get_edge();
-        if(edge) edge->disconnect();
+        if(edge) edge->disconnect(edge);
         disconnected.insert(edge);
     }
     for (auto s : _sources) {
         auto edge = s->get_edge();
-        if(edge) edge->disconnect();
+        if(edge) edge->disconnect(edge);
         disconnected.insert(edge);
     }
 

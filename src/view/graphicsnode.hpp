@@ -31,8 +31,12 @@ class EditableLabel;
 class GraphicsNode : public QObject, public QGraphicsItem {
     Q_OBJECT
 
+    friend class GraphicsNodeScene;
+
    public:
+    // only GraphicsNodeScene is authorized to create instances of GraphicsNode
     GraphicsNode(NodePtr node, QGraphicsItem *parent = nullptr);
+   public:
     virtual ~GraphicsNode();
 
     virtual QRectF boundingRect() const override;
@@ -42,11 +46,7 @@ class GraphicsNode : public QObject, public QGraphicsItem {
 
     const NodeWeakPtr node() { return _node; }
 
-    // connecting sources and sinks
-    GraphicsNodeSocket *connect_source(ConstPortPtr port,
-                                       std::shared_ptr<GraphicsDirectedEdge> edge);
-    GraphicsNodeSocket *connect_sink(ConstPortPtr port,
-                                     std::shared_ptr<GraphicsDirectedEdge> edge);
+    std::shared_ptr<GraphicsNodeSocket> getPort(ConstPortPtr port);
 
     std::set<std::shared_ptr<GraphicsDirectedEdge>> disconnect();
 

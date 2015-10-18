@@ -95,17 +95,17 @@ void GraphicsNodeView::leftMouseButtonRelease(QMouseEvent *event) {
         auto sock = socket_at(event->pos());
         if (!sock || !can_accept_edge(sock)) {
             //scene()->removeItem(_drag_event->e);
-            _drag_event->e->disconnect();
+            _drag_event->e->disconnect(_drag_event->e);
         } else {
             switch (_drag_event->mode) {
                 case EdgeDragEvent::move_to_source:
                 case EdgeDragEvent::connect_to_source:
-                    _drag_event->e->connect_source(sock);
+                    _drag_event->e->connect_source(_drag_event->e, sock);
                     break;
 
                 case EdgeDragEvent::move_to_sink:
                 case EdgeDragEvent::connect_to_sink:
-                    _drag_event->e->connect_sink(sock);
+                    _drag_event->e->connect_sink(_drag_event->e, sock);
                     break;
             }
         }
@@ -210,11 +210,11 @@ void GraphicsNodeView::leftMouseButtonPress(QMouseEvent *event) {
                 if ((_tmp_edge = sock->get_edge())) {
                     _drag_event->e = _tmp_edge;
                     if (sock->socket_type() == Port::Direction::IN) {
-                        _drag_event->e->disconnect_sink();
+                        _drag_event->e->disconnect_sink(_drag_event->e);
                         _drag_event->e->set_stop(mapToScene(event->pos()));
                         _drag_event->mode = EdgeDragEvent::move_to_sink;
                     } else {
-                        _drag_event->e->disconnect_source();
+                        _drag_event->e->disconnect_source(_drag_event->e);
                         _drag_event->e->set_start(mapToScene(event->pos()));
                         _drag_event->mode = EdgeDragEvent::move_to_source;
                     }
@@ -226,10 +226,10 @@ void GraphicsNodeView::leftMouseButtonPress(QMouseEvent *event) {
 
                     if (sock->socket_type() == Port::Direction::IN) {
                         _drag_event->e->set_start(mapToScene(event->pos()));
-                        _drag_event->e->connect_sink(sock);
+                        _drag_event->e->connect_sink(_drag_event->e, sock);
                         _drag_event->mode = EdgeDragEvent::connect_to_source;
                     } else {
-                        _drag_event->e->connect_source(sock);
+                        _drag_event->e->connect_source(_drag_event->e, sock);
                         _drag_event->e->set_stop(mapToScene(event->pos()));
                         _drag_event->mode = EdgeDragEvent::connect_to_sink;
                     }
