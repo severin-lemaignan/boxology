@@ -1,3 +1,5 @@
+#include <QTextCursor>
+
 #include "scene.hpp"
 
 #include "editablelabel.hpp"
@@ -27,6 +29,10 @@ void EditableLabel::focusInEvent(QFocusEvent *event) {
 }
 
 void EditableLabel::focusOutEvent(QFocusEvent *event) {
+    QTextCursor cur(document());
+    cur.clearSelection();
+    setTextCursor(cur);
+
     dynamic_cast<GraphicsNodeScene*>(scene())->dontGrabKeyPresses = false;
     emit contentUpdated(toPlainText());
     QGraphicsTextItem::focusOutEvent(event);
