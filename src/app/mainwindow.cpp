@@ -153,9 +153,18 @@ void MainWindow::on_actionFromJson_triggered() {
 
     ifstream json_file(filename.toStdString());
 
-    json_file >> root;
+    try {
+        json_file >> root;
+    }
+    catch (Json::RuntimeError jre) {
+        cerr << "Syntax error in " << filename.toStdString() << "! Model not loaded." << endl;
+        return;
+    }
 
     auto newstuff = arch->update(root);
+
+    DEBUG("Loaded " << newstuff.first.size() << " nodes and "
+          << newstuff.second.size() << " connections." << endl);
 
     for (auto n : newstuff.first) {
         _scene->add(n);
