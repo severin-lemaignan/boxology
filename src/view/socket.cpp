@@ -48,7 +48,7 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
 }
 
 GraphicsNodeSocket::~GraphicsNodeSocket() {
-    qWarning() << "Port deleted";
+    qWarning() << "[G] Port deleted";
 }
 
 

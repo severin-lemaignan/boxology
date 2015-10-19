@@ -16,58 +16,59 @@
 
 #include "edge.hpp"
 
-using namespace std;
+    using namespace std;
 
-GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
-                                           qreal factor)
-    : _pen(QColor("#00FF00")),
-      _effect(new QGraphicsDropShadowEffect()),
-      _start(start),
-      _stop(stop),
-      _factor(factor) {
-    _pen.setWidth(2);
-    setZValue(-1);
+    GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
+                                            qreal factor)
+        : _pen(QColor("#00FF00")),
+        _effect(new QGraphicsDropShadowEffect()),
+        _start(start),
+        _stop(stop),
+        _factor(factor) {
+        _pen.setWidth(2);
+        setZValue(-1);
 
-    _effect->setBlurRadius(15.0);
-    _effect->setColor(QColor("#99050505"));
-    setGraphicsEffect(_effect);
-}
+        _effect->setBlurRadius(15.0);
+        _effect->setColor(QColor("#99050505"));
+        setGraphicsEffect(_effect);
 
-GraphicsDirectedEdge::GraphicsDirectedEdge()
-    : GraphicsDirectedEdge(QPoint(0, 0), QPoint(0, 0)) {}
+        qWarning() << "[G] Created edge";
+    }
 
-GraphicsDirectedEdge::~GraphicsDirectedEdge() {
-    delete _effect;
+    GraphicsDirectedEdge::GraphicsDirectedEdge()
+        : GraphicsDirectedEdge(QPoint(0, 0), QPoint(0, 0)) {}
 
-    if (_connection.expired())
-        qWarning() << "Edge deleted (connection already dead)";
-    else
-        qWarning() << "Edge deleted (connection "
-                   << QString::fromStdString(_connection.lock()->name) << ")";
-}
+    GraphicsDirectedEdge::~GraphicsDirectedEdge() {
 
-void GraphicsDirectedEdge::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsPathItem::mousePressEvent(event);
-}
+        delete _effect;
 
-void GraphicsDirectedEdge::set_start(QPoint p) {
-    _start = p;
-    this->update_path();
-}
+        if (_connection.expired())
+            qWarning() << "[G] Edge deleted (connection already dead)";
+        else
+            qWarning() << "[G] Edge deleted (connection "
+                    << QString::fromStdString(_connection.lock()->name) << ")";
+    }
 
-void GraphicsDirectedEdge::set_stop(QPoint p) {
-    _stop = p;
-    update_path();
-}
+    void GraphicsDirectedEdge::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+        QGraphicsPathItem::mousePressEvent(event);
+    }
 
-void GraphicsDirectedEdge::connect(shared_ptr<GraphicsNode> source_node,
-                                   PortWeakPtr source_port,
-                                   shared_ptr<GraphicsNode> sink_node,
-                                   PortWeakPtr sink_port) {
-    connect_source(source_node->getPort(source_port.lock())
-                       .get());  // non-owning access to the socket
-    connect_sink(sink_node->getPort(sink_port.lock())
-                     .get());  // non-owning access to the socket
+    void GraphicsDirectedEdge::set_start(QPoint p) {
+        _start = p;
+        this->update_path();
+    }
+
+    void GraphicsDirectedEdge::set_stop(QPoint p) {
+        _stop = p;
+        update_path();
+    }
+
+    void GraphicsDirectedEdge::connect(GraphicsNode* source_node,
+                                       Port* source_port,
+                                       GraphicsNode* sink_node,
+                                       Port* sink_port) {
+    connect_source(source_node->getPort(source_port).get());  // non-owning access to the socket
+    connect_sink(sink_node->getPort(sink_port).get());  // non-owning access to the socket
 }
 
 void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {

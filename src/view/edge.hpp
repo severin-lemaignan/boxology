@@ -36,8 +36,8 @@ class GraphicsDirectedEdge
 
     ConnectionWeakPtr connection() const { return _connection; }
 
-    void connect(std::shared_ptr<GraphicsNode> n1, PortWeakPtr source,
-                 std::shared_ptr<GraphicsNode> n2, PortWeakPtr sink);
+    void connect(GraphicsNode* n1, Port* source,
+                 GraphicsNode* n2, Port* sink);
 
     void connect_source(GraphicsNodeSocket* source);
     void connect_sink(GraphicsNodeSocket* sink);

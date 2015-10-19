@@ -46,7 +46,7 @@ class GraphicsNode : public QObject, public QGraphicsItem {
 
     const NodeWeakPtr node() { return _node; }
 
-    std::shared_ptr<GraphicsNodeSocket> getPort(ConstPortPtr port);
+    std::shared_ptr<GraphicsNodeSocket> getPort(Port* port);
 
     std::set<std::shared_ptr<GraphicsDirectedEdge>> disconnect();
 

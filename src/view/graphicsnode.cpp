@@ -76,6 +76,8 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     setGraphicsEffect(_effect);
 
     refreshNode();
+
+    qWarning() << "[G] Graphic node created";
 }
 
 void GraphicsNode::setTitle(const QString &title) {
@@ -92,9 +94,9 @@ GraphicsNode::~GraphicsNode() {
     delete _effect;
 
     if (_node.expired())
-        qWarning() << "Widget deleted (node already dead)";
+        qWarning() << "[G] Widget deleted (node already dead)";
     else
-        qWarning() << "Widget deleted (node "
+        qWarning() << "[G] Widget deleted (node "
                    << QString::fromStdString(_node.lock()->name()) << ")";
 }
 
@@ -225,18 +227,18 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port) {
     return s;
 }
 
-shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(ConstPortPtr port) {
+shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(Port* port) {
     auto source =
         find_if(_sources.begin(), _sources.end(),
                 [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
-                    return gsocket->socket().port.lock() == port;
+                    return gsocket->socket().port.lock().get() == port;
                 });
 
     if (source == _sources.end()) {
 
     auto sink = find_if(_sinks.begin(), _sinks.end(),
                         [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
-                            return gsocket->socket().port.lock() == port;
+                            return gsocket->socket().port.lock().get() == port;
                         });
 
     if (sink == _sinks.end()) {
