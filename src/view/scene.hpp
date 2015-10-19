@@ -33,6 +33,8 @@ class GraphicsNodeScene : public QGraphicsScene {
     void onConnectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
     void onConnectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
 
+    bool dontGrabKeyPresses;
+
    protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void keyPressEvent(QKeyEvent* event) override;

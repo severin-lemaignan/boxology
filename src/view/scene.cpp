@@ -19,6 +19,8 @@ using namespace std;
 GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
                                      QObject *parent)
     : QGraphicsScene(parent),
+      architecture(architecture),
+      dontGrabKeyPresses(false),
       _color_background(QColor("#393939")),
       _color_light(QColor("#2F2F2F")),
       _color_dark(QColor("#292929")),
@@ -26,8 +28,8 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
       _pen_light(QPen(_color_light)),
       _pen_dark(QPen(_color_dark)),
       _pen_null(QPen(_color_null)),
-      _brush_background(_color_background),
-      architecture(architecture) {
+      _brush_background(_color_background)
+      {
     // initialize default pen settings
     for (auto p : {&_pen_light, &_pen_dark, &_pen_null}) {
         p->setWidth(0);
@@ -171,6 +173,13 @@ void GraphicsNodeScene::drawBackground(QPainter *painter, const QRectF &rect) {
 }
 
 void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
+
+    if (dontGrabKeyPresses) {
+        QGraphicsScene::keyPressEvent(event);
+        return;
+    }
+
+
     switch (event->key()) {
         ////// MISC DEBUG
         case Qt::Key_Enter:
