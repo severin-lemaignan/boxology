@@ -25,7 +25,7 @@ class GraphicsNodeScene : public QGraphicsScene {
     std::shared_ptr<GraphicsDirectedEdge> add(ConnectionPtr connection);
     std::shared_ptr<GraphicsDirectedEdge> make_edge();
 
-    std::set<std::shared_ptr<GraphicsNode>> selected();
+    std::set<std::shared_ptr<GraphicsNode>> selected() const;
 
     Architecture* architecture;
 

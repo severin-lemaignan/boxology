@@ -12,6 +12,10 @@
 #include "node.hpp"
 #include "connection.hpp"
 
+const std::map<std::string, std::string> GROUPS{{"Perception", "#55aa7f"},
+                                                {"Memory", "#ffaa7f"},
+                                                {"Action", "#75bdff"}};
+
 namespace Json {
     class Value;
 }

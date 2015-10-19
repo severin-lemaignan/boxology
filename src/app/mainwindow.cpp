@@ -26,6 +26,7 @@
 #include <json/json.h>
 
 // node editor
+#include "../view/groupbutton.hpp"
 #include "../view/scene.hpp"
 #include "../view/view.hpp"
 #include "../view/graphicsnode.hpp"
@@ -55,6 +56,16 @@ MainWindow::MainWindow()
     _view = make_shared<GraphicsNodeView>(this);
     _view->setScene(_scene.get());
     this->setCentralWidget(_view.get());
+
+
+    // Prepare the groups buttons in the toolbar
+    for(const auto& kv : GROUPS) {
+        auto grp = new GroupButton(kv.first, kv.second);
+        ui->toolBar->addWidget(grp);
+
+        connect(grp, &GroupButton::triggered,
+                this, &MainWindow::onGroupButtonTriggered);
+    }
 
     // add some content
     // addFakeContent();
@@ -147,6 +158,7 @@ void MainWindow::on_actionToJson_triggered() {
     json_file << output;
 }
 
+
 void MainWindow::on_actionFromJson_triggered() {
 
     Json::Value root;
@@ -176,4 +188,15 @@ void MainWindow::on_actionFromJson_triggered() {
     }
 
 
+}
+
+
+void MainWindow::onGroupButtonTriggered(const string& group) {
+
+    for(auto node : _scene->selected())
+    {
+        auto color = QColor(QString::fromStdString(GROUPS.at(group)));
+        color.setAlpha(120);
+        node->setColors(color);
+    }
 }

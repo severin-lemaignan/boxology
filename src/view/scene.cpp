@@ -112,7 +112,7 @@ void GraphicsNodeScene::onConnectionDisrupted(shared_ptr<GraphicsDirectedEdge> e
                                    edge->sink()->socket());
 }
 
-set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() {
+set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     set<shared_ptr<GraphicsNode>> selectedNodes;
 
     for (auto graphicNode : _nodes) {

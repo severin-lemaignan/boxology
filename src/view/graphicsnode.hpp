@@ -63,6 +63,8 @@ class GraphicsNode : public QObject, public QGraphicsItem {
     void setSize(const QSizeF size);
     void setSize(const QPointF size);
 
+    void setColors(const QColor& base);
+
     /**
         * set a regular QWidget as central widget
         */

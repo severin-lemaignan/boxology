@@ -14,6 +14,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsProxyWidget>
 #include <QDebug>
+#include <QColorDialog>
 
 #include <algorithm>
 #include <iostream>
@@ -449,9 +450,22 @@ void GraphicsNode::propagateChanges() {
     for (auto source : _sources) source->notifyPositionChange();
 }
 
-void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    qWarning() << "Double clicked!";
+void GraphicsNode::setColors(const QColor& base) {
+    
+    _brush_background.setColor(base);
+    _brush_title.setColor(base.lighter(110));
 
+    // redraw the node
+    update(boundingRect());
+
+
+}
+
+void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+
+    auto color = QColorDialog::getColor(_brush_background.color(), nullptr, "Pick a color", QColorDialog::ShowAlphaChannel);
+
+    setColors(color);
     // auto popup = make_shared<QLineEdit>();
     // popup->show();
 
