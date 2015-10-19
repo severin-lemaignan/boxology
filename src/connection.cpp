@@ -5,5 +5,5 @@
 
 Connection::~Connection() {
 
-    qWarning() << "Connection " << QString::fromStdString(name) << " deleted!!";
+    //qWarning() << "Connection " << QString::fromStdString(name) << " deleted!!";
 }

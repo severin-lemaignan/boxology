@@ -54,24 +54,28 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
     return gNode;
 }
 
-shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
-    ConnectionPtr connection) {
+shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection) {
+
+    auto from = connection->from.node.lock();
+    auto to = connection->to.node.lock();
+
     auto edge = make_edge();
 
     // look for the *graphic nodes* that represent the source/sink of
     // our connection:
     auto source =
         find_if(_nodes.begin(), _nodes.end(),
-                [&connection](const shared_ptr<GraphicsNode> gNode) {
-                    return gNode->node().lock() == connection->from.node.lock();
+                [&from](const shared_ptr<GraphicsNode> gNode) {
+                    return gNode->node().lock() == from;
                 });
 
     auto sink =
         find_if(_nodes.begin(), _nodes.end(),
-                [&connection](const shared_ptr<GraphicsNode> gNode) {
-                    return gNode->node().lock() == connection->to.node.lock();
+                [&to](const shared_ptr<GraphicsNode> gNode) {
+                    return gNode->node().lock() == to;
                 });
 
+    //qWarning() << "Connecting " << QString::fromStdString(from->name()) << " to " << QString::fromStdString(to->name());
     edge->connect((*source).get(), connection->from.port.lock().get(), 
                   (*sink).get(), connection->to.port.lock().get());
 
@@ -99,7 +103,7 @@ void GraphicsNodeScene::onConnectionEstablished(shared_ptr<GraphicsDirectedEdge>
 }
 
 void GraphicsNodeScene::onConnectionDisrupted(shared_ptr<GraphicsDirectedEdge> edge) {
-    qWarning() << "Connection disrupted!";
+    //qWarning() << "Connection disrupted!";
     architecture->removeConnection(edge->source()->socket(),
                                    edge->sink()->socket());
 }
@@ -182,8 +186,7 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             for (auto graphicNode : selected()) {
                 auto node = graphicNode->node();
                 if (node.expired()) {
-                    qWarning("Attempting to delete an already deleted node!");
-                    break;
+                    throw std::logic_error("Attempting to delete an already deleted node!");
                 }
                 graphicNode.get()->setSelected(false);
                 auto disconnected_edges = graphicNode.get()->disconnect();

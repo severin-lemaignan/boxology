@@ -1,5 +1,4 @@
 #include <iostream>
-#include <QDebug>
 #include <json/json.h>
 
 #include <boost/lexical_cast.hpp>
@@ -97,7 +96,7 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
     set<ConnectionPtr> newconnections;
 
     auto version = json.get("version", "<undefined>").asString();
-    cout << "Reading the architecture (v." << version << ")..." << endl;
+    DEBUG("Reading the architecture (v." << version << ")..." << endl);
 
     set<boost::uuids::uuid> existing_uuids;
 
@@ -135,7 +134,7 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
             node = createNode();
         }
 
-        cout << "Adding node <" << n["name"].asString() << ">" << endl;
+        DEBUG("Adding node <" << n["name"].asString() << ">" << endl);
 
         for (auto p : n["ports"]) {
 
@@ -175,8 +174,8 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
         auto to = node(to_uuid);
         auto to_port = c["to"].asString().substr(37);
 
-        cout << "Creating connection between: " << from->name() << ":" << from_port;
-        cout << " and " << to->name() << ":" << to_port << endl;
+        DEBUG("Creating connection between: " << from->name() << ":" << 
+              from_port << " and " << to->name() << ":" << to_port << endl);
 
         ConnectionPtr connection;
 

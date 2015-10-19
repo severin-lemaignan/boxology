@@ -1,6 +1,8 @@
 #ifndef ARCHITECTURE_HPP
 #define ARCHITECTURE_HPP
 
+#define DEBUG(x) do { std::cerr << "[" << __FILE__ << ":" << __LINE__ <<"] " << x; } while (0)
+
 #include <utility> // for std::pair
 #include <memory>
 #include <set>

@@ -77,7 +77,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
 
     refreshNode();
 
-    qWarning() << "[G] Graphic node created";
+    //qWarning() << "[G] Graphic node created";
 }
 
 void GraphicsNode::setTitle(const QString &title) {
@@ -93,11 +93,11 @@ GraphicsNode::~GraphicsNode() {
     delete _title_item;
     delete _effect;
 
-    if (_node.expired())
-        qWarning() << "[G] Widget deleted (node already dead)";
-    else
-        qWarning() << "[G] Widget deleted (node "
-                   << QString::fromStdString(_node.lock()->name()) << ")";
+    //if (_node.expired())
+    //    qWarning() << "[G] Widget deleted (node already dead)";
+    //else
+    //    qWarning() << "[G] Widget deleted (node "
+    //               << QString::fromStdString(_node.lock()->name()) << ")";
 }
 
 QRectF GraphicsNode::boundingRect() const {

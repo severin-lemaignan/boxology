@@ -10,7 +10,7 @@ Node::Node() : uuid(boost::uuids::random_generator()()) {}
 Node::Node(boost::uuids::uuid uuid) : uuid(uuid) {}
 
 Node::~Node() {
-    qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
+    //qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
 }
 
 /* Performs a deep-copy of the current Node, with however a different UUID

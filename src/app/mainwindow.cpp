@@ -1,5 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
+#define DEBUG(x) do { std::cerr << "[" << __FILE__ << ":" << __LINE__ <<"] " << x; } while (0)
+
 #include <QPen>
 #include <QColor>
 #include <QFont>
@@ -120,7 +122,6 @@ void MainWindow::addNodeViews() {
     auto conn = arch->createConnection({node, p1}, {node2, p2});
     _scene->add(conn);
 
-    // arch.addConnection(*e12);
 }
 
 void MainWindow::on_actionAdd_node_triggered() {

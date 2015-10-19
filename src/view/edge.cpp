@@ -32,7 +32,7 @@
         _effect->setColor(QColor("#99050505"));
         setGraphicsEffect(_effect);
 
-        qWarning() << "[G] Created edge";
+        //qWarning() << "[G] Created edge";
     }
 
     GraphicsDirectedEdge::GraphicsDirectedEdge()
@@ -42,11 +42,11 @@
 
         delete _effect;
 
-        if (_connection.expired())
-            qWarning() << "[G] Edge deleted (connection already dead)";
-        else
-            qWarning() << "[G] Edge deleted (connection "
-                    << QString::fromStdString(_connection.lock()->name) << ")";
+        //if (_connection.expired())
+        //    qWarning() << "[G] Edge deleted (connection already dead)";
+        //else
+        //    qWarning() << "[G] Edge deleted (connection "
+        //            << QString::fromStdString(_connection.lock()->name) << ")";
     }
 
     void GraphicsDirectedEdge::mousePressEvent(QGraphicsSceneMouseEvent* event) {
