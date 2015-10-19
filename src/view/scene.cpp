@@ -100,8 +100,10 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::make_edge() {
 
 
 void GraphicsNodeScene::onConnectionEstablished(shared_ptr<GraphicsDirectedEdge> edge) {
-    architecture->createConnection(edge->source()->socket(),
-                                   edge->sink()->socket());
+    auto conn = architecture->createConnection(edge->source()->socket(),
+                                               edge->sink()->socket());
+
+    edge->setUnderlyingConnection(conn);
 }
 
 void GraphicsNodeScene::onConnectionDisrupted(shared_ptr<GraphicsDirectedEdge> edge) {

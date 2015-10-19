@@ -20,11 +20,14 @@
 
     GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
                                             qreal factor)
-        : _pen(QColor("#00FF00")),
-        _effect(new QGraphicsDropShadowEffect()),
-        _start(start),
-        _stop(stop),
-        _factor(factor) {
+            :_effect(new QGraphicsDropShadowEffect()),
+            _start(start),
+            _stop(stop),
+            _factor(factor),
+            _label(new EditableLabel(this)) {
+
+        //setFlag(QGraphicsItem::ItemIsSelectable);
+
         _pen.setWidth(2);
         setZValue(-1);
 
@@ -32,14 +35,17 @@
         _effect->setColor(QColor("#99050505"));
         setGraphicsEffect(_effect);
 
+        _label->setDefaultTextColor(QColor("#888888"));
         //qWarning() << "[G] Created edge";
-    }
+
+}
 
     GraphicsDirectedEdge::GraphicsDirectedEdge()
         : GraphicsDirectedEdge(QPoint(0, 0), QPoint(0, 0)) {}
 
     GraphicsDirectedEdge::~GraphicsDirectedEdge() {
 
+        delete _label;
         delete _effect;
 
         //if (_connection.expired())
@@ -56,11 +62,13 @@
     void GraphicsDirectedEdge::set_start(QPoint p) {
         _start = p;
         this->update_path();
+        placeLabel();
     }
 
     void GraphicsDirectedEdge::set_stop(QPoint p) {
         _stop = p;
         update_path();
+        placeLabel();
     }
 
     void GraphicsDirectedEdge::connect(GraphicsNode* source_node,
@@ -71,6 +79,19 @@
     connect_sink(sink_node->getPort(sink_port).get());  // non-owning access to the socket
 }
 
+void GraphicsDirectedEdge::establishConnection() {
+
+        emit connectionEstablished(shared_from_this());
+
+        if(_connection.use_count() == 0)
+            throw std::logic_error("The edge should have a connection set!!");
+
+        _label->setPlainText(QString::fromStdString(_connection.lock()->name));
+        QObject::connect(_label, &EditableLabel::contentUpdated,
+                         this, &GraphicsDirectedEdge::setConnectionName);
+
+}
+
 void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {
     if (_sink == sink) return;
 
@@ -79,7 +100,7 @@ void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {
     _sink = sink;
     if (_sink) _sink->set_edge(shared_from_this());
 
-    if (_source) emit connectionEstablished(shared_from_this());
+    if (_source) establishConnection();
 }
 
 void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket* source) {
@@ -90,7 +111,7 @@ void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket* source) {
     _source = source;
     if (_source) _source->set_edge(shared_from_this());
 
-    if (_sink) emit connectionEstablished(shared_from_this());
+    if (_sink) establishConnection();
 }
 
 void GraphicsDirectedEdge::disconnect() {
@@ -110,6 +131,18 @@ void GraphicsDirectedEdge::disconnect_source() {
         emit connectionDisrupted(shared_from_this());
 
     if (_source) _source->set_edge(nullptr);
+}
+
+void GraphicsDirectedEdge::placeLabel() {
+    auto bb = _label->boundingRect();
+
+    QPointF corner{_start + (_stop - _start)/2};
+    _label->setPos(corner);
+}
+
+
+void GraphicsDirectedEdge::setConnectionName(const QString& name) {
+    _connection.lock()->name = name.toStdString();
 }
 
 void GraphicsBezierEdge::update_path() {

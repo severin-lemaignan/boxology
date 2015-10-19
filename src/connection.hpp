@@ -27,8 +27,15 @@ inline bool operator==(const Socket& l, const Socket& r) {
  */
 struct Connection {
    public:
-    Connection() : uuid(boost::uuids::random_generator()()){};
-    Connection(const boost::uuids::uuid& uuid) : uuid(uuid) {};
+    static const std::string ANONYMOUS;
+
+    Connection() :
+            uuid(boost::uuids::random_generator()()),
+            name(ANONYMOUS) {};
+
+    Connection(const boost::uuids::uuid& uuid) : 
+            uuid(uuid),
+            name(ANONYMOUS) {};
 
     //TODO: attention: possible discrepency between UUIDs and equality operator!! Non intuitive!!
     inline bool operator==(const Connection& r) {

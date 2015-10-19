@@ -189,6 +189,8 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
                                           {to, to->port(to_port)});
         }
 
+        connection->name = c.get("name",Connection::ANONYMOUS).asString();
+
         newconnections.insert(connection);
     }
 

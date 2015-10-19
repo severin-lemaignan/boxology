@@ -11,6 +11,7 @@
 #include <QGraphicsPathItem>
 #include "graphicsnodedefs.hpp"
 
+#include "editablelabel.hpp"
 #include "../connection.hpp"
 
 class QGraphicsDropShadowEffect;
@@ -61,6 +62,8 @@ class GraphicsDirectedEdge
     GraphicsNodeSocket* source() { return _source; }
     GraphicsNodeSocket* sink() { return _sink; }
 
+    void setUnderlyingConnection(ConnectionWeakPtr c) {_connection = c;}
+
 signals:
     void connectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
     void connectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
@@ -71,8 +74,15 @@ signals:
    private:
     ConnectionWeakPtr _connection;
 
+    EditableLabel* _label;
+
    protected:
     virtual void update_path() = 0;
+
+    void placeLabel();
+
+    void establishConnection();
+    void setConnectionName(const QString& name);
 
     QPen _pen;
     QGraphicsDropShadowEffect* _effect;

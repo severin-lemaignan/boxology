@@ -120,6 +120,7 @@ void MainWindow::addNodeViews() {
     node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
 
     auto conn = arch->createConnection({node, p1}, {node2, p2});
+    conn->name = "data";
     _scene->add(conn);
 
 }
