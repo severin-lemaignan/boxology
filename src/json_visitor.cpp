@@ -7,14 +7,14 @@ using namespace std;
 
 void JsonVisitor::startUp() {
     ss << "{\"version\":\"0.1\"," << endl;
-    ss << "\"nodes\":[";
+    ss << "\"nodes\":[ ";
 }
 
 void JsonVisitor::endNodes() {
     ss.seekp((long)(ss.tellp()) - 1);  // remove the last comma
     ss << endl
        << "], " << endl
-       << "\"connections\":[";
+       << "\"connections\":[ ";
 }
 
 void JsonVisitor::tearDown() {
