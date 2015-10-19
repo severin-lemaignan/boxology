@@ -36,7 +36,6 @@ GraphicsNodeView::GraphicsNodeView(QGraphicsScene *scene, QWidget *parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setResizeAnchor(NoAnchor);
     setTransformationAnchor(AnchorUnderMouse);
-    // setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void GraphicsNodeView::resizeEvent(QResizeEvent *event) {
@@ -86,7 +85,6 @@ void GraphicsNodeView::middleMouseButtonRelease(QMouseEvent *event) {
                           event->buttons() & ~Qt::LeftButton,
                           event->modifiers());
     QGraphicsView::mouseReleaseEvent(&fakeEvent);
-    // setDragMode(QGraphicsView::RubberBandDrag);
     setDragMode(QGraphicsView::NoDrag);
 }
 
@@ -118,6 +116,7 @@ void GraphicsNodeView::leftMouseButtonRelease(QMouseEvent *event) {
         setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
     }
     QGraphicsView::mouseReleaseEvent(event);
+    setDragMode(QGraphicsView::NoDrag);
 }
 
 void GraphicsNodeView::mouseReleaseEvent(QMouseEvent *event) {
@@ -193,6 +192,7 @@ void GraphicsNodeView::leftMouseButtonPress(QMouseEvent *event) {
     // the event appropriately
     QGraphicsItem *item = itemAt(event->pos());
     if (!item) {
+        setDragMode(QGraphicsView::RubberBandDrag);
         QGraphicsView::mousePressEvent(event);
         return;
     }
