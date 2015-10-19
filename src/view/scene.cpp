@@ -72,7 +72,7 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
                     return gNode->node().lock() == connection->to.node.lock();
                 });
 
-    edge->connect(edge,
+    edge->connect(
                   *source, connection->from.port, 
                   *sink, connection->to.port);
 

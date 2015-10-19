@@ -60,54 +60,53 @@ void GraphicsDirectedEdge::set_stop(QPoint p) {
     update_path();
 }
 
-void GraphicsDirectedEdge::connect(shared_ptr<GraphicsDirectedEdge> shared_this,
-                                   shared_ptr<GraphicsNode> source_node,
+void GraphicsDirectedEdge::connect(shared_ptr<GraphicsNode> source_node,
                                    PortWeakPtr source_port,
                                    shared_ptr<GraphicsNode> sink_node,
                                    PortWeakPtr sink_port) {
-    connect_source(shared_this, source_node->getPort(source_port.lock()).get()); // non-owning access to the socket
-    connect_sink(shared_this, sink_node->getPort(sink_port.lock()).get()); // non-owning access to the socket
+    connect_source(source_node->getPort(source_port.lock())
+                       .get());  // non-owning access to the socket
+    connect_sink(sink_node->getPort(sink_port.lock())
+                     .get());  // non-owning access to the socket
 }
 
-void GraphicsDirectedEdge::connect_sink(shared_ptr<GraphicsDirectedEdge> shared_this,
-                                        GraphicsNodeSocket* sink) {
+void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {
     if (_sink == sink) return;
 
-    if (_sink) disconnect_sink(shared_this);
+    if (_sink) disconnect_sink();
 
     _sink = sink;
-    if (_sink) _sink->set_edge(shared_this);
+    if (_sink) _sink->set_edge(shared_from_this());
 
-    if (_source) emit connectionEstablished(shared_this);
+    if (_source) emit connectionEstablished(shared_from_this());
 }
 
-void GraphicsDirectedEdge::connect_source(shared_ptr<GraphicsDirectedEdge> shared_this,
-                                          GraphicsNodeSocket* source) {
+void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket* source) {
     if (_source == source) return;
 
-    if (_source) disconnect_source(shared_this);
+    if (_source) disconnect_source();
 
     _source = source;
-    if (_source) _source->set_edge(shared_this);
+    if (_source) _source->set_edge(shared_from_this());
 
-    if (_sink) emit connectionEstablished(shared_this);
+    if (_sink) emit connectionEstablished(shared_from_this());
 }
 
-void GraphicsDirectedEdge::disconnect(shared_ptr<GraphicsDirectedEdge> shared_this) {
-    disconnect_source(shared_this);
-    disconnect_sink(shared_this);
+void GraphicsDirectedEdge::disconnect() {
+    disconnect_source();
+    disconnect_sink();
 }
 
-void GraphicsDirectedEdge::disconnect_sink(shared_ptr<GraphicsDirectedEdge> shared_this) {
+void GraphicsDirectedEdge::disconnect_sink() {
     if (_sink && _sink->get_edge() && _source && _source->get_edge())
-        emit connectionDisrupted(shared_this);
+        emit connectionDisrupted(shared_from_this());
 
     if (_sink) _sink->set_edge(nullptr);
 }
 
-void GraphicsDirectedEdge::disconnect_source(shared_ptr<GraphicsDirectedEdge> shared_this) {
+void GraphicsDirectedEdge::disconnect_source() {
     if (_sink && _sink->get_edge() && _source && _source->get_edge())
-        emit connectionDisrupted(shared_this);
+        emit connectionDisrupted(shared_from_this());
 
     if (_source) _source->set_edge(nullptr);
 }
@@ -137,9 +136,9 @@ void GraphicsBezierEdge::update_path() {
     setPath(path);
 }
 
-void GraphicsBezierEdge::paint(QPainter *painter,
-                               const QStyleOptionGraphicsItem * /*option*/,
-                               QWidget * /*widget*/) {
+void GraphicsBezierEdge::paint(QPainter* painter,
+                               const QStyleOptionGraphicsItem* /*option*/,
+                               QWidget* /*widget*/) {
     painter->setPen(_pen);
     painter->drawPath(path());
 }

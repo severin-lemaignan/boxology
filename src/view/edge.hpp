@@ -21,36 +21,30 @@ class GraphicsNodeSocket;
 // TODO: move specific draw stuff out of the graphics-edge
 //       this may actually lead to the proper data model for a data layer
 
-class GraphicsDirectedEdge : public QObject, public QGraphicsPathItem {
+class GraphicsDirectedEdge
+    : public QObject,
+      public QGraphicsPathItem,
+      public std::enable_shared_from_this<GraphicsDirectedEdge> {
     Q_OBJECT
 
-    friend class GraphicsNodeScene;
-
    public:
-    // only GraphicsNodeScene (+descendants of GraphicsDirectedEdge) is 
-    // authorized to create instances of GraphicsDirectedEdge
-    
     // GraphicsDirectedEdge(qreal factor=0.5f);
     explicit GraphicsDirectedEdge();
     GraphicsDirectedEdge(QPoint start, QPoint stop, qreal factor = 0.5f);
 
-   public:
     ~GraphicsDirectedEdge();
 
     ConnectionWeakPtr connection() const { return _connection; }
 
-    void connect(std::shared_ptr<GraphicsDirectedEdge> shared_this,
-                 std::shared_ptr<GraphicsNode> n1, PortWeakPtr source,
+    void connect(std::shared_ptr<GraphicsNode> n1, PortWeakPtr source,
                  std::shared_ptr<GraphicsNode> n2, PortWeakPtr sink);
 
-    void connect_source(std::shared_ptr<GraphicsDirectedEdge> shared_this,
-                        GraphicsNodeSocket* source);
-    void connect_sink(std::shared_ptr<GraphicsDirectedEdge> shared_this,
-                      GraphicsNodeSocket* sink);
+    void connect_source(GraphicsNodeSocket* source);
+    void connect_sink(GraphicsNodeSocket* sink);
 
-    void disconnect(std::shared_ptr<GraphicsDirectedEdge> shared_this);
-    void disconnect_sink(std::shared_ptr<GraphicsDirectedEdge> shared_this);
-    void disconnect_source(std::shared_ptr<GraphicsDirectedEdge> shared_this);
+    void disconnect();
+    void disconnect_sink();
+    void disconnect_source();
 
     // methods to manually set a position
     void set_start(QPoint p);
@@ -72,7 +66,7 @@ signals:
     void connectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
 
    protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
    private:
     ConnectionWeakPtr _connection;
@@ -81,7 +75,7 @@ signals:
     virtual void update_path() = 0;
 
     QPen _pen;
-    QGraphicsDropShadowEffect *_effect;
+    QGraphicsDropShadowEffect* _effect;
     QPoint _start;
     QPoint _stop;
     qreal _factor;
@@ -91,9 +85,9 @@ signals:
 };
 
 class GraphicsBezierEdge : public GraphicsDirectedEdge {
-    virtual void paint(QPainter *painter,
-                       const QStyleOptionGraphicsItem *option,
-                       QWidget *widget = 0) override;
+    virtual void paint(QPainter* painter,
+                       const QStyleOptionGraphicsItem* option,
+                       QWidget* widget = 0) override;
     int type() const override { return GraphicsNodeItemTypes::TypeBezierEdge; }
 
    protected:
