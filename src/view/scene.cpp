@@ -226,6 +226,21 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
                 }
             }
             break;
+            
+        ///// (DE-)SELECT ALL
+        case Qt::Key_A:
+            {
+                bool allSelected = true;
+                for (auto graphicNode : _nodes) {
+                    allSelected = allSelected && graphicNode->isSelected();
+                }
+                for (auto graphicNode : _nodes) {
+                    if (allSelected) graphicNode->setSelected(false);
+                    else graphicNode->setSelected(true);
+                }
+                break;
+            }
+
 
         ////// NOT HANDLED -> pass forward
         default:
