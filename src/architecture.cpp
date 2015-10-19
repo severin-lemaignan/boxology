@@ -53,6 +53,12 @@ ConnectionPtr Architecture::createConnection(Socket from, Socket to) {
     connection->from = from;
     connection->to = to;
 
+    for (auto c : _connections) {
+        if ((*c) == (*connection)) {
+            return c;
+        }
+    }
+
     _connections.insert(connection);
     return connection;
 }
@@ -63,13 +69,14 @@ ConnectionPtr Architecture::createConnection(const boost::uuids::uuid& uuid,
     connection->from = from;
     connection->to = to;
 
+    for (auto c : _connections) {
+        if ((*c) == (*connection)) {
+            return c;
+        }
+    }
+
     _connections.insert(connection);
     return connection;
-}
-
-
-void Architecture::addConnection(ConnectionPtr connection) {
-    _connections.insert(connection);
 }
 
 void Architecture::removeConnection(Socket from, Socket to) {

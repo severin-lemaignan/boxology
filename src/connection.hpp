@@ -30,6 +30,11 @@ struct Connection {
     Connection() : uuid(boost::uuids::random_generator()()){};
     Connection(const boost::uuids::uuid& uuid) : uuid(uuid) {};
 
+    //TODO: attention: possible discrepency between UUIDs and equality operator!! Non intuitive!!
+    inline bool operator==(const Connection& r) {
+        return (to == r.to) && (from == r.from);
+    }
+
     ~Connection();
 
     boost::uuids::uuid uuid;

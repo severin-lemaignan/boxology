@@ -41,7 +41,6 @@ class Architecture {
     ConnectionPtr createConnection(const boost::uuids::uuid& uuid,
                                    Socket from, Socket to);
 
-    void addConnection(ConnectionPtr connection);
     void removeConnection(Socket from, Socket to);
 
     Connections connections() { return _connections; }
