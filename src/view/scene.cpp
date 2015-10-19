@@ -178,6 +178,7 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             for (auto graphicNode : selected()) {
                 cout << graphicNode->node().lock()->name() << endl;
             }
+            QGraphicsScene::keyPressEvent(event);
             break;
 
         ////// DELETE
@@ -215,7 +216,7 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             }
             break;
 
-        ////// NOT HANDLED
+        ////// NOT HANDLED -> pass forward
         default:
             QGraphicsScene::keyPressEvent(event);
     }

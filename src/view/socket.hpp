@@ -12,6 +12,7 @@
 #include <QPointF>
 #include <QSizeF>
 
+#include "editablelabel.hpp"
 #include "graphicsnodedefs.hpp"
 #include "../node.hpp"
 #include "../connection.hpp"
@@ -24,8 +25,9 @@ class GraphicsDirectedEdge;
  * visual representation of a socket. the visual representation consists of a
  * circle for User Interaction and a label
  */
-class GraphicsNodeSocket : public QGraphicsItem {
-    friend class GraphicsDirectedEdge;
+class GraphicsNodeSocket : public QObject, public QGraphicsItem {
+
+    Q_OBJECT
 
    public:
     GraphicsNodeSocket(Socket socket, QGraphicsItem *parent = nullptr);
@@ -88,7 +90,9 @@ class GraphicsNodeSocket : public QGraphicsItem {
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 
    private:
-    void drawAlignedText(QPainter *painter);
+    void placeLabel();
+
+    void setPortName(const QString& name) {_socket.port.lock()->name = name.toStdString();}
 
    private:
     Socket _socket;
@@ -97,7 +101,7 @@ class GraphicsNodeSocket : public QGraphicsItem {
     QPen _pen_circle;
     const QPen _pen_text;
     const QBrush _brush_circle;
-    const QString _text;
+    EditableLabel* _text;
 
     /*
      * edge with which this socket is connected

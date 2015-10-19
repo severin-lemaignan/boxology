@@ -34,21 +34,32 @@ using namespace std;
 // const qreal width = 30.0;
 
 GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
-    : _socket(socket),
-      QGraphicsItem(parent),
+    : QGraphicsItem(parent),
+      _socket(socket),
       _socket_type(socket.port.lock()->direction),
       _pen_circle(PEN_COLOR_CIRCLE),
       _pen_text(PEN_COLOR_TEXT),
       _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK
                                                           : BRUSH_COLOR_SOURCE),
-      _text(QString::fromStdString(socket.port.lock()->name)),
+      _text(new EditableLabel(this)),
       _edge(nullptr) {
+
     _pen_circle.setWidth(0);
     setAcceptDrops(true);
+
+    //_text->setPos(0, 0);
+    //_text->setTextWidth(_width - 2 * _lr_padding);
+
+    _text->setPlainText(QString::fromStdString(socket.port.lock()->name));
+    QObject::connect(_text, &EditableLabel::contentUpdated,
+                     this, &GraphicsNodeSocket::setPortName);
+
 }
 
 GraphicsNodeSocket::~GraphicsNodeSocket() {
     //qWarning() << "[G] Port deleted";
+    
+    delete _text;
 }
 
 
@@ -75,38 +86,27 @@ QRectF GraphicsNodeSocket::boundingRect() const {
 
 QSizeF GraphicsNodeSocket::getMinimalSize() const {
     QSizeF size;
-    QFont font;
-    QFontMetrics fm(font);
-    int text_width = fm.width(_text);
-    const qreal text_height = static_cast<qreal>(fm.height());
+    //const qreal text_height = static_cast<qreal>(fm.height());
+    auto bb = _text->boundingRect();
     size.setWidth(std::max(_min_width, _circle_radius * 2 + _text_offset +
-                                           text_width + _pen_width));
-    size.setHeight(std::max(_min_height, text_height + _pen_width));
+                                           bb.width() + _pen_width));
+    size.setHeight(std::max(_min_height, bb.height() + _pen_width));
     return size;
 }
 
 QSizeF GraphicsNodeSocket::getSize() const { return getMinimalSize(); }
 
-void GraphicsNodeSocket::drawAlignedText(QPainter *painter) {
-    int flags = Qt::AlignVCenter;
-    const qreal size = 32767.0;
+void GraphicsNodeSocket::placeLabel() {
+    auto bb = _text->boundingRect();
+
     QPointF corner(0, 0);
     if (_socket_type == Port::Direction::IN) {
         corner.setX(_circle_radius + _text_offset);
-        corner.setY(-size);
-        corner.ry() += size / 2.0;
-        flags |= Qt::AlignLeft;
     } else {
-        corner.setX(-_circle_radius - _text_offset);
-        corner.setY(-size);
-        corner.ry() += size / 2.0;
-        corner.rx() -= size;
-        flags |= Qt::AlignRight;
+        corner.setX(-_circle_radius - _text_offset - bb.width());
     }
-    QRectF rect(corner, QSizeF(size, size));
-    painter->setPen(_pen_text);
-
-    painter->drawText(rect, flags, _text, 0);
+    corner.setY(-bb.height()/2);
+    _text->setPos(corner);
 }
 
 QPointF GraphicsNodeSocket::sceneAnchorPos() const { return mapToScene(0, 0); }
@@ -118,10 +118,11 @@ void GraphicsNodeSocket::paint(QPainter *painter,
     painter->setBrush(_brush_circle);
     painter->drawEllipse(-_circle_radius, -_circle_radius, _circle_radius * 2,
                          _circle_radius * 2);
-    drawAlignedText(painter);
 
-// debug painting the bounding box
+    placeLabel();
+
 #if 0
+// debug painting the bounding box
     QPen debugPen = QPen(QColor(Qt::red));
     debugPen.setWidth(0);
     auto r = boundingRect();

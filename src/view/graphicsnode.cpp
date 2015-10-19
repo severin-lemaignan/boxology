@@ -49,6 +49,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
       _brush_sinks(QColor("#FF0077FF")),
       _effect(new QGraphicsDropShadowEffect()),
       _title_item(new EditableLabel(this)) {
+
     for (auto p :
          {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
         p->setWidth(0);

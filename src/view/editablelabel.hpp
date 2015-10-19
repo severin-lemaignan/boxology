@@ -1,6 +1,7 @@
 #ifndef EDITABLELABEL_HPP
 #define EDITABLELABEL_HPP
 
+#include <QCursor>
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
 
@@ -15,7 +16,8 @@ class EditableLabel : public QGraphicsTextItem {
 
     void keyPressEvent(QKeyEvent *event) override {
         if ((event->key() == Qt::Key_Enter) ||
-            (event->key() == Qt::Key_Return)) {
+            (event->key() == Qt::Key_Return) ||
+            (event->key() == Qt::Key_Escape)) {
             clearFocus();
         } else {
             QGraphicsTextItem::keyPressEvent(event);
