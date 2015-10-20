@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <set>
+#include <map>
 #include <tuple>
 
 #include <QObject>
@@ -11,10 +12,14 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
+#include "group.hpp"
+
 struct Port {
    public:
     enum class Direction { OUT, IN };
-    enum class Type { EXPLICIT, LATENT, OTHER };
+    enum class Type { EXPLICIT, LATENT, EVENT, OTHER };
+
+    static const std::map<Type, std::string> TYPENAME;
 
     Port() {}
     Port(std::string name, Direction direction, Type type)
@@ -50,23 +55,27 @@ struct Node : public QObject {
     Node(boost::uuids::uuid uuid);
     ~Node();
 
-    boost::uuids::uuid uuid;
-
     NodePtr duplicate() const;
 
     std::string name() const { return _name; }
     void name(const std::string& name);
+
+    Group group() const { return _group; }
+    void group(Group group);
 
     PortPtr createPort(const Port port);
     PortPtr port(const std::string& name);
 
     const std::set<PortPtr> ports() const { return _ports; }
 
+    boost::uuids::uuid uuid;
+
   signals:
     void dirty();
 
    private:
     std::string _name;
+    Group _group;
     std::set<PortPtr> _ports;
 };
 

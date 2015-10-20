@@ -2,6 +2,9 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include "json_visitor.hpp"
+
+#include "group.hpp"
+
 using namespace std;
 
 
@@ -30,6 +33,7 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
     ss << endl
        << "{\"uuid\": \"" << node->uuid << "\", ";
     ss << "\"name\": \"" << node->name() << "\", ";
+    ss << "\"group\": \"" << GROUPNAME.at(node->group()) << "\", ";
     ss << "\"ports\": [";
     for (const auto port : node->ports()) {
         ss << "{\"name\": \"" << port->name << "\",";

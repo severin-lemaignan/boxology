@@ -6,8 +6,13 @@
 
 using namespace std;
 
-Node::Node() : uuid(boost::uuids::random_generator()()) {}
-Node::Node(boost::uuids::uuid uuid) : uuid(uuid) {}
+const map<Port::Type, std::string> Port::TYPENAME {{Type::EXPLICIT, "[->]"},
+                                                   {Type::LATENT, "[~]"},
+                                                   {Type::EVENT, "[!]"},
+                                                   {Type::OTHER, ""}};
+   
+Node::Node() : Node(boost::uuids::random_generator()()) {}
+Node::Node(boost::uuids::uuid uuid) : uuid(uuid), _group(Group::OTHER) {}
 
 Node::~Node() {
     //qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
@@ -48,5 +53,10 @@ PortPtr Node::port(const string& name) {
 
 void Node::name(const std::string& name) {
     _name = name;
-    emit dirty();  // signal update
+    emit dirty();
+}
+
+void Node::group(Group group) {
+    _group = group;
+    emit dirty();
 }

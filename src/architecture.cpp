@@ -6,6 +6,8 @@
 
 #include "architecture.hpp"
 
+#include "group.hpp"
+
 using namespace std;
 
 NodePtr Architecture::createNode() {
@@ -135,6 +137,8 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
         }
 
         DEBUG("Adding node <" << n["name"].asString() << ">" << endl);
+
+        node->group(get_group_by_name(n.get("group", "").asString()));
 
         for (auto p : n["ports"]) {
 

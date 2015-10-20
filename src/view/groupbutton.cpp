@@ -5,15 +5,12 @@
 
 using namespace std;
 
-GroupButton::GroupButton(QWidget *parent) :
-    QPushButton(parent)
+GroupButton::GroupButton(Group group, QWidget *parent): 
+    QPushButton(parent),
+    _group(group)
 {
-}
-
-GroupButton::GroupButton(const string& label, const string& color, QWidget *parent): GroupButton(parent)
-{
-    setText(QString::fromStdString(label));
-    setColor(QString::fromStdString(color));
+    setText(QString::fromStdString(GROUPNAME.at(group)));
+    setColor(QString::fromStdString(GROUPCOLORS.at(group)));
 }
 
 void GroupButton::mousePressEvent(QMouseEvent *e)
@@ -24,7 +21,7 @@ void GroupButton::mousePressEvent(QMouseEvent *e)
     //    setColor(color);
     //}
     if(e->button()==Qt::LeftButton) {
-        emit triggered(text().toStdString());
+        emit triggered(_group);
         QPushButton::mousePressEvent(e);
     }
 
@@ -33,7 +30,6 @@ void GroupButton::mousePressEvent(QMouseEvent *e)
 
 void GroupButton::setColor(const QColor& color)
 {
-    _color = color;
     auto icon = QPixmap(32,32);
     icon.fill(color);
     setIcon(QIcon(icon));

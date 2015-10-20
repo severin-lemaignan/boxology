@@ -289,6 +289,10 @@ void GraphicsNode::refreshNode() {
 
     setTitle(QString::fromStdString(node->name()));
 
+    auto color = QColor(QString::fromStdString(GROUPCOLORS.at(node->group())));
+    color.setAlpha(120);
+    setColors(color);
+
     set<PortPtr> in_node = node->ports();
     set<PortPtr> existing;
     set<PortPtr> to_add;

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "../architecture.hpp"
+#include "../group.hpp"
 
 class QResizeEvent;
 class GraphicsNodeView;
@@ -32,7 +33,7 @@ class MainWindow : public QMainWindow {
     void on_actionAdd_node_triggered();
     void on_actionToJson_triggered();
     void on_actionFromJson_triggered();
-    void onGroupButtonTriggered(const std::string& group);
+    void onGroupButtonTriggered(Group group);
 
    private:
     void addNodeViews();

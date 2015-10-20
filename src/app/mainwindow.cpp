@@ -59,8 +59,8 @@ MainWindow::MainWindow()
 
 
     // Prepare the groups buttons in the toolbar
-    for(const auto& kv : GROUPS) {
-        auto grp = new GroupButton(kv.first, kv.second);
+    for(const auto& kv : GROUPNAME) {
+        auto grp = new GroupButton(kv.first);
         ui->toolBar->addWidget(grp);
 
         connect(grp, &GroupButton::triggered,
@@ -191,12 +191,10 @@ void MainWindow::on_actionFromJson_triggered() {
 }
 
 
-void MainWindow::onGroupButtonTriggered(const string& group) {
+void MainWindow::onGroupButtonTriggered(Group group) {
 
     for(auto node : _scene->selected())
     {
-        auto color = QColor(QString::fromStdString(GROUPS.at(group)));
-        color.setAlpha(120);
-        node->setColors(color);
+        node->node().lock()->group(group);
     }
 }

@@ -7,25 +7,28 @@
 #include <QMouseEvent>
 #include <QColor>
 
+#include "../group.hpp"
+
 class GroupButton : public QPushButton
 {
     Q_OBJECT
 
 public:
-    explicit GroupButton(QWidget *parent = 0);
-    GroupButton(const std::string& label, const std::string& color, QWidget *parent = 0);
+    GroupButton() = delete;
+    GroupButton(Group group, QWidget *parent = 0);
 
-    void setColor(const QColor& color);
-    QColor color() const {return _color;}
+    //QColor color() const {return _color;}
 
 //private slots:
     void mousePressEvent(QMouseEvent *e);
 
 signals:
-    void triggered(const std::string& group);
+    void triggered(Group group);
 
 private:
-    QColor _color;
+    void setColor(const QColor& color);
+
+    Group _group;
 };
 
 #endif // GROUPBUTTON_HPP
