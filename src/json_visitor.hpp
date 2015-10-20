@@ -8,17 +8,18 @@
 #include "architecture.hpp"  // Node
 #include "visitor.hpp"
 
+#include "json/json.h"
+
 class JsonVisitor : public Visitor<std::string> {
     using Visitor::Visitor;  // inheriting Visitor's ctor
 
-    void startUp();
+    void startUp(const Architecture& architecture);
     void onNode(std::shared_ptr<const Node>);
-    void endNodes();
     void onConnection(std::shared_ptr<const Connection>);
     void tearDown();
 
    private:
-    std::stringstream ss;
+    Json::Value root;
 };
 
 #endif

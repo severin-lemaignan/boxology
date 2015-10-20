@@ -29,9 +29,14 @@ class GraphicsNodeScene : public QGraphicsScene {
 
     Architecture* architecture;
 
+    void set_description(const std::string& name,
+                         const std::string& version,
+                         const std::string& desc);
+
     // slots
     void onConnectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
     void onConnectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
+    void onDescriptionChanged(const QString& content);
 
     bool dontGrabKeyPresses;
 
@@ -44,12 +49,17 @@ class GraphicsNodeScene : public QGraphicsScene {
     QColor _color_light;
     QColor _color_dark;
     QColor _color_null;
+    QColor _color_bg_text;
 
     QPen _pen_light;
     QPen _pen_dark;
     QPen _pen_null;
 
     QBrush _brush_background;
+
+    EditableLabel* _arch_name;
+    EditableLabel* _arch_version;
+    EditableDescription* _arch_desc;
 
     std::set<std::shared_ptr<GraphicsNode>> _nodes;
     std::set<std::shared_ptr<GraphicsDirectedEdge>> _edges;

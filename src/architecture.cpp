@@ -97,8 +97,12 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
     set<NodePtr> newnodes;
     set<ConnectionPtr> newconnections;
 
-    auto version = json.get("version", "<undefined>").asString();
-    DEBUG("Reading the architecture (v." << version << ")..." << endl);
+    auto version = json.get("encoding_version", "<undefined>").asString();
+    DEBUG("Reading the architecture (encoding: v." << version << ")..." << endl);
+
+    name = json.get("name","<no name>").asString();
+    version = json.get("version", "v0.1").asString();
+    description = json.get("description", "(no description yet)").asString();
 
     set<boost::uuids::uuid> existing_uuids;
 

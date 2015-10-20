@@ -115,17 +115,18 @@ void MainWindow::addNodeViews() {
 
     auto node = arch->createNode();
     node->name("NLP");
+    node->group(Group::PERCEPTION);
     auto p1 = node->createPort(
         {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _scene->add(node);
-    gNode->setPos(0, 0);
+    gNode->setPos(0, 150);
 
     auto node2 = arch->createNode();
     node2->name("KB");
     auto p2 =
         node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     auto gNode2 = _scene->add(node2);
-    gNode2->setPos(0 + gNode->width() * 1.5, 0);
+    gNode2->setPos(0 + gNode->width() * 1.5, 150);
 
     node2->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
@@ -165,6 +166,8 @@ void MainWindow::on_actionFromJson_triggered() {
 
     auto filename = QFileDialog::getOpenFileName(this,"Select an architecture to open", "", "*.json");
 
+    if(filename.isNull()) return;
+
     ifstream json_file(filename.toStdString());
 
     try {
@@ -176,6 +179,8 @@ void MainWindow::on_actionFromJson_triggered() {
     }
 
     auto newstuff = arch->update(root);
+
+    _scene->set_description(arch->name, arch->version, arch->description);
 
     DEBUG("Loaded " << newstuff.first.size() << " nodes and "
           << newstuff.second.size() << " connections." << endl);

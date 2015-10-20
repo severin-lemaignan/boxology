@@ -14,7 +14,7 @@ class Visitor {
     T visit();
 
    protected:
-    virtual void startUp(){};
+    virtual void startUp(const Architecture& architecture){};
     virtual void beginNodes(){};
     virtual void onNode(std::shared_ptr<const Node>) = 0;
     virtual void endNodes(){};

@@ -48,6 +48,10 @@ class Architecture {
     Connections connections() { return _connections; }
     const Connections connections() const { return _connections; }
 
+    std::string name;
+    std::string version;
+    std::string description;
+
    private:
     Nodes _nodes;
     Connections _connections;

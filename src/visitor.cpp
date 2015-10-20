@@ -8,7 +8,7 @@ Visitor<T>::Visitor(const Architecture& architecture)
 
 template<class T>
 T Visitor<T>::visit() {
-    startUp();
+    startUp(_architecture);
 
     beginNodes();
     for (const auto node : _architecture.nodes()) {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "json_visitor.hpp"
 
@@ -8,50 +9,43 @@
 using namespace std;
 
 
-void JsonVisitor::startUp() {
-    ss << "{\"version\":\"0.1\"," << endl;
-    ss << "\"nodes\":[ ";
+void JsonVisitor::startUp(const Architecture& architecture) {
+    root["encoding_version"] = "0.1";
+    root["name"] = architecture.name;
+    root["version"] = architecture.version;
+    root["description"] = architecture.description;
 }
 
-void JsonVisitor::endNodes() {
-    ss.seekp((long)(ss.tellp()) - 1);  // remove the last comma
-    ss << endl
-       << "], " << endl
-       << "\"connections\":[ ";
-}
 
 void JsonVisitor::tearDown() {
-    ss.seekp((long)(ss.tellp()) - 1);  // remove the last comma
-    ss << endl
-       << "]" << endl
-       << "}" << endl;
-
-    _content = ss.str();
+    Json::StyledWriter writer;
+    _content = writer.write(root);
 }
 
 void JsonVisitor::onNode(shared_ptr<const Node> node) {
-    ss << endl
-       << "{\"uuid\": \"" << node->uuid << "\", ";
-    ss << "\"name\": \"" << node->name() << "\", ";
-    ss << "\"group\": \"" << GROUPNAME.at(node->group()) << "\", ";
-    ss << "\"position\": [" << node->x() << ", " << node->y() << "], ";
-    ss << "\"ports\": [";
+    Json::Value jnode;
+    jnode["uuid"] = boost::lexical_cast<std::string>(node->uuid);
+    jnode["name"] = node->name();
+    jnode["group"] = GROUPNAME.at(node->group());
+    jnode["position"].append(node->x());
+    jnode["position"].append(node->y());
+
     for (const auto port : node->ports()) {
-        ss << "{\"name\": \"" << port->name << "\",";
-        ss << " \"direction\": \""
-           << (port->direction == Port::Direction::IN ? "in" : "out") << "\"},";
+        Json::Value jport;
+        jport["name"] = port->name;
+        jport["direction"] = (port->direction == Port::Direction::IN ? "in" : "out");
+        jnode["ports"].append(jport);
+
     }
-    ss.seekp((long)(ss.tellp()) - 1);  // remove the last comma
-    ss << "]},";
+    root["nodes"].append(jnode);
 }
 
 void JsonVisitor::onConnection(shared_ptr<const Connection> connection) {
-    ss << endl
-       << "{\"uuid\": \"" << connection->uuid << "\", ";
-    ss << "\"name\": \"" << connection->name << "\", ";
-    ss << "\"from\": \"" << connection->from.node.lock()->uuid << ":"
-       << connection->from.port.lock()->name << "\", ";
-    ss << "\"to\": \"" << connection->to.node.lock()->uuid << ":"
-       << connection->to.port.lock()->name << "\"},";
-    // cout << "\"type\": \"" << connection->type << "\"" << endl;
+    Json::Value jconn;
+    jconn["uuid"] = boost::lexical_cast<std::string>(connection->uuid);
+    jconn["name"] = connection->name;
+    jconn["from"] = boost::lexical_cast<std::string>(connection->from.node.lock()->uuid) + ":" + connection->from.port.lock()->name;
+    jconn["to"] = boost::lexical_cast<std::string>(connection->to.node.lock()->uuid) + ":" + connection->to.port.lock()->name;
+
+    root["connections"].append(jconn);
 }

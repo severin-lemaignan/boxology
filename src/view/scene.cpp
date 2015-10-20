@@ -25,10 +25,14 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
       _color_light(QColor("#2F2F2F")),
       _color_dark(QColor("#292929")),
       _color_null(QColor("#212121")),
+      _color_bg_text(QColor("#a1a1a1")),
       _pen_light(QPen(_color_light)),
       _pen_dark(QPen(_color_dark)),
       _pen_null(QPen(_color_null)),
-      _brush_background(_color_background)
+      _brush_background(_color_background),
+      _arch_name(new EditableLabel()),
+      _arch_version(new EditableLabel()),
+      _arch_desc(new EditableDescription())
       {
     // initialize default pen settings
     for (auto p : {&_pen_light, &_pen_dark, &_pen_null}) {
@@ -38,10 +42,35 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     // initialize the background
     setBackgroundBrush(_brush_background);
 
-    // add some text to where zero is
-    auto nulltext = this->addText("(0,0)", QFont("Ubuntu Mono"));
-    nulltext->setPos(0, 0);
-    nulltext->setDefaultTextColor(_color_null);
+    // add text field with the architecture name
+    _arch_name->setHtml("<h1>CoolArch</h1>");
+
+    _arch_name->setPos(0, 0);
+    _arch_name->setDefaultTextColor(_color_bg_text);
+
+    this->addItem(_arch_name);
+    connect(_arch_name, &EditableLabel::contentUpdated,
+            this, &GraphicsNodeScene::onDescriptionChanged);
+    
+    // add text field with the architecture version
+    _arch_version->setHtml("<h2>v0.1</h2>");
+
+    _arch_version->setPos(0, _arch_name->boundingRect().height());
+    _arch_version->setDefaultTextColor(_color_bg_text);
+
+    this->addItem(_arch_version);
+    connect(_arch_version, &EditableLabel::contentUpdated,
+            this, &GraphicsNodeScene::onDescriptionChanged);
+
+
+    _arch_desc->setHtml("The <strong>CoolArch</strong> architecture is based on <a href=\"http://example.org\">this article</a> with the following modifications...");
+    _arch_desc->setTextWidth(400);
+    _arch_desc->setPos(0, _arch_version->y() + _arch_version->boundingRect().height());
+    _arch_desc->setDefaultTextColor(_color_null);
+
+    this->addItem(_arch_desc);
+    connect(_arch_desc, &EditableLabel::contentUpdated,
+            this, &GraphicsNodeScene::onDescriptionChanged);
 }
 
 shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
@@ -112,6 +141,16 @@ void GraphicsNodeScene::onConnectionDisrupted(shared_ptr<GraphicsDirectedEdge> e
                                    edge->sink()->socket());
 }
 
+void GraphicsNodeScene::onDescriptionChanged(const QString& content) {
+
+    architecture->name = _arch_name->toPlainText().toStdString();
+    architecture->version = _arch_version->toPlainText().toStdString();
+    architecture->description = _arch_desc->toHtml().toStdString();
+
+
+}
+
+
 set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     set<shared_ptr<GraphicsNode>> selectedNodes;
 
@@ -122,6 +161,15 @@ set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     }
     return selectedNodes;
 }
+
+void GraphicsNodeScene::set_description(const string& name,
+                                        const string& version,
+                                        const string& desc) {
+    _arch_name->setHtml(QString::fromStdString(string("<h1>") + name + "</h1>"));
+    _arch_version->setHtml(QString::fromStdString(string("<h2>") + version + "</h2>"));
+    _arch_desc->setHtml(QString::fromStdString(desc));
+}
+
 
 /*
  * TODO: move the visualization into the graphicsview, and move all the GUI
