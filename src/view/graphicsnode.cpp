@@ -31,8 +31,8 @@
 
 using namespace std;
 
-GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
-    : QGraphicsItem(parent),
+GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
+    : QGraphicsObject(parent),
       _node(node),
       _changed(false),
       _width(150),
@@ -65,6 +65,13 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsItem *parent)
     _title_item->setTextWidth(_width - 2 * _lr_padding);
     QObject::connect(_title_item, &EditableLabel::contentUpdated, this,
                      &GraphicsNode::updateNode);
+
+    QObject::connect(this, &GraphicsNode::xChanged, 
+                     this, &GraphicsNode::updateNodePos);
+
+    QObject::connect(this, &GraphicsNode::yChanged, 
+                     this, &GraphicsNode::updateNodePos);
+
 
     // alignment?
     /*
@@ -287,6 +294,8 @@ void GraphicsNode::refreshNode() {
 
     auto node = _node.lock();
 
+    setPos({node->x(), node->y()});
+
     setTitle(QString::fromStdString(node->name()));
 
     auto color = QColor(QString::fromStdString(GROUPCOLORS.at(node->group())));
@@ -339,6 +348,15 @@ void GraphicsNode::updateNode(QString name) {
     }
 
     _node.lock()->name(name.toStdString());
+}
+
+void GraphicsNode::updateNodePos() {
+    if (_node.expired()) {
+        throw logic_error("We should not be accessing a dead node!");
+    }
+
+    _node.lock()->x(x());
+    _node.lock()->y(y());
 }
 
 void GraphicsNode::updateGeometry() {

@@ -9,7 +9,6 @@
 #include <QBrush>
 #include <QRectF>
 #include <QPointF>
-#include <QGraphicsItem>
 #include <QGraphicsObject>
 #include <QVariant>
 #include <QString>
@@ -28,14 +27,14 @@ class GraphicsDirectedEdge;
 class GraphicsNodeSocket;
 class EditableLabel;
 
-class GraphicsNode : public QObject, public QGraphicsItem {
+class GraphicsNode : public QGraphicsObject {
     Q_OBJECT
 
     friend class GraphicsNodeScene;
 
    public:
     // only GraphicsNodeScene is authorized to create instances of GraphicsNode
-    GraphicsNode(NodePtr node, QGraphicsItem *parent = nullptr);
+    GraphicsNode(NodePtr node, QGraphicsObject *parent = nullptr);
    public:
     virtual ~GraphicsNode();
 
@@ -72,6 +71,8 @@ class GraphicsNode : public QObject, public QGraphicsItem {
 
     void refreshNode();
     void updateNode(QString name);
+    void updateNodePos();
+
 
    protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

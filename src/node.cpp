@@ -12,7 +12,11 @@ const map<Port::Type, std::string> Port::TYPENAME {{Type::EXPLICIT, "[->]"},
                                                    {Type::OTHER, ""}};
    
 Node::Node() : Node(boost::uuids::random_generator()()) {}
-Node::Node(boost::uuids::uuid uuid) : uuid(uuid), _group(Group::OTHER) {}
+Node::Node(boost::uuids::uuid uuid) : 
+    uuid(uuid), 
+    _x(0), _y(0),
+    _group(Group::OTHER)
+{}
 
 Node::~Node() {
     //qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";

@@ -34,6 +34,7 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
        << "{\"uuid\": \"" << node->uuid << "\", ";
     ss << "\"name\": \"" << node->name() << "\", ";
     ss << "\"group\": \"" << GROUPNAME.at(node->group()) << "\", ";
+    ss << "\"position\": [" << node->x() << ", " << node->y() << "], ";
     ss << "\"ports\": [";
     for (const auto port : node->ports()) {
         ss << "{\"name\": \"" << port->name << "\",";

@@ -63,6 +63,12 @@ struct Node : public QObject {
     Group group() const { return _group; }
     void group(Group group);
 
+    double x() const { return _x; }
+    void x(double x) {_x = x;}
+    double y() const { return _y; }
+    void y(double y) {_y = y;}
+
+
     PortPtr createPort(const Port port);
     PortPtr port(const std::string& name);
 
@@ -70,10 +76,14 @@ struct Node : public QObject {
 
     boost::uuids::uuid uuid;
 
+
   signals:
     void dirty();
 
    private:
+    // the node's position in whatever 2D space
+    double _x, _y;
+
     std::string _name;
     Group _group;
     std::set<PortPtr> _ports;

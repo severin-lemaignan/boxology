@@ -139,6 +139,11 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
         DEBUG("Adding node <" << n["name"].asString() << ">" << endl);
 
         node->group(get_group_by_name(n.get("group", "").asString()));
+        
+        if (n.isMember("position")) {
+            node->x(n["position"][0].asDouble());
+            node->y(n["position"][1].asDouble());
+        }
 
         for (auto p : n["ports"]) {
 
