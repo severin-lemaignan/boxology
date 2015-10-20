@@ -6,7 +6,7 @@
 
 #include "architecture.hpp"
 
-#include "group.hpp"
+#include "cognitive_function.hpp"
 
 using namespace std;
 
@@ -142,7 +142,7 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
 
         DEBUG("Adding node <" << n["name"].asString() << ">" << endl);
 
-        node->group(get_group_by_name(n.get("group", "").asString()));
+        node->cognitive_function(get_cognitive_function_by_name(n.get("cognitive_function", "").asString()));
         
         if (n.isMember("position")) {
             node->x(n["position"][0].asDouble());

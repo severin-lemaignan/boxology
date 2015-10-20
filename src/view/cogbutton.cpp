@@ -1,19 +1,19 @@
 #include <QColorDialog>
 #include <QString>
 
-#include "groupbutton.hpp"
+#include "cogbutton.hpp"
 
 using namespace std;
 
-GroupButton::GroupButton(Group group, QWidget *parent): 
+CogButton::CogButton(CognitiveFunction cognitive_function, QWidget *parent): 
     QPushButton(parent),
-    _group(group)
+    _cognitive_function(cognitive_function)
 {
-    setText(QString::fromStdString(GROUPNAME.at(group)));
-    setColor(QString::fromStdString(GROUPCOLORS.at(group)));
+    setText(QString::fromStdString(COGNITIVE_FUNCTION_NAMES.at(cognitive_function)));
+    setColor(QString::fromStdString(COGNITIVE_FUNCTION_COLORS.at(cognitive_function)));
 }
 
-void GroupButton::mousePressEvent(QMouseEvent *e)
+void CogButton::mousePressEvent(QMouseEvent *e)
 {
     //if(e->button()==Qt::RightButton) {
 
@@ -21,14 +21,14 @@ void GroupButton::mousePressEvent(QMouseEvent *e)
     //    setColor(color);
     //}
     if(e->button()==Qt::LeftButton) {
-        emit triggered(_group);
+        emit triggered(_cognitive_function);
         QPushButton::mousePressEvent(e);
     }
 
 }
 
 
-void GroupButton::setColor(const QColor& color)
+void CogButton::setColor(const QColor& color)
 {
     auto icon = QPixmap(32,32);
     icon.fill(color);

@@ -134,8 +134,6 @@ void GraphicsDirectedEdge::disconnect_source() {
 }
 
 void GraphicsDirectedEdge::placeLabel() {
-    auto bb = _label->boundingRect();
-
     QPointF corner{_start + (_stop - _start)/2};
     _label->setPos(corner);
 }

@@ -12,7 +12,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-#include "group.hpp"
+#include "cognitive_function.hpp"
 
 struct Port {
    public:
@@ -60,8 +60,8 @@ struct Node : public QObject {
     std::string name() const { return _name; }
     void name(const std::string& name);
 
-    Group group() const { return _group; }
-    void group(Group group);
+    CognitiveFunction cognitive_function() const { return _cognitive_function; }
+    void cognitive_function(CognitiveFunction cognitive_function);
 
     double x() const { return _x; }
     void x(double x) {_x = x;}
@@ -85,7 +85,7 @@ struct Node : public QObject {
     double _x, _y;
 
     std::string _name;
-    Group _group;
+    CognitiveFunction _cognitive_function;
     std::set<PortPtr> _ports;
 };
 

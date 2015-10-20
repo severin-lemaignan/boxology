@@ -15,7 +15,7 @@ Node::Node() : Node(boost::uuids::random_generator()()) {}
 Node::Node(boost::uuids::uuid uuid) : 
     uuid(uuid), 
     _x(0), _y(0),
-    _group(Group::OTHER)
+    _cognitive_function(CognitiveFunction::OTHER)
 {}
 
 Node::~Node() {
@@ -60,7 +60,7 @@ void Node::name(const std::string& name) {
     emit dirty();
 }
 
-void Node::group(Group group) {
-    _group = group;
+void Node::cognitive_function(CognitiveFunction cognitive_function) {
+    _cognitive_function = cognitive_function;
     emit dirty();
 }

@@ -26,7 +26,7 @@
 #include <json/json.h>
 
 // node editor
-#include "../view/groupbutton.hpp"
+#include "../view/cogbutton.hpp"
 #include "../view/scene.hpp"
 #include "../view/view.hpp"
 #include "../view/graphicsnode.hpp"
@@ -58,13 +58,13 @@ MainWindow::MainWindow()
     this->setCentralWidget(_view.get());
 
 
-    // Prepare the groups buttons in the toolbar
-    for(const auto& kv : GROUPNAME) {
-        auto grp = new GroupButton(kv.first);
-        ui->toolBar->addWidget(grp);
+    // Prepare the cognitive functions buttons in the toolbar
+    for(const auto& kv : COGNITIVE_FUNCTION_NAMES) {
+        auto grp = new CogButton(kv.first);
+        ui->cognitionToolbar->addWidget(grp);
 
-        connect(grp, &GroupButton::triggered,
-                this, &MainWindow::onGroupButtonTriggered);
+        connect(grp, &CogButton::triggered,
+                this, &MainWindow::onCogButtonTriggered);
     }
 
     // add some content
@@ -115,7 +115,7 @@ void MainWindow::addNodeViews() {
 
     auto node = arch->createNode();
     node->name("NLP");
-    node->group(Group::PERCEPTION);
+    node->cognitive_function(CognitiveFunction::PERCEPTION);
     auto p1 = node->createPort(
         {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _scene->add(node);
@@ -196,10 +196,10 @@ void MainWindow::on_actionFromJson_triggered() {
 }
 
 
-void MainWindow::onGroupButtonTriggered(Group group) {
+void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
 
     for(auto node : _scene->selected())
     {
-        node->node().lock()->group(group);
+        node->node().lock()->cognitive_function(cognitive_function);
     }
 }

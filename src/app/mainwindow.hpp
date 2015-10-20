@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "../architecture.hpp"
-#include "../group.hpp"
+#include "../cognitive_function.hpp"
 
 class QResizeEvent;
 class GraphicsNodeView;
@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow {
     void on_actionAdd_node_triggered();
     void on_actionToJson_triggered();
     void on_actionFromJson_triggered();
-    void onGroupButtonTriggered(Group group);
+    void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
    private:
     void addNodeViews();

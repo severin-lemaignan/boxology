@@ -4,7 +4,7 @@
 
 #include "json_visitor.hpp"
 
-#include "group.hpp"
+#include "cognitive_function.hpp"
 
 using namespace std;
 
@@ -26,7 +26,7 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
     Json::Value jnode;
     jnode["uuid"] = boost::lexical_cast<std::string>(node->uuid);
     jnode["name"] = node->name();
-    jnode["group"] = GROUPNAME.at(node->group());
+    jnode["cognitive_function"] = COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
     jnode["position"].append(node->x());
     jnode["position"].append(node->y());
 
