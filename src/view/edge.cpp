@@ -101,7 +101,6 @@ void GraphicsDirectedEdge::establishConnection() {
 }
 
 void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {
-    if (_sink == sink) return;
 
     if (_sink) disconnect_sink();
 
@@ -112,7 +111,6 @@ void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {
 }
 
 void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket* source) {
-    if (_source == source) return;
 
     if (_source) disconnect_source();
 
