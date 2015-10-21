@@ -36,6 +36,7 @@ class GraphicsNode : public QGraphicsObject {
    public:
     // only GraphicsNodeScene is authorized to create instances of GraphicsNode
     GraphicsNode(NodePtr node, QGraphicsObject *parent = nullptr);
+
    public:
     virtual ~GraphicsNode();
 
@@ -46,7 +47,7 @@ class GraphicsNode : public QGraphicsObject {
 
     const NodeWeakPtr node() { return _node; }
 
-    std::shared_ptr<GraphicsNodeSocket> getPort(Port* port);
+    std::shared_ptr<GraphicsNodeSocket> getPort(Port *port);
 
     void disconnect();
 
@@ -63,7 +64,7 @@ class GraphicsNode : public QGraphicsObject {
     void setSize(const QSizeF size);
     void setSize(const QPointF size);
 
-    void setColors(const QColor& base);
+    void setColors(const QColor &base);
 
     /**
         * set a regular QWidget as central widget
@@ -78,7 +79,9 @@ class GraphicsNode : public QGraphicsObject {
     void add_source();
 
    protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override {QGraphicsItem::mousePressEvent(event);}
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
+        QGraphicsItem::mousePressEvent(event);
+    }
     virtual void mouseDoubleClickEvent(
         QGraphicsSceneMouseEvent *event) override;
     virtual QVariant itemChange(GraphicsItemChange change,
@@ -93,7 +96,6 @@ class GraphicsNode : public QGraphicsObject {
     std::shared_ptr<const GraphicsNodeSocket> add_socket(PortPtr port);
 
    private:
-
     NodeWeakPtr _node;
 
     // TODO: change pairs of sizes to QPointF, QSizeF, or quadrupels to QRectF
@@ -130,9 +132,9 @@ class GraphicsNode : public QGraphicsObject {
     QGraphicsDropShadowEffect *_effect;
     EditableLabel *_title_item;
     QGraphicsProxyWidget *_central_proxy = nullptr;
-    
-    TinyButton* _new_sink_btn;
-    TinyButton* _new_source_btn;
+
+    TinyButton *_new_sink_btn;
+    TinyButton *_new_source_btn;
 
     QString _title;
 

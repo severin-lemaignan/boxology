@@ -29,15 +29,12 @@ struct Connection {
    public:
     static const std::string ANONYMOUS;
 
-    Connection() :
-            uuid(boost::uuids::random_generator()()),
-            name(ANONYMOUS) {};
+    Connection() : uuid(boost::uuids::random_generator()()), name(ANONYMOUS){};
 
-    Connection(const boost::uuids::uuid& uuid) : 
-            uuid(uuid),
-            name(ANONYMOUS) {};
+    Connection(const boost::uuids::uuid& uuid) : uuid(uuid), name(ANONYMOUS){};
 
-    //TODO: attention: possible discrepency between UUIDs and equality operator!! Non intuitive!!
+    // TODO: attention: possible discrepency between UUIDs and equality
+    // operator!! Non intuitive!!
     inline bool operator==(const Connection& r) {
         return (to == r.to) && (from == r.from);
     }

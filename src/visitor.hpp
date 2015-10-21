@@ -7,7 +7,6 @@
 
 template <class T>
 class Visitor {
-
    public:
     Visitor(const Architecture& architecture);
 

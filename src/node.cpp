@@ -6,20 +6,17 @@
 
 using namespace std;
 
-const map<Port::Type, std::string> Port::TYPENAME {{Type::EXPLICIT, "[->]"},
-                                                   {Type::LATENT, "[~]"},
-                                                   {Type::EVENT, "[!]"},
-                                                   {Type::OTHER, ""}};
-   
+const map<Port::Type, std::string> Port::TYPENAME{{Type::EXPLICIT, "[->]"},
+                                                  {Type::LATENT, "[~]"},
+                                                  {Type::EVENT, "[!]"},
+                                                  {Type::OTHER, ""}};
+
 Node::Node() : Node(boost::uuids::random_generator()()) {}
-Node::Node(boost::uuids::uuid uuid) : 
-    uuid(uuid), 
-    _x(0), _y(0),
-    _cognitive_function(CognitiveFunction::OTHER)
-{}
+Node::Node(boost::uuids::uuid uuid)
+    : uuid(uuid), _x(0), _y(0), _cognitive_function(CognitiveFunction::OTHER) {}
 
 Node::~Node() {
-    //qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
+    // qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
 }
 
 /* Performs a deep-copy of the current Node, with however a different UUID

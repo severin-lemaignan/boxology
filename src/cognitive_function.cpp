@@ -6,4 +6,3 @@ CognitiveFunction get_cognitive_function_by_name(const std::string& name) {
     }
     return CognitiveFunction::OTHER;
 }
-

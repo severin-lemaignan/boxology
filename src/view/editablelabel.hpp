@@ -18,12 +18,10 @@ class EditableLabel : public QGraphicsTextItem {
 
 signals:
     void contentUpdated(QString content);
-
 };
 
 class EditableDescription : public EditableLabel {
-
-public:
+   public:
     EditableDescription(QGraphicsItem *parent = 0);
 
     void focusInEvent(QFocusEvent *event) override;
@@ -31,7 +29,7 @@ public:
 
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
-private:
+   private:
     bool _is_editing;
 
     qreal _base_width;

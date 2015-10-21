@@ -1,9 +1,12 @@
 #ifndef ARCHITECTURE_HPP
 #define ARCHITECTURE_HPP
 
-#define DEBUG(x) do { std::cerr << "[" << __FILE__ << ":" << __LINE__ <<"] " << x; } while (0)
+#define DEBUG(x)                                                      \
+    do {                                                              \
+        std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] " << x; \
+    } while (0)
 
-#include <utility> // for std::pair
+#include <utility>  // for std::pair
 #include <memory>
 #include <set>
 #include <string>
@@ -13,21 +16,20 @@
 #include "connection.hpp"
 
 namespace Json {
-    class Value;
+class Value;
 }
 
 class Architecture {
    public:
     typedef std::set<NodePtr> Nodes;
     typedef std::set<ConnectionPtr> Connections;
-    typedef std::pair<std::set<NodePtr>, std::set<ConnectionPtr>> NodesAndConnections;
+    typedef std::pair<std::set<NodePtr>, std::set<ConnectionPtr>>
+        NodesAndConnections;
 
     Architecture(){};
 
-    NodesAndConnections update(const Json::Value& json, 
-                               bool clearFirst = false, 
+    NodesAndConnections update(const Json::Value& json, bool clearFirst = false,
                                bool recreateUUIDs = false);
-
 
     NodePtr createNode();
     NodePtr createNode(const boost::uuids::uuid& uuid);
@@ -40,8 +42,8 @@ class Architecture {
     const Nodes nodes() const { return _nodes; }
 
     ConnectionPtr createConnection(Socket from, Socket to);
-    ConnectionPtr createConnection(const boost::uuids::uuid& uuid,
-                                   Socket from, Socket to);
+    ConnectionPtr createConnection(const boost::uuids::uuid& uuid, Socket from,
+                                   Socket to);
 
     void removeConnection(Socket from, Socket to);
 

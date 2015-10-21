@@ -46,9 +46,7 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
       _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK
                                                           : BRUSH_COLOR_SOURCE),
       _text(new EditableLabel()),
-      _delete_button(TinyButton::forbidden(this))
-{
-
+      _delete_button(TinyButton::forbidden(this)) {
     _pen_circle.setWidth(2);
 
     _pen_unconnected_circle.setWidth(0);
@@ -60,19 +58,18 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
 
     _text->setPlainText(QString::fromStdString(socket.port.lock()->name));
     _text->setParentItem(this);
-    connect(_text, &EditableLabel::contentUpdated,
-            this, &GraphicsNodeSocket::setPortName);
+    connect(_text, &EditableLabel::contentUpdated, this,
+            &GraphicsNodeSocket::setPortName);
 
-    connect(_delete_button, &TinyButton::triggered,
-            this, &GraphicsNodeSocket::onDeletion);
+    connect(_delete_button, &TinyButton::triggered, this,
+            &GraphicsNodeSocket::onDeletion);
 }
 
 GraphicsNodeSocket::~GraphicsNodeSocket() {
-    //qWarning() << "[G] Port deleted";
+    // qWarning() << "[G] Port deleted";
     delete _text;
     delete _delete_button;
 }
-
 
 Port::Direction GraphicsNodeSocket::socket_type() const { return _socket_type; }
 
@@ -97,7 +94,7 @@ QRectF GraphicsNodeSocket::boundingRect() const {
 
 QSizeF GraphicsNodeSocket::getMinimalSize() const {
     QSizeF size;
-    //const qreal text_height = static_cast<qreal>(fm.height());
+    // const qreal text_height = static_cast<qreal>(fm.height());
     auto bb = _text->boundingRect();
     size.setWidth(std::max(_min_width, _circle_radius * 2 + _text_offset +
                                            bb.width() + _pen_width));
@@ -108,15 +105,13 @@ QSizeF GraphicsNodeSocket::getMinimalSize() const {
 QSizeF GraphicsNodeSocket::getSize() const { return getMinimalSize(); }
 
 void GraphicsNodeSocket::onDeletion() {
-
-    if(_edges.empty()) {
+    if (_edges.empty()) {
         _socket.node.lock()->remove_port(_socket.port.lock());
-    }
-    else {
-        auto ok = QMessageBox::warning(
-                nullptr, "Port deletion", 
-                "This port is already connected. Are you sure you want to delete it?", 
-                QMessageBox::Ok | QMessageBox::Cancel);
+    } else {
+        auto ok = QMessageBox::warning(nullptr, "Port deletion",
+                                       "This port is already connected. Are "
+                                       "you sure you want to delete it?",
+                                       QMessageBox::Ok | QMessageBox::Cancel);
 
         if (ok == QMessageBox::Ok) {
             _socket.node.lock()->remove_port(_socket.port.lock());
@@ -136,7 +131,7 @@ void GraphicsNodeSocket::placeLabel() {
         corner.setX(-_circle_radius - _text_offset - bb.width());
         delete_btn_corner.setX(corner.x() - (_text_offset * 2));
     }
-    corner.setY(-bb.height()/2);
+    corner.setY(-bb.height() / 2);
     delete_btn_corner.setY(0);
 
     _text->setPos(corner);
@@ -148,7 +143,7 @@ QPointF GraphicsNodeSocket::sceneAnchorPos() const { return mapToScene(0, 0); }
 void GraphicsNodeSocket::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem * /*option*/,
                                QWidget * /*widget*/) {
-    if(_edges.empty())
+    if (_edges.empty())
         painter->setPen(_pen_unconnected_circle);
     else
         painter->setPen(_pen_circle);
@@ -195,25 +190,27 @@ void GraphicsNodeSocket::connect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
     update();
 }
 
-void GraphicsNodeSocket::disconnect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
+void GraphicsNodeSocket::disconnect_edge(
+    shared_ptr<GraphicsDirectedEdge> edge) {
     _edges.erase(edge);
     notifyPositionChange();
     update();
 }
 
 void GraphicsNodeSocket::disconnect() {
-     auto edges = _edges;
-    for(auto e : edges) {
+    auto edges = _edges;
+    for (auto e : edges) {
         e->disconnect();
         // -> Edge::disconnect will call Socket::disconnect_edge in turn,
         // thus effectively removing the edge from _edges
     }
 
-    if(!_edges.empty())
+    if (!_edges.empty())
         throw logic_error("No more edges should be present at that point");
 }
 
-bool GraphicsNodeSocket::is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const {
+bool GraphicsNodeSocket::is_connected_to(
+    std::shared_ptr<GraphicsDirectedEdge> edge) const {
     return _edges.count(edge) > 0;
 }
 
@@ -222,12 +219,10 @@ void GraphicsNodeSocket::notifyPositionChange() {
 
     switch (_socket_type) {
         case Port::Direction::IN:
-            for(const auto& e: _edges) e->set_stop(mapToScene(0, 0));
+            for (const auto &e : _edges) e->set_stop(mapToScene(0, 0));
             break;
         case Port::Direction::OUT:
-            for(const auto& e: _edges) e->set_start(mapToScene(0, 0));
+            for (const auto &e : _edges) e->set_start(mapToScene(0, 0));
             break;
     }
 }
-
-

@@ -7,24 +7,20 @@
 #include <QBrush>
 
 class TinyButton : public QGraphicsObject {
-
     Q_OBJECT
 
-public:
-    TinyButton(const QString& symbol = "×",
-               QColor border = "#333",
-               QColor bg = "#44111111",
-               QColor bgHover = "#222",
-               QColor color = "#44aaaaaa",
-               QColor colorHover = "#eee",
-               QGraphicsItem* parent =0);
+   public:
+    TinyButton(const QString& symbol = "×", QColor border = "#333",
+               QColor bg = "#44111111", QColor bgHover = "#222",
+               QColor color = "#44aaaaaa", QColor colorHover = "#eee",
+               QGraphicsItem* parent = 0);
 
     static TinyButton* forbidden(QGraphicsItem* parent = 0);
     static TinyButton* plus(QGraphicsItem* parent = 0);
 
-    virtual void paint(QPainter *painter,
-                       const QStyleOptionGraphicsItem *option,
-                       QWidget *widget = 0) override;
+    virtual void paint(QPainter* painter,
+                       const QStyleOptionGraphicsItem* option,
+                       QWidget* widget = 0) override;
 
     virtual QRectF boundingRect() const override;
 
@@ -35,8 +31,7 @@ public:
 signals:
     void triggered();
 
-private:
-
+   private:
     bool _hovered = false;
     QGraphicsSimpleTextItem* _text;
     QPen _pen;
@@ -48,4 +43,4 @@ private:
     const qreal _circle_radius = 6.0;
 };
 
-#endif // SMALLBUTTON
+#endif  // SMALLBUTTON

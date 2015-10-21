@@ -29,8 +29,7 @@ class GraphicsNodeScene : public QGraphicsScene {
 
     Architecture* architecture;
 
-    void set_description(const std::string& name,
-                         const std::string& version,
+    void set_description(const std::string& name, const std::string& version,
                          const std::string& desc);
 
     // slots

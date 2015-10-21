@@ -28,7 +28,6 @@ class TinyButton;
  * circle for User Interaction and a label
  */
 class GraphicsNodeSocket : public QObject, public QGraphicsItem {
-
     Q_OBJECT
 
    public:
@@ -51,7 +50,9 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     void disconnect();
     bool is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const;
 
-    std::set<std::shared_ptr<GraphicsDirectedEdge>> get_edges() {return _edges;}
+    std::set<std::shared_ptr<GraphicsDirectedEdge>> get_edges() {
+        return _edges;
+    }
 
     /**
      * notify the socket that its position has changed. this may be either
@@ -98,7 +99,9 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     void onDeletion();
     void placeLabel();
 
-    void setPortName(const QString& name) {_socket.port.lock()->name = name.toStdString();}
+    void setPortName(const QString &name) {
+        _socket.port.lock()->name = name.toStdString();
+    }
 
    private:
     Socket _socket;
@@ -108,8 +111,8 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     QPen _pen_unconnected_circle;
     const QPen _pen_text;
     const QBrush _brush_circle;
-    EditableLabel* _text;
-    TinyButton* _delete_button;
+    EditableLabel *_text;
+    TinyButton *_delete_button;
 
     /*
      * edges with which this socket is connected

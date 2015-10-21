@@ -9,26 +9,25 @@
 
 #include "../cognitive_function.hpp"
 
-class CogButton : public QPushButton
-{
+class CogButton : public QPushButton {
     Q_OBJECT
 
-public:
+   public:
     CogButton() = delete;
     CogButton(CognitiveFunction cognitive_function, QWidget *parent = 0);
 
-    //QColor color() const {return _color;}
+    // QColor color() const {return _color;}
 
-//private slots:
+    // private slots:
     void mousePressEvent(QMouseEvent *e);
 
 signals:
     void triggered(CognitiveFunction cognitive_function);
 
-private:
-    void setColor(const QColor& color);
+   private:
+    void setColor(const QColor &color);
 
     CognitiveFunction _cognitive_function;
 };
 
-#endif // COGNITIVE_FUNCTION_BUTTON_HPP
+#endif  // COGNITIVE_FUNCTION_BUTTON_HPP

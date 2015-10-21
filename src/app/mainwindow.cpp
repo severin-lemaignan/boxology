@@ -1,6 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
-#define DEBUG(x) do { std::cerr << "[" << __FILE__ << ":" << __LINE__ <<"] " << x; } while (0)
+#define DEBUG(x)                                                      \
+    do {                                                              \
+        std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] " << x; \
+    } while (0)
 
 #include <QPen>
 #include <QColor>
@@ -57,14 +60,13 @@ MainWindow::MainWindow()
     _view->setScene(_scene.get());
     this->setCentralWidget(_view.get());
 
-
     // Prepare the cognitive functions buttons in the toolbar
-    for(const auto& kv : COGNITIVE_FUNCTION_NAMES) {
+    for (const auto& kv : COGNITIVE_FUNCTION_NAMES) {
         auto grp = new CogButton(kv.first);
         ui->cognitionToolbar->addWidget(grp);
 
-        connect(grp, &CogButton::triggered,
-                this, &MainWindow::onCogButtonTriggered);
+        connect(grp, &CogButton::triggered, this,
+                &MainWindow::onCogButtonTriggered);
     }
 
     // add some content
@@ -74,7 +76,7 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::resizeEvent(QResizeEvent *event) {
+void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
 }
 
@@ -112,7 +114,6 @@ addFakeContent()
 */
 
 void MainWindow::addNodeViews() {
-
     auto node = arch->createNode();
     node->name("NLP");
     node->cognitive_function(CognitiveFunction::PERCEPTION);
@@ -134,7 +135,6 @@ void MainWindow::addNodeViews() {
     auto conn = arch->createConnection({node, p1}, {node2, p2});
     conn->name = "data";
     _scene->add(conn);
-
 }
 
 void MainWindow::on_actionAdd_node_triggered() {
@@ -152,29 +152,29 @@ void MainWindow::on_actionToJson_triggered() {
     JsonVisitor json(*arch);
     auto output = json.visit();
 
-    auto filename = QFileDialog::getSaveFileName(this,"Save architecture to json", "", "*.json");
+    auto filename = QFileDialog::getSaveFileName(
+        this, "Save architecture to json", "", "*.json");
 
     ofstream json_file(filename.toStdString(), std::ofstream::out);
 
     json_file << output;
 }
 
-
 void MainWindow::on_actionFromJson_triggered() {
-
     Json::Value root;
 
-    auto filename = QFileDialog::getOpenFileName(this,"Select an architecture to open", "", "*.json");
+    auto filename = QFileDialog::getOpenFileName(
+        this, "Select an architecture to open", "", "*.json");
 
-    if(filename.isNull()) return;
+    if (filename.isNull()) return;
 
     ifstream json_file(filename.toStdString());
 
     try {
         json_file >> root;
-    }
-    catch (Json::RuntimeError jre) {
-        cerr << "Syntax error in " << filename.toStdString() << "! Model not loaded." << endl;
+    } catch (Json::RuntimeError jre) {
+        cerr << "Syntax error in " << filename.toStdString()
+             << "! Model not loaded." << endl;
         return;
     }
 
@@ -183,7 +183,7 @@ void MainWindow::on_actionFromJson_triggered() {
     _scene->set_description(arch->name, arch->version, arch->description);
 
     DEBUG("Loaded " << newstuff.first.size() << " nodes and "
-          << newstuff.second.size() << " connections." << endl);
+                    << newstuff.second.size() << " connections." << endl);
 
     for (auto n : newstuff.first) {
         _scene->add(n);
@@ -191,15 +191,10 @@ void MainWindow::on_actionFromJson_triggered() {
     for (auto c : newstuff.second) {
         _scene->add(c);
     }
-
-
 }
 
-
 void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
-
-    for(auto node : _scene->selected())
-    {
+    for (auto node : _scene->selected()) {
         node->node().lock()->cognitive_function(cognitive_function);
     }
 }

@@ -37,8 +37,7 @@ class GraphicsDirectedEdge
 
     ConnectionWeakPtr connection() const { return _connection; }
 
-    void connect(GraphicsNode* n1, Port* source,
-                 GraphicsNode* n2, Port* sink);
+    void connect(GraphicsNode* n1, Port* source, GraphicsNode* n2, Port* sink);
 
     void connect_source(GraphicsNodeSocket* source);
     void connect_sink(GraphicsNodeSocket* sink);
@@ -62,7 +61,7 @@ class GraphicsDirectedEdge
     GraphicsNodeSocket* source() { return _source; }
     GraphicsNodeSocket* sink() { return _sink; }
 
-    void setUnderlyingConnection(ConnectionWeakPtr c) {_connection = c;}
+    void setUnderlyingConnection(ConnectionWeakPtr c) { _connection = c; }
 
 signals:
     void connectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);

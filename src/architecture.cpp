@@ -24,16 +24,13 @@ NodePtr Architecture::createNode(const boost::uuids::uuid& uuid) {
     return node;
 }
 
-
 void Architecture::addNode(NodePtr node) { _nodes.insert(node); }
 
 void Architecture::removeNode(NodePtr node) {
-
     // first, delete all connections involving this node
     set<ConnectionPtr> to_remove;
     for (auto c : _connections) {
-        if (   c->from.node.lock() == node
-            || c->to.node.lock() == node) {
+        if (c->from.node.lock() == node || c->to.node.lock() == node) {
             to_remove.insert(c);
         }
     }
@@ -89,18 +86,17 @@ void Architecture::removeConnection(Socket from, Socket to) {
     }
 }
 
-
 Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
-                                                       bool clearFirst, 
+                                                       bool clearFirst,
                                                        bool recreateUUIDs) {
-
     set<NodePtr> newnodes;
     set<ConnectionPtr> newconnections;
 
     auto version = json.get("encoding_version", "<undefined>").asString();
-    DEBUG("Reading the architecture (encoding: v." << version << ")..." << endl);
+    DEBUG("Reading the architecture (encoding: v." << version << ")..."
+                                                   << endl);
 
-    name = json.get("name","<no name>").asString();
+    name = json.get("name", "<no name>").asString();
     version = json.get("version", "v0.1").asString();
     description = json.get("description", "(no description yet)").asString();
 
@@ -118,12 +114,12 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
         existing_uuids.insert(c->uuid);
     }
 
-
     //////////////////////////////////////////
     /////   NODES
     //////////////////////////////////////////
     for (auto n : json["nodes"]) {
-        auto uuid = boost::lexical_cast<boost::uuids::uuid>(n["uuid"].asString());
+        auto uuid =
+            boost::lexical_cast<boost::uuids::uuid>(n["uuid"].asString());
 
         NodePtr node;
 
@@ -133,49 +129,53 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
             continue;
         }
 
-        if(!recreateUUIDs){
+        if (!recreateUUIDs) {
             node = createNode(uuid);
-        }
-        else {
+        } else {
             node = createNode();
         }
 
         DEBUG("Adding node <" << n["name"].asString() << ">" << endl);
 
-        node->cognitive_function(get_cognitive_function_by_name(n.get("cognitive_function", "").asString()));
-        
+        node->cognitive_function(get_cognitive_function_by_name(
+            n.get("cognitive_function", "").asString()));
+
         if (n.isMember("position")) {
             node->x(n["position"][0].asDouble());
             node->y(n["position"][1].asDouble());
         }
 
         for (auto p : n["ports"]) {
-
             Port::Type type;
-            if (p["type"].asString() == "latent") type = Port::Type::LATENT;
-            else if (p["type"].asString() == "explicit") type = Port::Type::EXPLICIT;
-            else type = Port::Type::OTHER;
+            if (p["type"].asString() == "latent")
+                type = Port::Type::LATENT;
+            else if (p["type"].asString() == "explicit")
+                type = Port::Type::EXPLICIT;
+            else
+                type = Port::Type::OTHER;
 
             node->createPort({p["name"].asString(),
-                              p["direction"].asString() == "in" ? Port::Direction::IN : Port::Direction::OUT,
+                              p["direction"].asString() == "in"
+                                  ? Port::Direction::IN
+                                  : Port::Direction::OUT,
                               type});
         }
         node->name(n["name"].asString());
         newnodes.insert(node);
     }
-    
+
     //////////////////////////////////////////
     /////   CONNECTIONS
     //////////////////////////////////////////
     for (auto c : json["connections"]) {
-        auto uuid = boost::lexical_cast<boost::uuids::uuid>(c["uuid"].asString());
+        auto uuid =
+            boost::lexical_cast<boost::uuids::uuid>(c["uuid"].asString());
 
         if (!recreateUUIDs && existing_uuids.count(uuid)) {
             cerr << "Already existing UUID <" << uuid << ">! ";
             cerr << "Skipping this connection." << endl;
             continue;
         }
-
 
         auto from_uuid_str = c["from"].asString().substr(0, 36);
         auto from_uuid = boost::lexical_cast<boost::uuids::uuid>(from_uuid_str);
@@ -187,22 +187,21 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
         auto to = node(to_uuid);
         auto to_port = c["to"].asString().substr(37);
 
-        DEBUG("Creating connection between: " << from->name() << ":" << 
-              from_port << " and " << to->name() << ":" << to_port << endl);
+        DEBUG("Creating connection between: "
+              << from->name() << ":" << from_port << " and " << to->name()
+              << ":" << to_port << endl);
 
         ConnectionPtr connection;
 
         if (!recreateUUIDs) {
-            connection = createConnection(uuid,
-                                          {from, from->port(from_port)},
+            connection = createConnection(uuid, {from, from->port(from_port)},
                                           {to, to->port(to_port)});
-        }
-        else {
+        } else {
             connection = createConnection({from, from->port(from_port)},
                                           {to, to->port(to_port)});
         }
 
-        connection->name = c.get("name",Connection::ANONYMOUS).asString();
+        connection->name = c.get("name", Connection::ANONYMOUS).asString();
 
         newconnections.insert(connection);
     }

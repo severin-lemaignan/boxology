@@ -21,7 +21,6 @@
 #include <tuple>
 #include <memory>
 
-
 #include "tinybutton.hpp"
 #include "editablelabel.hpp"
 
@@ -53,7 +52,6 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
       _title_item(new EditableLabel(this)),
       _new_sink_btn(TinyButton::plus(this)),
       _new_source_btn(TinyButton::plus(this)) {
-
     for (auto p :
          {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
         p->setWidth(0);
@@ -69,11 +67,10 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
     QObject::connect(_title_item, &EditableLabel::contentUpdated, this,
                      &GraphicsNode::updateNode);
 
-    connect(_new_sink_btn, &TinyButton::triggered,
-            this, &GraphicsNode::add_sink);
-    connect(_new_source_btn, &TinyButton::triggered,
-            this, &GraphicsNode::add_source);
-
+    connect(_new_sink_btn, &TinyButton::triggered, this,
+            &GraphicsNode::add_sink);
+    connect(_new_source_btn, &TinyButton::triggered, this,
+            &GraphicsNode::add_source);
 
     // alignment?
     /*
@@ -88,7 +85,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
 
     refreshNode();
 
-    //qWarning() << "[G] Graphic node created";
+    // qWarning() << "[G] Graphic node created";
 }
 
 void GraphicsNode::setTitle(const QString &title) {
@@ -97,16 +94,15 @@ void GraphicsNode::setTitle(const QString &title) {
 }
 
 GraphicsNode::~GraphicsNode() {
-
     disconnect();
 
     if (_central_proxy) delete _central_proxy;
     delete _title_item;
     delete _effect;
 
-    //if (_node.expired())
+    // if (_node.expired())
     //    qWarning() << "[G] Widget deleted (node already dead)";
-    //else
+    // else
     //    qWarning() << "[G] Widget deleted (node "
     //               << QString::fromStdString(_node.lock()->name()) << ")";
 }
@@ -190,8 +186,7 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change,
         case QGraphicsItem::ItemSelectedChange: {
             if (value == true) {
                 setZValue(1);
-            }
-            else {
+            } else {
                 setZValue(0);
             }
             break;
@@ -232,7 +227,7 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port) {
     return s;
 }
 
-shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(Port* port) {
+shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(Port *port) {
     auto source =
         find_if(_sources.begin(), _sources.end(),
                 [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
@@ -240,29 +235,26 @@ shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(Port* port) {
                 });
 
     if (source == _sources.end()) {
+        auto sink =
+            find_if(_sinks.begin(), _sinks.end(),
+                    [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
+                        return gsocket->socket().port.lock().get() == port;
+                    });
 
-    auto sink = find_if(_sinks.begin(), _sinks.end(),
-                        [&port](shared_ptr<const GraphicsNodeSocket> gsocket) {
-                            return gsocket->socket().port.lock().get() == port;
-                        });
-
-    if (sink == _sinks.end()) {
-        qWarning() << "Trying to connect to port "
-                   << QString::fromStdString(port->name) << " of node "
-                   << _title << ", but it does not exist.";
-        return nullptr;
-    }
-    else {
-        return *sink;
-    }
-    }
-    else {
+        if (sink == _sinks.end()) {
+            qWarning() << "Trying to connect to port "
+                       << QString::fromStdString(port->name) << " of node "
+                       << _title << ", but it does not exist.";
+            return nullptr;
+        } else {
+            return *sink;
+        }
+    } else {
         return *source;
     }
 }
 
 void GraphicsNode::disconnect() {
-
     for (auto s : _sinks) {
         s->disconnect();
     }
@@ -282,7 +274,8 @@ void GraphicsNode::refreshNode() {
 
     setTitle(QString::fromStdString(node->name()));
 
-    auto color = QColor(QString::fromStdString(COGNITIVE_FUNCTION_COLORS.at(node->cognitive_function())));
+    auto color = QColor(QString::fromStdString(
+        COGNITIVE_FUNCTION_COLORS.at(node->cognitive_function())));
     color.setAlpha(120);
     setColors(color);
 
@@ -349,13 +342,14 @@ void GraphicsNode::updateNodePos() {
 }
 
 void GraphicsNode::add_sink() {
-    _node.lock()->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
+    _node.lock()->createPort(
+        {"input", Port::Direction::IN, Port::Type::EXPLICIT});
 }
 
 void GraphicsNode::add_source() {
-    _node.lock()->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+    _node.lock()->createPort(
+        {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 }
-
 
 void GraphicsNode::updateGeometry() {
     if (!_changed) return;
@@ -474,22 +468,20 @@ void GraphicsNode::propagateChanges() {
     for (auto source : _sources) source->notifyPositionChange();
 }
 
-void GraphicsNode::setColors(const QColor& base) {
-    
+void GraphicsNode::setColors(const QColor &base) {
     _brush_background.setColor(base);
     _brush_title.setColor(base.lighter(110));
 
     // redraw the node
     update(boundingRect());
-
-
 }
 
 void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+    auto color =
+        QColorDialog::getColor(_brush_background.color(), nullptr,
+                               "Pick a color", QColorDialog::ShowAlphaChannel);
 
-    auto color = QColorDialog::getColor(_brush_background.color(), nullptr, "Pick a color", QColorDialog::ShowAlphaChannel);
-
-    if(!color.isValid()) color = _brush_background.color();
+    if (!color.isValid()) color = _brush_background.color();
 
     setColors(color);
     // auto popup = make_shared<QLineEdit>();

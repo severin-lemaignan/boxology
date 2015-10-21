@@ -32,8 +32,7 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
       _brush_background(_color_background),
       _arch_name(new EditableLabel()),
       _arch_version(new EditableLabel()),
-      _arch_desc(new EditableDescription())
-      {
+      _arch_desc(new EditableDescription()) {
     // initialize default pen settings
     for (auto p : {&_pen_light, &_pen_dark, &_pen_null}) {
         p->setWidth(0);
@@ -49,9 +48,9 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     _arch_name->setDefaultTextColor(_color_bg_text);
 
     this->addItem(_arch_name);
-    connect(_arch_name, &EditableLabel::contentUpdated,
-            this, &GraphicsNodeScene::onDescriptionChanged);
-    
+    connect(_arch_name, &EditableLabel::contentUpdated, this,
+            &GraphicsNodeScene::onDescriptionChanged);
+
     // add text field with the architecture version
     _arch_version->setHtml("<h2>v0.1</h2>");
 
@@ -59,18 +58,21 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     _arch_version->setDefaultTextColor(_color_bg_text);
 
     this->addItem(_arch_version);
-    connect(_arch_version, &EditableLabel::contentUpdated,
-            this, &GraphicsNodeScene::onDescriptionChanged);
+    connect(_arch_version, &EditableLabel::contentUpdated, this,
+            &GraphicsNodeScene::onDescriptionChanged);
 
-
-    _arch_desc->setHtml("The <strong>CoolArch</strong> architecture is based on <a href=\"http://example.org\">this article</a> with the following modifications...");
+    _arch_desc->setHtml(
+        "The <strong>CoolArch</strong> architecture is based on <a "
+        "href=\"http://example.org\">this article</a> with the following "
+        "modifications...");
     _arch_desc->setTextWidth(400);
-    _arch_desc->setPos(0, _arch_version->y() + _arch_version->boundingRect().height());
+    _arch_desc->setPos(
+        0, _arch_version->y() + _arch_version->boundingRect().height());
     _arch_desc->setDefaultTextColor(_color_null);
 
     this->addItem(_arch_desc);
-    connect(_arch_desc, &EditableLabel::contentUpdated,
-            this, &GraphicsNodeScene::onDescriptionChanged);
+    connect(_arch_desc, &EditableLabel::contentUpdated, this,
+            &GraphicsNodeScene::onDescriptionChanged);
 }
 
 shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
@@ -85,8 +87,8 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
     return gNode;
 }
 
-shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection) {
-
+shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
+    ConnectionPtr connection) {
     auto from = connection->from.node.lock();
     auto to = connection->to.node.lock();
 
@@ -94,27 +96,25 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(ConnectionPtr connection
 
     // look for the *graphic nodes* that represent the source/sink of
     // our connection:
-    auto source =
-        find_if(_nodes.begin(), _nodes.end(),
-                [&from](const shared_ptr<GraphicsNode> gNode) {
-                    return gNode->node().lock() == from;
-                });
+    auto source = find_if(_nodes.begin(), _nodes.end(),
+                          [&from](const shared_ptr<GraphicsNode> gNode) {
+                              return gNode->node().lock() == from;
+                          });
 
-    auto sink =
-        find_if(_nodes.begin(), _nodes.end(),
-                [&to](const shared_ptr<GraphicsNode> gNode) {
-                    return gNode->node().lock() == to;
-                });
+    auto sink = find_if(_nodes.begin(), _nodes.end(),
+                        [&to](const shared_ptr<GraphicsNode> gNode) {
+                            return gNode->node().lock() == to;
+                        });
 
-    //qWarning() << "Connecting " << QString::fromStdString(from->name()) << " to " << QString::fromStdString(to->name());
-    edge->connect((*source).get(), connection->from.port.lock().get(), 
+    // qWarning() << "Connecting " << QString::fromStdString(from->name()) << "
+    // to " << QString::fromStdString(to->name());
+    edge->connect((*source).get(), connection->from.port.lock().get(),
                   (*sink).get(), connection->to.port.lock().get());
 
     return edge;
 }
 
 shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::make_edge() {
-
     auto edge = make_shared<GraphicsBezierEdge>();
 
     connect(edge.get(), &GraphicsDirectedEdge::connectionEstablished, this,
@@ -127,27 +127,25 @@ shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::make_edge() {
     return edge;
 }
 
-
-void GraphicsNodeScene::onConnectionEstablished(shared_ptr<GraphicsDirectedEdge> edge) {
+void GraphicsNodeScene::onConnectionEstablished(
+    shared_ptr<GraphicsDirectedEdge> edge) {
     auto conn = architecture->createConnection(edge->source()->socket(),
                                                edge->sink()->socket());
 
     edge->setUnderlyingConnection(conn);
 }
 
-void GraphicsNodeScene::onConnectionDisrupted(shared_ptr<GraphicsDirectedEdge> edge) {
-    //qWarning() << "Connection disrupted!";
+void GraphicsNodeScene::onConnectionDisrupted(
+    shared_ptr<GraphicsDirectedEdge> edge) {
+    // qWarning() << "Connection disrupted!";
     architecture->removeConnection(edge->source()->socket(),
                                    edge->sink()->socket());
 }
 
-void GraphicsNodeScene::onDescriptionChanged(const QString& content) {
-
+void GraphicsNodeScene::onDescriptionChanged(const QString &content) {
     architecture->name = _arch_name->toPlainText().toStdString();
     architecture->version = _arch_version->toPlainText().toStdString();
     architecture->description = _arch_desc->toHtml().toStdString();
-
-
 }
 
 set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
@@ -161,14 +159,15 @@ set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     return selectedNodes;
 }
 
-void GraphicsNodeScene::set_description(const string& name,
-                                        const string& version,
-                                        const string& desc) {
-    _arch_name->setHtml(QString::fromStdString(string("<h1>") + name + "</h1>"));
-    _arch_version->setHtml(QString::fromStdString(string("<h2>") + version + "</h2>"));
+void GraphicsNodeScene::set_description(const string &name,
+                                        const string &version,
+                                        const string &desc) {
+    _arch_name->setHtml(
+        QString::fromStdString(string("<h1>") + name + "</h1>"));
+    _arch_version->setHtml(
+        QString::fromStdString(string("<h2>") + version + "</h2>"));
     _arch_desc->setHtml(QString::fromStdString(desc));
 }
-
 
 /*
  * TODO: move the visualization into the graphicsview, and move all the GUI
@@ -222,12 +221,10 @@ void GraphicsNodeScene::drawBackground(QPainter *painter, const QRectF &rect) {
 }
 
 void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
-
     if (dontGrabKeyPresses) {
         QGraphicsScene::keyPressEvent(event);
         return;
     }
-
 
     switch (event->key()) {
         ////// MISC DEBUG
@@ -245,14 +242,14 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             for (auto graphicNode : selected()) {
                 auto node = graphicNode->node();
                 if (node.expired()) {
-                    throw std::logic_error("Attempting to delete an already deleted node!");
+                    throw std::logic_error(
+                        "Attempting to delete an already deleted node!");
                 }
                 graphicNode.get()->setSelected(false);
                 graphicNode.get()->disconnect();
 
                 architecture->removeNode(node.lock());
                 _nodes.erase(graphicNode);
-
             }
             break;
         }
@@ -270,21 +267,21 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
                 }
             }
             break;
-            
-        ///// (DE-)SELECT ALL
-        case Qt::Key_A:
-            {
-                bool allSelected = true;
-                for (auto graphicNode : _nodes) {
-                    allSelected = allSelected && graphicNode->isSelected();
-                }
-                for (auto graphicNode : _nodes) {
-                    if (allSelected) graphicNode->setSelected(false);
-                    else graphicNode->setSelected(true);
-                }
-                break;
-            }
 
+        ///// (DE-)SELECT ALL
+        case Qt::Key_A: {
+            bool allSelected = true;
+            for (auto graphicNode : _nodes) {
+                allSelected = allSelected && graphicNode->isSelected();
+            }
+            for (auto graphicNode : _nodes) {
+                if (allSelected)
+                    graphicNode->setSelected(false);
+                else
+                    graphicNode->setSelected(true);
+            }
+            break;
+        }
 
         ////// NOT HANDLED -> pass forward
         default:

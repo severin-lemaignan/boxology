@@ -8,6 +8,6 @@ using namespace std;
 const string Connection::ANONYMOUS = "anonymous";
 
 Connection::~Connection() {
-
-    //qWarning() << "Connection " << QString::fromStdString(name) << " deleted!!";
+    // qWarning() << "Connection " << QString::fromStdString(name) << "
+    // deleted!!";
 }

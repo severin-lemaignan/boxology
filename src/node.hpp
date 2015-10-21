@@ -23,9 +23,7 @@ struct Port {
 
     Port() {}
     Port(std::string name, Direction direction, Type type)
-         : name(name),
-          direction(direction),
-          type(type) {}
+        : name(name), direction(direction), type(type) {}
 
     friend bool operator<(const Port& l, const Port& r) {
         return l.name < r.name;
@@ -64,10 +62,9 @@ struct Node : public QObject {
     void cognitive_function(CognitiveFunction cognitive_function);
 
     double x() const { return _x; }
-    void x(double x) {_x = x;}
+    void x(double x) { _x = x; }
     double y() const { return _y; }
-    void y(double y) {_y = y;}
-
+    void y(double y) { _y = y; }
 
     PortPtr createPort(const Port port);
     void remove_port(PortPtr port);
@@ -77,8 +74,7 @@ struct Node : public QObject {
 
     boost::uuids::uuid uuid;
 
-
-  signals:
+signals:
     void dirty();
 
    private:
@@ -90,4 +86,4 @@ struct Node : public QObject {
     std::set<PortPtr> _ports;
 };
 
-#endif // __NODE_HPP
+#endif  // __NODE_HPP
