@@ -150,7 +150,6 @@ void GraphicsNodeScene::onDescriptionChanged(const QString& content) {
 
 }
 
-
 set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     set<shared_ptr<GraphicsNode>> selectedNodes;
 

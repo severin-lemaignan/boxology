@@ -66,12 +66,6 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
     QObject::connect(_title_item, &EditableLabel::contentUpdated, this,
                      &GraphicsNode::updateNode);
 
-    QObject::connect(this, &GraphicsNode::xChanged, 
-                     this, &GraphicsNode::updateNodePos);
-
-    QObject::connect(this, &GraphicsNode::yChanged, 
-                     this, &GraphicsNode::updateNodePos);
-
 
     // alignment?
     /*
@@ -166,15 +160,6 @@ void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 #endif
 }
 
-void GraphicsNode::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    // TODO: ordering after selection/deselection cycle
-    QGraphicsItem::mousePressEvent(event);
-    if (isSelected())
-        setZValue(1);
-    else
-        setZValue(0);
-}
-
 void GraphicsNode::setSize(const qreal width, const qreal height) {
     setSize(QPointF(width, height));
 }
@@ -195,15 +180,18 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change,
                                   const QVariant &value) {
     switch (change) {
         case QGraphicsItem::ItemSelectedChange: {
-            if (value == true)
+            if (value == true) {
                 setZValue(1);
-            else
+            }
+            else {
                 setZValue(0);
+            }
             break;
         }
         case QGraphicsItem::ItemPositionChange:
         case QGraphicsItem::ItemPositionHasChanged:
             propagateChanges();
+            updateNodePos();
             break;
 
         default:

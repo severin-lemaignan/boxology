@@ -75,7 +75,7 @@ class GraphicsNode : public QGraphicsObject {
 
 
    protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override {QGraphicsItem::mousePressEvent(event);}
     virtual void mouseDoubleClickEvent(
         QGraphicsSceneMouseEvent *event) override;
     virtual QVariant itemChange(GraphicsItemChange change,
@@ -90,6 +90,7 @@ class GraphicsNode : public QGraphicsObject {
     std::shared_ptr<const GraphicsNodeSocket> add_socket(PortPtr port);
 
    private:
+
     NodeWeakPtr _node;
 
     // TODO: change pairs of sizes to QPointF, QSizeF, or quadrupels to QRectF
