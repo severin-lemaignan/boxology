@@ -51,7 +51,7 @@ MainWindow::MainWindow()
     ui->setupUi(this);
 
     // create and configure scene
-    _scene = make_shared<GraphicsNodeScene>(arch.get(), this);
+    _scene = make_shared<GraphicsNodeScene>(arch.get(), nullptr, this);
 
     _scene->setSceneRect(-32000, -32000, 64000, 64000);
 

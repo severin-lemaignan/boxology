@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
+#include <QGraphicsView>
 #include <QDebug>
 #include <algorithm>
 #include <iostream>
@@ -17,9 +18,11 @@ using namespace std;
 // TODO: move to graphicsnodeview. use graphicsnodescene for management
 
 GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
+                                     GraphicsNode* parent_node,
                                      QObject *parent)
     : QGraphicsScene(parent),
       architecture(architecture),
+      parent_node(parent_node),
       dontGrabKeyPresses(false),
       _color_background(QColor("#393939")),
       _color_light(QColor("#2F2F2F")),
@@ -282,6 +285,16 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             }
             break;
         }
+                        
+        ///// BACK TO PARENT ARCHITECTURE
+        case Qt::Key_Escape: {
+            if(parent_node) {
+                views()[0]->setScene(parent_node->scene());
+            }
+            break;
+        }
+
+
 
         ////// NOT HANDLED -> pass forward
         default:

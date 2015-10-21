@@ -19,7 +19,9 @@ class GraphicsNodeScene : public QGraphicsScene {
     Q_OBJECT
 
    public:
-    GraphicsNodeScene(Architecture* architecture, QObject* parent);
+    GraphicsNodeScene(Architecture* architecture, 
+                      GraphicsNode* parent_node = nullptr, 
+                      QObject* parent = 0);
 
     std::shared_ptr<GraphicsNode> add(NodePtr node);
     std::shared_ptr<GraphicsDirectedEdge> add(ConnectionPtr connection);
@@ -28,6 +30,7 @@ class GraphicsNodeScene : public QGraphicsScene {
     std::set<std::shared_ptr<GraphicsNode>> selected() const;
 
     Architecture* architecture;
+    GraphicsNode* parent_node;
 
     void set_description(const std::string& name, const std::string& version,
                          const std::string& desc);
@@ -38,6 +41,7 @@ class GraphicsNodeScene : public QGraphicsScene {
     void onDescriptionChanged(const QString& content);
 
     bool dontGrabKeyPresses;
+
 
    protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;

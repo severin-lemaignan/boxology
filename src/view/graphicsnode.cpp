@@ -15,6 +15,7 @@
 #include <QGraphicsProxyWidget>
 #include <QDebug>
 #include <QColorDialog>
+#include <QGraphicsView>
 
 #include <algorithm>
 #include <iostream>
@@ -26,6 +27,8 @@
 
 #include "edge.hpp"
 #include "socket.hpp"
+#include "scene.hpp"
+
 
 #include "graphicsnode.hpp"
 
@@ -477,15 +480,10 @@ void GraphicsNode::setColors(const QColor &base) {
 }
 
 void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    auto color =
-        QColorDialog::getColor(_brush_background.color(), nullptr,
-                               "Pick a color", QColorDialog::ShowAlphaChannel);
 
-    if (!color.isValid()) color = _brush_background.color();
+    sub_structure_scene = new GraphicsNodeScene(sub_structure.get(), this, scene()->parent());
 
-    setColors(color);
-    // auto popup = make_shared<QLineEdit>();
-    // popup->show();
+    scene()->views()[0]->setScene(sub_structure_scene);
 
     QGraphicsItem::mouseDoubleClickEvent(event);
 }

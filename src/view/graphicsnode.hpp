@@ -16,6 +16,7 @@
 #include "edge.hpp"
 #include "graphicsnodedefs.hpp"
 #include "../node.hpp"
+#include "../architecture.hpp"
 
 class QWidget;
 class QPushButton;
@@ -27,6 +28,7 @@ class GraphicsDirectedEdge;
 class GraphicsNodeSocket;
 class EditableLabel;
 class TinyButton;
+class GraphicsNodeScene;
 
 class GraphicsNode : public QGraphicsObject {
     Q_OBJECT
@@ -140,6 +142,11 @@ class GraphicsNode : public QGraphicsObject {
 
     std::vector<std::shared_ptr<GraphicsNodeSocket>> _sources;
     std::vector<std::shared_ptr<GraphicsNodeSocket>> _sinks;
+
+    std::unique_ptr<Architecture> sub_structure;
+    //std::unique_ptr<GraphicsNodeScene> sub_structure_scene;
+    GraphicsNodeScene* sub_structure_scene;
+
 };
 
 #endif /* __GRAPHICSNODE_HPP__0707C377_95A2_4E0B_B98B_7E4813001982 */
