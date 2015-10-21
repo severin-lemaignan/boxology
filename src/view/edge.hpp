@@ -84,7 +84,9 @@ signals:
     void establishConnection();
     void setConnectionName(const QString& name);
 
+    bool _is_connected;
     QPen _pen;
+    QPen _active_pen;
     QGraphicsDropShadowEffect* _effect;
     QPoint _start;
     QPoint _stop;

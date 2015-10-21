@@ -20,16 +20,21 @@
 
     GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
                                             qreal factor)
-            :_effect(new QGraphicsDropShadowEffect()),
+            : _label(new EditableLabel(this)),
+            _is_connected(false),
+            _effect(new QGraphicsDropShadowEffect()),
             _start(start),
             _stop(stop),
-            _factor(factor),
-            _label(new EditableLabel(this)) {
+            _factor(factor) {
 
         //setFlag(QGraphicsItem::ItemIsSelectable);
 
+        _pen.setColor(Qt::black);
         _pen.setWidth(2);
         setZValue(-1);
+
+        _active_pen.setColor("#bccb16");
+        _active_pen.setWidth(2);
 
         _effect->setBlurRadius(15.0);
         _effect->setColor(QColor("#99050505"));
@@ -82,14 +87,15 @@
 
 void GraphicsDirectedEdge::establishConnection() {
 
-        emit connectionEstablished(shared_from_this());
+    _is_connected = true;
+    emit connectionEstablished(shared_from_this());
 
-        if(_connection.use_count() == 0)
-            throw std::logic_error("At that point, the edge should have its underlying connection set!!");
+    if(_connection.use_count() == 0)
+        throw std::logic_error("At that point, the edge should have its underlying connection set!!");
 
-        _label->setPlainText(QString::fromStdString(_connection.lock()->name));
-        QObject::connect(_label, &EditableLabel::contentUpdated,
-                         this, &GraphicsDirectedEdge::setConnectionName);
+    _label->setPlainText(QString::fromStdString(_connection.lock()->name));
+    QObject::connect(_label, &EditableLabel::contentUpdated,
+                        this, &GraphicsDirectedEdge::setConnectionName);
 
 }
 
@@ -122,16 +128,20 @@ void GraphicsDirectedEdge::disconnect() {
 
 void GraphicsDirectedEdge::disconnect_sink() {
     if (_sink && _source &&
-        _sink->is_connected_to(shared_from_this()) && _source->is_connected_to(shared_from_this()))
+        _sink->is_connected_to(shared_from_this()) && _source->is_connected_to(shared_from_this())) {
+        _is_connected = false;
         emit connectionDisrupted(shared_from_this());
+    }
 
     if (_sink) _sink->disconnect_edge(shared_from_this());
 }
 
 void GraphicsDirectedEdge::disconnect_source() {
     if (_sink && _source &&
-        _sink->is_connected_to(shared_from_this()) && _source->is_connected_to(shared_from_this()))
+        _sink->is_connected_to(shared_from_this()) && _source->is_connected_to(shared_from_this())) {
+        _is_connected = false;
         emit connectionDisrupted(shared_from_this());
+    }
 
     if (_source) _source->disconnect_edge(shared_from_this());
 }
@@ -174,6 +184,8 @@ void GraphicsBezierEdge::update_path() {
 void GraphicsBezierEdge::paint(QPainter* painter,
                                const QStyleOptionGraphicsItem* /*option*/,
                                QWidget* /*widget*/) {
-    painter->setPen(_pen);
+    if (_is_connected) painter->setPen(_pen);
+    else painter->setPen(_active_pen);
+
     painter->drawPath(path());
 }
