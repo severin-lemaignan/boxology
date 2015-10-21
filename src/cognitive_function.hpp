@@ -5,34 +5,40 @@
 #include <string>
 
 enum class CognitiveFunction {PERCEPTION, 
-                              LEARNING, 
+                              ATTENTION, 
+                              LANGUAGE, 
                               DECISION_MAKING, 
                               MEMORY, 
                               REASONING, 
-                              LANGUAGE, 
-                              ATTENTION, 
+                              SOCIOCOGNITION, 
+                              EMOTIONS, 
+                              LEARNING, 
                               ACTION, 
                               OTHER};
 
 static const std::map<CognitiveFunction, std::string> COGNITIVE_FUNCTION_NAMES{
                         {CognitiveFunction::PERCEPTION, "Perception"},
-                        {CognitiveFunction::LEARNING, "Learning"},
-                        {CognitiveFunction::MEMORY, "Memory"},
-                        {CognitiveFunction::DECISION_MAKING, "Decision making"},
-                        {CognitiveFunction::REASONING, "Reasoning"},
-                        {CognitiveFunction::LANGUAGE, "Language"},
                         {CognitiveFunction::ATTENTION, "Attention"},
+                        {CognitiveFunction::LANGUAGE, "Language"},
+                        {CognitiveFunction::DECISION_MAKING, "Decision making"},
+                        {CognitiveFunction::MEMORY, "Memory"},
+                        {CognitiveFunction::REASONING, "Reasoning"},
+                        {CognitiveFunction::SOCIOCOGNITION, "Socio-cog."},
+                        {CognitiveFunction::EMOTIONS, "Emotions"},
+                        {CognitiveFunction::LEARNING, "Learning"},
                         {CognitiveFunction::ACTION, "Action"},
                         {CognitiveFunction::OTHER, "Other"}};
 
 static const std::map<CognitiveFunction, std::string> COGNITIVE_FUNCTION_COLORS{
-                        {CognitiveFunction::PERCEPTION, "#ff0000"},
-                        {CognitiveFunction::LEARNING, "#9d398b"},
+                        {CognitiveFunction::PERCEPTION, "#53399d"},
+                        {CognitiveFunction::ATTENTION, "#0476aa"},
+                        {CognitiveFunction::LANGUAGE, "#9d398b"},
                         {CognitiveFunction::MEMORY, "#ffaa7f"},
                         {CognitiveFunction::DECISION_MAKING, "#e1d620"},
-                        {CognitiveFunction::REASONING, "#399d40"},
-                        {CognitiveFunction::LANGUAGE, "#53399d"},
-                        {CognitiveFunction::ATTENTION, "#9d3939"},
+                        {CognitiveFunction::REASONING, "#c28e25"},
+                        {CognitiveFunction::SOCIOCOGNITION, "#399d40"},
+                        {CognitiveFunction::EMOTIONS, "#a11012"},
+                        {CognitiveFunction::LEARNING, "#2e13ff"},
                         {CognitiveFunction::ACTION, "#75bdff"},
                         {CognitiveFunction::OTHER, "#1a1a1a"}};
 

@@ -487,6 +487,8 @@ void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
     auto color = QColorDialog::getColor(_brush_background.color(), nullptr, "Pick a color", QColorDialog::ShowAlphaChannel);
 
+    if(!color.isValid()) color = _brush_background.color();
+
     setColors(color);
     // auto popup = make_shared<QLineEdit>();
     // popup->show();
