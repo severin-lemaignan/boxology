@@ -42,12 +42,14 @@
         setGraphicsEffect(_effect);
 
         _label->setDefaultTextColor(QColor("#888888"));
-        
+
         if (_label->boundingRect().width() < _label_max_width) {
             _label->setTextWidth(-1);
         } else {
             _label->setTextWidth(_label_max_width);
         }
+
+        placeLabel();
 
         //qWarning() << "[G] Created edge";
 
@@ -74,7 +76,7 @@
 
     void GraphicsDirectedEdge::set_start(QPoint p) {
         _start = p;
-        this->update_path();
+        update_path();
         placeLabel();
     }
 
