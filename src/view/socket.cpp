@@ -45,7 +45,7 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
       _pen_text(PEN_COLOR_TEXT),
       _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK
                                                           : BRUSH_COLOR_SOURCE),
-      _text(new EditableLabel(this)),
+      _text(new EditableLabel()),
       _delete_button(TinyButton::forbidden(this))
 {
 
@@ -59,6 +59,7 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
     //_text->setTextWidth(_width - 2 * _lr_padding);
 
     _text->setPlainText(QString::fromStdString(socket.port.lock()->name));
+    _text->setParentItem(this);
     connect(_text, &EditableLabel::contentUpdated,
             this, &GraphicsNodeSocket::setPortName);
 

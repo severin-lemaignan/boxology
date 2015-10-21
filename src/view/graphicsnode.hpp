@@ -26,6 +26,7 @@ class QGraphicsTextItem;
 class GraphicsDirectedEdge;
 class GraphicsNodeSocket;
 class EditableLabel;
+class TinyButton;
 
 class GraphicsNode : public QGraphicsObject {
     Q_OBJECT
@@ -73,6 +74,8 @@ class GraphicsNode : public QGraphicsObject {
     void updateNode(QString name);
     void updateNodePos();
 
+    void add_sink();
+    void add_source();
 
    protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override {QGraphicsItem::mousePressEvent(event);}
@@ -127,6 +130,9 @@ class GraphicsNode : public QGraphicsObject {
     QGraphicsDropShadowEffect *_effect;
     EditableLabel *_title_item;
     QGraphicsProxyWidget *_central_proxy = nullptr;
+    
+    TinyButton* _new_sink_btn;
+    TinyButton* _new_source_btn;
 
     QString _title;
 

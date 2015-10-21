@@ -22,6 +22,7 @@
 #include <memory>
 
 
+#include "tinybutton.hpp"
 #include "editablelabel.hpp"
 
 #include "edge.hpp"
@@ -49,7 +50,9 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
       _brush_sources(QColor("#FFFF7700")),
       _brush_sinks(QColor("#FF0077FF")),
       _effect(new QGraphicsDropShadowEffect()),
-      _title_item(new EditableLabel(this)) {
+      _title_item(new EditableLabel(this)),
+      _new_sink_btn(TinyButton::plus(this)),
+      _new_source_btn(TinyButton::plus(this)) {
 
     for (auto p :
          {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
@@ -65,6 +68,11 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
     _title_item->setTextWidth(_width - 2 * _lr_padding);
     QObject::connect(_title_item, &EditableLabel::contentUpdated, this,
                      &GraphicsNode::updateNode);
+
+    connect(_new_sink_btn, &TinyButton::triggered,
+            this, &GraphicsNode::add_sink);
+    connect(_new_source_btn, &TinyButton::triggered,
+            this, &GraphicsNode::add_source);
 
 
     // alignment?
@@ -318,6 +326,9 @@ void GraphicsNode::refreshNode() {
     for (auto port : to_add) {
         add_socket(port);
     }
+
+    _changed = true;
+    updateGeometry();
 }
 
 void GraphicsNode::updateNode(QString name) {
@@ -336,6 +347,15 @@ void GraphicsNode::updateNodePos() {
     _node.lock()->x(x());
     _node.lock()->y(y());
 }
+
+void GraphicsNode::add_sink() {
+    _node.lock()->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
+}
+
+void GraphicsNode::add_source() {
+    _node.lock()->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+}
+
 
 void GraphicsNode::updateGeometry() {
     if (!_changed) return;
@@ -358,6 +378,8 @@ void GraphicsNode::updateGeometry() {
         ypos1 += size.height() + _item_padding;
     }
 
+    _new_sink_btn->setPos(0, ypos1 + _item_padding * 2);
+
     // sources are placed bottom/right
     qreal ypos2 = _height - _bottom_margin;
     for (size_t i = _sources.size(); i > 0; i--) {
@@ -368,6 +390,8 @@ void GraphicsNode::updateGeometry() {
         s->setPos(_width, ypos2 + size.height() / 2.0);
         ypos2 -= _item_padding;
     }
+
+    _new_source_btn->setPos(_width, ypos2 - _item_padding * 2);
 
     // central widget
     if (_central_proxy != nullptr) {
