@@ -9,6 +9,8 @@
 #include <QList>
 #include <QDrag>
 #include <QMimeData>
+#include <QMessageBox>
+
 #include <QDebug>
 
 #include <iostream>
@@ -105,7 +107,20 @@ QSizeF GraphicsNodeSocket::getMinimalSize() const {
 QSizeF GraphicsNodeSocket::getSize() const { return getMinimalSize(); }
 
 void GraphicsNodeSocket::onDeletion() {
-    qWarning() << "Je me meuuuuhre";
+
+    if(_edges.empty()) {
+        _socket.node.lock()->remove_port(_socket.port.lock());
+    }
+    else {
+        auto ok = QMessageBox::warning(
+                nullptr, "Port deletion", 
+                "This port is already connected. Are you sure you want to delete it?", 
+                QMessageBox::Ok | QMessageBox::Cancel);
+
+        if (ok == QMessageBox::Ok) {
+            _socket.node.lock()->remove_port(_socket.port.lock());
+        }
+    }
 }
 
 void GraphicsNodeSocket::placeLabel() {

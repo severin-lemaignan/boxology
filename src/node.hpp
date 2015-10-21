@@ -70,6 +70,7 @@ struct Node : public QObject {
 
 
     PortPtr createPort(const Port port);
+    void remove_port(PortPtr port);
     PortPtr port(const std::string& name);
 
     const std::set<PortPtr> ports() const { return _ports; }

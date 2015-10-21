@@ -48,6 +48,12 @@ PortPtr Node::createPort(const Port port) {
     return portPtr;
 }
 
+void Node::remove_port(PortPtr port) {
+    _ports.erase(port);
+
+    emit dirty();
+}
+
 PortPtr Node::port(const string& name) {
     for (auto p : _ports) {
         if (p->name == name) return p;
