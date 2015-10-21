@@ -41,8 +41,8 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
       _pen_text(PEN_COLOR_TEXT),
       _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK
                                                           : BRUSH_COLOR_SOURCE),
-      _text(new EditableLabel(this)),
-      _edge(nullptr) {
+      _text(new EditableLabel(this)) 
+{
 
     _pen_circle.setWidth(0);
     setAcceptDrops(true);
@@ -152,21 +152,29 @@ void GraphicsNodeSocket::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mousePressEvent(event);
 }
 
-void GraphicsNodeSocket::set_edge(shared_ptr<GraphicsDirectedEdge> edge) {
-    // TODO: handle edge conflict
-    _edge = edge;
+void GraphicsNodeSocket::connect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
+    _edges.insert(edge);
     notifyPositionChange();
 }
 
+void GraphicsNodeSocket::disconnect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
+    _edges.erase(edge);
+    notifyPositionChange();
+}
+
+bool GraphicsNodeSocket::is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const {
+    return _edges.count(edge) > 0;
+}
+
 void GraphicsNodeSocket::notifyPositionChange() {
-    if (!_edge) return;
+    if (_edges.empty()) return;
 
     switch (_socket_type) {
         case Port::Direction::IN:
-            _edge->set_stop(mapToScene(0, 0));
+            for(const auto& e: _edges) e->set_stop(mapToScene(0, 0));
             break;
         case Port::Direction::OUT:
-            _edge->set_start(mapToScene(0, 0));
+            for(const auto& e: _edges) e->set_start(mapToScene(0, 0));
             break;
     }
 }

@@ -4,6 +4,7 @@
 #define __GRAPHICSNODESOCKET_HPP__99275D3E_35A8_4D63_8E10_995E5DC83C8C
 
 #include <memory>
+#include <set>
 #include <QString>
 #include <QRectF>
 #include <QGraphicsItem>
@@ -42,11 +43,13 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
                        QWidget *widget = 0) override;
 
     /**
-     * set the edge for this socket
+     * add/remove an edge for this socket
      */
-    void set_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
+    void connect_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
+    void disconnect_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
+    bool is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const;
 
-    std::shared_ptr<GraphicsDirectedEdge> get_edge() {return _edge;}
+    std::set<std::shared_ptr<GraphicsDirectedEdge>> get_edges() {return _edges;}
 
     /**
      * notify the socket that its position has changed. this may be either
@@ -104,9 +107,9 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     EditableLabel* _text;
 
     /*
-     * edge with which this socket is connected
+     * edges with which this socket is connected
      */
-    std::shared_ptr<GraphicsDirectedEdge> _edge;
+    std::set<std::shared_ptr<GraphicsDirectedEdge>> _edges;
 
    private:  // some constants. TODO: need to be defined somewhere else
              // (customizable?)

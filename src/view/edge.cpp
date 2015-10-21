@@ -84,7 +84,7 @@ void GraphicsDirectedEdge::establishConnection() {
         emit connectionEstablished(shared_from_this());
 
         if(_connection.use_count() == 0)
-            throw std::logic_error("The edge should have a connection set!!");
+            throw std::logic_error("At that point, the edge should have its underlying connection set!!");
 
         _label->setPlainText(QString::fromStdString(_connection.lock()->name));
         QObject::connect(_label, &EditableLabel::contentUpdated,
@@ -98,7 +98,7 @@ void GraphicsDirectedEdge::connect_sink(GraphicsNodeSocket* sink) {
     if (_sink) disconnect_sink();
 
     _sink = sink;
-    if (_sink) _sink->set_edge(shared_from_this());
+    if (_sink) _sink->connect_edge(shared_from_this());
 
     if (_source) establishConnection();
 }
@@ -109,7 +109,7 @@ void GraphicsDirectedEdge::connect_source(GraphicsNodeSocket* source) {
     if (_source) disconnect_source();
 
     _source = source;
-    if (_source) _source->set_edge(shared_from_this());
+    if (_source) _source->connect_edge(shared_from_this());
 
     if (_sink) establishConnection();
 }
@@ -120,17 +120,19 @@ void GraphicsDirectedEdge::disconnect() {
 }
 
 void GraphicsDirectedEdge::disconnect_sink() {
-    if (_sink && _sink->get_edge() && _source && _source->get_edge())
+    if (_sink && _source &&
+        _sink->is_connected_to(shared_from_this()) && _source->is_connected_to(shared_from_this()))
         emit connectionDisrupted(shared_from_this());
 
-    if (_sink) _sink->set_edge(nullptr);
+    if (_sink) _sink->disconnect_edge(shared_from_this());
 }
 
 void GraphicsDirectedEdge::disconnect_source() {
-    if (_sink && _sink->get_edge() && _source && _source->get_edge())
+    if (_sink && _source &&
+        _sink->is_connected_to(shared_from_this()) && _source->is_connected_to(shared_from_this()))
         emit connectionDisrupted(shared_from_this());
 
-    if (_source) _source->set_edge(nullptr);
+    if (_source) _source->disconnect_edge(shared_from_this());
 }
 
 void GraphicsDirectedEdge::placeLabel() {

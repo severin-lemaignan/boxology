@@ -207,7 +207,14 @@ void GraphicsNodeView::leftMouseButtonPress(QMouseEvent *event) {
 
                 // initialize a new drag mode event
                 _drag_event = new EdgeDragEvent();
-                if ((_tmp_edge = sock->get_edge())) {
+                auto edges = sock->get_edges();
+                if (edges.size() == 1) {
+                    // get the first edge
+                    for (auto e : edges) {
+                        _tmp_edge = e;
+                        break;
+                    }
+
                     _drag_event->e = _tmp_edge;
                     if (sock->socket_type() == Port::Direction::IN) {
                         _drag_event->e->disconnect_sink();

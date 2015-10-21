@@ -258,15 +258,13 @@ set<shared_ptr<GraphicsDirectedEdge>> GraphicsNode::disconnect() {
     set<shared_ptr<GraphicsDirectedEdge>> disconnected;
 
     for (auto s : _sinks) {
-        auto edge = s->get_edge();
-        if(edge) {
+        for (const auto& edge : s->get_edges()) {
             edge->disconnect();
             disconnected.insert(edge);
         }
     }
     for (auto s : _sources) {
-        auto edge = s->get_edge();
-        if(edge) {
+        for (const auto& edge : s->get_edges()) {
             edge->disconnect();
             disconnected.insert(edge);
         }
