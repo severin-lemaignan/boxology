@@ -21,6 +21,7 @@
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneDragDropEvent;
 class GraphicsDirectedEdge;
+class TinyButton;
 
 /**
  * visual representation of a socket. the visual representation consists of a
@@ -93,6 +94,7 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 
    private:
+    void onDeletion();
     void placeLabel();
 
     void setPortName(const QString& name) {_socket.port.lock()->name = name.toStdString();}
@@ -102,9 +104,11 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
 
     const Port::Direction _socket_type;
     QPen _pen_circle;
+    QPen _pen_unconnected_circle;
     const QPen _pen_text;
     const QBrush _brush_circle;
     EditableLabel* _text;
+    TinyButton* _delete_button;
 
     /*
      * edges with which this socket is connected

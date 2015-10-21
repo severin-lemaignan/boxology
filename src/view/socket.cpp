@@ -14,6 +14,7 @@
 #include <iostream>
 #include <algorithm>
 
+#include "tinybutton.hpp"
 #include "edge.hpp"
 
 #include "socket.hpp"
@@ -38,28 +39,35 @@ GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
       _socket(socket),
       _socket_type(socket.port.lock()->direction),
       _pen_circle(PEN_COLOR_CIRCLE),
+      _pen_unconnected_circle(PEN_COLOR_CIRCLE),
       _pen_text(PEN_COLOR_TEXT),
       _brush_circle((_socket_type == Port::Direction::IN) ? BRUSH_COLOR_SINK
                                                           : BRUSH_COLOR_SOURCE),
-      _text(new EditableLabel(this)) 
+      _text(new EditableLabel(this)),
+      _delete_button(TinyButton::forbidden(this))
 {
 
-    _pen_circle.setWidth(0);
+    _pen_circle.setWidth(2);
+
+    _pen_unconnected_circle.setWidth(0);
+    //_pen_unconnected_circle.setStyle(Qt::DotLine);
     setAcceptDrops(true);
 
     //_text->setPos(0, 0);
     //_text->setTextWidth(_width - 2 * _lr_padding);
 
     _text->setPlainText(QString::fromStdString(socket.port.lock()->name));
-    QObject::connect(_text, &EditableLabel::contentUpdated,
-                     this, &GraphicsNodeSocket::setPortName);
+    connect(_text, &EditableLabel::contentUpdated,
+            this, &GraphicsNodeSocket::setPortName);
 
+    connect(_delete_button, &TinyButton::triggered,
+            this, &GraphicsNodeSocket::onDeletion);
 }
 
 GraphicsNodeSocket::~GraphicsNodeSocket() {
     //qWarning() << "[G] Port deleted";
-    
     delete _text;
+    delete _delete_button;
 }
 
 
@@ -96,17 +104,27 @@ QSizeF GraphicsNodeSocket::getMinimalSize() const {
 
 QSizeF GraphicsNodeSocket::getSize() const { return getMinimalSize(); }
 
+void GraphicsNodeSocket::onDeletion() {
+    qWarning() << "Je me meuuuuhre";
+}
+
 void GraphicsNodeSocket::placeLabel() {
     auto bb = _text->boundingRect();
 
     QPointF corner(0, 0);
+    QPointF delete_btn_corner(0, 0);
     if (_socket_type == Port::Direction::IN) {
         corner.setX(_circle_radius + _text_offset);
+        delete_btn_corner.setX(corner.x() + bb.width() + (_text_offset * 2));
     } else {
         corner.setX(-_circle_radius - _text_offset - bb.width());
+        delete_btn_corner.setX(corner.x() - (_text_offset * 2));
     }
     corner.setY(-bb.height()/2);
+    delete_btn_corner.setY(0);
+
     _text->setPos(corner);
+    _delete_button->setPos(delete_btn_corner);
 }
 
 QPointF GraphicsNodeSocket::sceneAnchorPos() const { return mapToScene(0, 0); }
@@ -114,7 +132,10 @@ QPointF GraphicsNodeSocket::sceneAnchorPos() const { return mapToScene(0, 0); }
 void GraphicsNodeSocket::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem * /*option*/,
                                QWidget * /*widget*/) {
-    painter->setPen(_pen_circle);
+    if(_edges.empty())
+        painter->setPen(_pen_unconnected_circle);
+    else
+        painter->setPen(_pen_circle);
     painter->setBrush(_brush_circle);
     painter->drawEllipse(-_circle_radius, -_circle_radius, _circle_radius * 2,
                          _circle_radius * 2);
@@ -155,11 +176,13 @@ void GraphicsNodeSocket::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void GraphicsNodeSocket::connect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
     _edges.insert(edge);
     notifyPositionChange();
+    update();
 }
 
 void GraphicsNodeSocket::disconnect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
     _edges.erase(edge);
     notifyPositionChange();
+    update();
 }
 
 bool GraphicsNodeSocket::is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const {
