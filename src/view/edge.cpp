@@ -36,6 +36,7 @@
         setGraphicsEffect(_effect);
 
         _label->setDefaultTextColor(QColor("#888888"));
+        _label->setTextWidth(100);
         //qWarning() << "[G] Created edge";
 
 }
