@@ -21,6 +21,7 @@
     GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
                                             qreal factor)
             : _label(new EditableLabel(this)),
+            _in_scene(true),
             _is_connected(false),
             _effect(new QGraphicsDropShadowEffect()),
             _start(start),
@@ -134,6 +135,14 @@ void GraphicsDirectedEdge::disconnect_sink() {
     }
 
     if (_sink) _sink->disconnect_edge(shared_from_this());
+
+
+    if(!_source || !_source->is_connected_to(shared_from_this())) {
+        if (_in_scene) {
+            scene()->removeItem(this);
+            _in_scene = false;
+        }
+    }
 }
 
 void GraphicsDirectedEdge::disconnect_source() {
@@ -144,6 +153,13 @@ void GraphicsDirectedEdge::disconnect_source() {
     }
 
     if (_source) _source->disconnect_edge(shared_from_this());
+
+    if(!_sink || !_sink->is_connected_to(shared_from_this())){
+        if (_in_scene) {
+            scene()->removeItem(this);
+            _in_scene = false;
+        }
+    }
 }
 
 void GraphicsDirectedEdge::placeLabel() {

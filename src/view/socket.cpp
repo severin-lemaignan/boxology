@@ -185,6 +185,18 @@ void GraphicsNodeSocket::disconnect_edge(shared_ptr<GraphicsDirectedEdge> edge) 
     update();
 }
 
+void GraphicsNodeSocket::disconnect() {
+     auto edges = _edges;
+    for(auto e : edges) {
+        e->disconnect();
+        // -> Edge::disconnect will call Socket::disconnect_edge in turn,
+        // thus effectively removing the edge from _edges
+    }
+
+    if(!_edges.empty())
+        throw logic_error("No more edges should be present at that point");
+}
+
 bool GraphicsNodeSocket::is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const {
     return _edges.count(edge) > 0;
 }

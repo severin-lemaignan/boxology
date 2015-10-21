@@ -253,24 +253,14 @@ shared_ptr<GraphicsNodeSocket> GraphicsNode::getPort(Port* port) {
     }
 }
 
-set<shared_ptr<GraphicsDirectedEdge>> GraphicsNode::disconnect() {
-
-    set<shared_ptr<GraphicsDirectedEdge>> disconnected;
+void GraphicsNode::disconnect() {
 
     for (auto s : _sinks) {
-        for (const auto& edge : s->get_edges()) {
-            edge->disconnect();
-            disconnected.insert(edge);
-        }
+        s->disconnect();
     }
     for (auto s : _sources) {
-        for (const auto& edge : s->get_edges()) {
-            edge->disconnect();
-            disconnected.insert(edge);
-        }
+        s->disconnect();
     }
-
-    return disconnected;
 }
 
 void GraphicsNode::refreshNode() {
@@ -308,6 +298,7 @@ void GraphicsNode::refreshNode() {
 
     for (auto it = _sinks.begin(); it < _sinks.end();) {
         if (to_remove.count((*it)->socket().port.lock())) {
+            (*it)->disconnect();
             scene()->removeItem((*it).get());
             it = _sinks.erase(it);
         } else {
@@ -316,6 +307,7 @@ void GraphicsNode::refreshNode() {
     }
     for (auto it = _sources.begin(); it < _sources.end();) {
         if (to_remove.count((*it)->socket().port.lock())) {
+            (*it)->disconnect();
             scene()->removeItem((*it).get());
             it = _sources.erase(it);
         } else {

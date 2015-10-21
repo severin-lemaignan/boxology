@@ -76,6 +76,8 @@ signals:
 
     EditableLabel* _label;
 
+    bool _in_scene;
+
    protected:
     virtual void update_path() = 0;
 

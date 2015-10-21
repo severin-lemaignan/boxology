@@ -248,14 +248,11 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
                     throw std::logic_error("Attempting to delete an already deleted node!");
                 }
                 graphicNode.get()->setSelected(false);
-                auto disconnected_edges = graphicNode.get()->disconnect();
+                graphicNode.get()->disconnect();
 
                 architecture->removeNode(node.lock());
                 _nodes.erase(graphicNode);
 
-                for(auto e : disconnected_edges) {
-                    _edges.erase(e);
-                }
             }
             break;
         }

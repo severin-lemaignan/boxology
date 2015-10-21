@@ -92,7 +92,6 @@ void GraphicsNodeView::leftMouseButtonRelease(QMouseEvent *event) {
     if (_drag_event) {
         auto sock = socket_at(event->pos());
         if (!sock || !can_accept_edge(sock)) {
-            scene()->removeItem(_drag_event->e.get());
             _drag_event->e->disconnect();
         } else {
             switch (_drag_event->mode) {

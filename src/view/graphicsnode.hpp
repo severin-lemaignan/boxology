@@ -47,7 +47,7 @@ class GraphicsNode : public QGraphicsObject {
 
     std::shared_ptr<GraphicsNodeSocket> getPort(Port* port);
 
-    std::set<std::shared_ptr<GraphicsDirectedEdge>> disconnect();
+    void disconnect();
 
     int type() const override { return GraphicsNodeItemTypes::TypeNode; };
 

@@ -48,6 +48,7 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
      */
     void connect_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
     void disconnect_edge(std::shared_ptr<GraphicsDirectedEdge> edge);
+    void disconnect();
     bool is_connected_to(std::shared_ptr<GraphicsDirectedEdge> edge) const;
 
     std::set<std::shared_ptr<GraphicsDirectedEdge>> get_edges() {return _edges;}
