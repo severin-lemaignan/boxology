@@ -94,6 +94,8 @@ signals:
     QPoint _stop;
     qreal _factor;
 
+    qreal _label_max_width = 100;
+
     GraphicsNodeSocket* _source;
     GraphicsNodeSocket* _sink;
 };

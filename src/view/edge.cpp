@@ -42,7 +42,13 @@
         setGraphicsEffect(_effect);
 
         _label->setDefaultTextColor(QColor("#888888"));
-        _label->setTextWidth(100);
+        
+        if (_label->boundingRect().width() < _label_max_width) {
+            _label->setTextWidth(-1);
+        } else {
+            _label->setTextWidth(_label_max_width);
+        }
+
         //qWarning() << "[G] Created edge";
 
 }
@@ -162,11 +168,21 @@ void GraphicsDirectedEdge::disconnect_source() {
 
 void GraphicsDirectedEdge::placeLabel() {
     QPointF corner{_start + (_stop - _start)/2};
+    corner.setX(corner.x() - _label->boundingRect().width()/2);
     _label->setPos(corner);
 }
 
 
 void GraphicsDirectedEdge::setConnectionName(const QString& name) {
+
+    // adapt the size of the label, if needed
+    if (_label->boundingRect().width() < _label_max_width) {
+        _label->setTextWidth(-1);
+    } else {
+        _label->setTextWidth(_label_max_width);
+    }
+
+    // update the underlying name of the connection
     _connection.lock()->name = name.toStdString();
 }
 
