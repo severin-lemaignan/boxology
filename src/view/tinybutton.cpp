@@ -7,6 +7,7 @@
 #include "tinybutton.hpp"
 
 TinyButton::TinyButton(const QString& symbol,
+               QColor border,
                QColor bg,
                QColor bgHover,
                QColor color,
@@ -15,7 +16,7 @@ TinyButton::TinyButton(const QString& symbol,
     QGraphicsObject(parent),
     _hovered(false),
     _text(new QGraphicsSimpleTextItem(symbol, this)),
-    _pen("#333"),
+    _pen(border),
     _brush(bg),
     _hover_brush(bgHover),
     _text_color(color),
@@ -31,11 +32,11 @@ TinyButton::TinyButton(const QString& symbol,
 }
 
 TinyButton* TinyButton::forbidden(QGraphicsItem* parent) {
-    return new TinyButton("×", "#44111111", "#522", "#44aaaaaa", "#822", parent);
+    return new TinyButton("×","#00ffffff", "#44111111", "#44111111", "#44aaaaaa", "#522", parent);
 }
 
 TinyButton* TinyButton::plus(QGraphicsItem* parent) {
-    return new TinyButton("+", "#44111111", "#232", "#4488dd88", "#282", parent);
+    return new TinyButton("+", "#7f000000", "#333", "#333", "#888", "#aaa", parent);
 }
 
 

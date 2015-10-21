@@ -12,6 +12,7 @@ class TinyButton : public QGraphicsObject {
 
 public:
     TinyButton(const QString& symbol = "×",
+               QColor border = "#333",
                QColor bg = "#44111111",
                QColor bgHover = "#222",
                QColor color = "#44aaaaaa",
