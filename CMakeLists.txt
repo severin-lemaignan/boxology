@@ -33,7 +33,7 @@ file(GLOB_RECURSE HEADERS src/*.hpp)
 include_directories(
     # ${EIGEN3_INCLUDE_DIR}
     # ${Boost_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/src
     )
 add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI})
 target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES}
