@@ -10,7 +10,7 @@
 
 #include "json/json.h"
 
-class JsonVisitor : public Visitor<std::string> {
+class JsonVisitor : public Visitor {
     using Visitor::Visitor;  // inheriting Visitor's ctor
 
     void startUp(const Architecture& architecture);

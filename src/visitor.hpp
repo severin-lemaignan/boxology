@@ -5,12 +5,11 @@
 #include <string>
 #include "architecture.hpp"
 
-template <class T>
 class Visitor {
    public:
     Visitor(const Architecture& architecture);
 
-    T visit();
+    std::string visit();
 
    protected:
     virtual void startUp(const Architecture& architecture){};
@@ -22,12 +21,11 @@ class Visitor {
     virtual void endConnections(){};
     virtual void tearDown(){};
 
-    T _content;
+    std::string _content;
 
    private:
     const Architecture& _architecture;
 };
 
-template class Visitor<std::string>;
 
 #endif  // VISITOR_HPP
