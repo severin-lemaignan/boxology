@@ -29,6 +29,7 @@
 #include "socket.hpp"
 #include "scene.hpp"
 
+#include "../app/mainwindow.hpp"
 
 #include "graphicsnode.hpp"
 
@@ -489,7 +490,8 @@ void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
         _sub_structure_scene.reset(new GraphicsNodeScene(_sub_structure.get(), this, scene()->parent()));
     }
 
-    scene()->views()[0]->setScene(_sub_structure_scene.get());
+    auto topwindow = dynamic_cast<MainWindow*>(scene()->views()[0]->window());
+    topwindow->set_active_scene(_sub_structure_scene.get());
 
     QGraphicsItem::mouseDoubleClickEvent(event);
 }

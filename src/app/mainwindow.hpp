@@ -26,6 +26,8 @@ class MainWindow : public QMainWindow {
     MainWindow();
     ~MainWindow();
 
+    void set_active_scene(GraphicsNodeScene* scene);
+
    protected:
     virtual void resizeEvent(QResizeEvent *event);
 
@@ -38,6 +40,7 @@ class MainWindow : public QMainWindow {
    private:
     void save(const std::string& file) const;
 
+    std::string hierarchy_name(const std::string& name, GraphicsNodeScene* scene);
     void spawnInitialNodes();
 
     std::unique_ptr<Architecture> _root_arch;
@@ -46,7 +49,8 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
 
     std::shared_ptr<GraphicsNodeView> _view;
-    std::shared_ptr<GraphicsNodeScene> _scene;
+    std::shared_ptr<GraphicsNodeScene> _root_scene;
+    GraphicsNodeScene* _active_scene;
 
     QPainterPath _path;
 };

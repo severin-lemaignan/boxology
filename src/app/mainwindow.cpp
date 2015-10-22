@@ -49,18 +49,22 @@ MainWindow::MainWindow()
       _active_arch(_root_arch.get()),
       ui(new Ui::MainWindow),
       _view(nullptr),
-      _scene(nullptr) {
+      _root_scene(nullptr),
+      _active_scene(nullptr) {
 
     ui->setupUi(this);
 
     // create and configure scene
-    _scene = make_shared<GraphicsNodeScene>(_root_arch.get(), nullptr, this);
+    _root_scene = make_shared<GraphicsNodeScene>(_root_arch.get(), nullptr, this);
 
-    _scene->setSceneRect(-32000, -32000, 64000, 64000);
+
+    _root_scene->setSceneRect(-32000, -32000, 64000, 64000);
 
     //  view setup
     _view = make_shared<GraphicsNodeView>(this);
-    _view->setScene(_scene.get());
+
+    set_active_scene(_root_scene.get());
+
     this->setCentralWidget(_view.get());
 
     // Prepare the cognitive functions buttons in the toolbar
@@ -73,9 +77,23 @@ MainWindow::MainWindow()
     }
 
     spawnInitialNodes();
+
+    ui->statusBar->showMessage(QString::fromStdString(hierarchy_name("", _root_scene.get())));
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+string MainWindow::hierarchy_name(const string& name, GraphicsNodeScene* scene) {
+    if (!scene->parent_node) return name;
+    return  hierarchy_name(name, dynamic_cast<GraphicsNodeScene*>(scene->parent_node->scene())) + " > " + scene->architecture->name;
+}
+
+void MainWindow::set_active_scene(GraphicsNodeScene* scene) {
+
+    ui->statusBar->showMessage(QString::fromStdString(hierarchy_name("", scene)));
+    _active_scene = scene;
+    _view->setScene(scene);
+}
 
 void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
@@ -87,21 +105,21 @@ void MainWindow::spawnInitialNodes() {
     node->cognitive_function(CognitiveFunction::PERCEPTION);
     auto p1 = node->createPort(
         {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
-    auto gNode = _scene->add(node);
+    auto gNode = _root_scene->add(node);
     gNode->setPos(30, 170);
 
     auto node2 = _root_arch->createNode();
     node2->name("Node 2");
     auto p2 =
         node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
-    auto gNode2 = _scene->add(node2);
+    auto gNode2 = _root_scene->add(node2);
     gNode2->setPos(30 + gNode->width() * 2, 170);
 
     node2->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
     auto conn = _root_arch->createConnection({node, p1}, {node2, p2});
     conn->name = "data";
-    _scene->add(conn);
+    _root_scene->add(conn);
 }
 
 void MainWindow::save(const std::string& filename) const {
@@ -122,7 +140,7 @@ void MainWindow::on_actionAdd_node_triggered() {
     node->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
-    auto gNode = _scene->add(node);
+    auto gNode = _active_scene->add(node);
     gNode->setPos(0, 0);
 }
 
@@ -170,21 +188,21 @@ void MainWindow::on_actionFromJson_triggered() {
 
     auto newstuff = _active_arch->load(root);
 
-    _scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
+    _active_scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
 
     DEBUG("Loaded " << newstuff.first.size() << " nodes and "
             << newstuff.second.size() << " connections." << endl);
 
     for (auto n : newstuff.first) {
-        _scene->add(n);
+        _active_scene->add(n);
     }
     for (auto c : newstuff.second) {
-        _scene->add(c);
+        _active_scene->add(c);
     }
 }
 
 void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
-    for (auto node : _scene->selected()) {
+    for (auto node : _active_scene->selected()) {
         node->node().lock()->cognitive_function(cognitive_function);
     }
 }

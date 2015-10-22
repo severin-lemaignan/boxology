@@ -12,6 +12,7 @@
 
 #include "scene.hpp"
 #include "socket.hpp"
+#include "../app/mainwindow.hpp"
 
 using namespace std;
 
@@ -287,7 +288,8 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
         ///// BACK TO PARENT ARCHITECTURE
         case Qt::Key_Escape: {
             if(parent_node) {
-                views()[0]->setScene(parent_node->scene());
+                auto topwindow = dynamic_cast<MainWindow*>(views()[0]->window());
+                topwindow->set_active_scene(dynamic_cast<GraphicsNodeScene*>(parent_node->scene()));
             }
             break;
         }

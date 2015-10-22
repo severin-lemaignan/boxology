@@ -47,6 +47,7 @@
     <bool>false</bool>
    </attribute>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAdd_node">
    <property name="icon">
     <iconset theme="list-add">
