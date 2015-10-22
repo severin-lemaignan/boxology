@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <json/json.h>
 
 #include <boost/lexical_cast.hpp>
@@ -226,6 +227,23 @@ Architecture::NodesAndConnections Architecture::load(const Json::Value& json,
     }
 
     return {newnodes, newconnections};
+}
+
+Architecture::NodesAndConnections Architecture::load(const std::string& filename) {
+
+    Json::Value root;
+    ifstream json_file(filename);
+
+    json_file >> root;
+
+    // 'Dummy' load to make sure the JSON is valid, without impacting the current arch
+    // -> prevent going in a 'semi-loaded' state
+    Architecture new_arch;
+    new_arch.load(root);
+
+    // if we reach this point, no exception was raised while loading the arch from the
+    // JSON file. We can load it into ourselves.
+    return load(root);
 }
 
 boost::uuids::uuid Architecture::get_uuid(const std::string& uuid, const string& ctxt) {

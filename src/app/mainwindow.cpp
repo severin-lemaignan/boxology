@@ -154,51 +154,40 @@ void MainWindow::on_actionToJson_triggered() {
 }
 
 void MainWindow::on_actionFromJson_triggered() {
-    Json::Value root;
 
     auto filename = QFileDialog::getOpenFileName(
         this, "Select an architecture to open", "", "*.json");
 
     if (filename.isNull()) return;
 
-    ifstream json_file(filename.toStdString());
 
     try {
-        json_file >> root;
+        auto newstuff = _active_arch->load(filename.toStdString());
+
+        _active_scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
+
+        DEBUG("Loaded " << newstuff.first.size() << " nodes and "
+                << newstuff.second.size() << " connections." << endl);
+
+        for (auto n : newstuff.first) {
+            _active_scene->add(n);
+        }
+        for (auto c : newstuff.second) {
+            _active_scene->add(c);
+        }
     } catch (Json::RuntimeError jre) {
         QMessageBox::warning(0, "Error while loading an architecture",
                 QString::fromStdString(string("Unable to load the architecture from ") +
-                filename.toStdString() + ":\n\nJSON syntax error."));
+                    filename.toStdString() + ":\n\nJSON syntax error."));
         return;
-    }
-
-
-    // 'Dummy' load to make sure the JSON is valid, without impacting the current arch
-    // -> prevent going in a 'semi-loaded' state
-    try {
-        Architecture* new_arch{new Architecture()};
-        new_arch->load(root);
-    }
-    catch (runtime_error e) {
+    } catch (runtime_error e) {
         QMessageBox::warning(0, "Error while loading an architecture",
                 QString::fromStdString(string("Unable to load the architecture from ") +
-                filename.toStdString() + ":\n\n" + e.what()));
+                    filename.toStdString() + ":\n\n" + e.what()));
         return;
     }
 
-    auto newstuff = _active_arch->load(root);
 
-    _active_scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
-
-    DEBUG("Loaded " << newstuff.first.size() << " nodes and "
-            << newstuff.second.size() << " connections." << endl);
-
-    for (auto n : newstuff.first) {
-        _active_scene->add(n);
-    }
-    for (auto c : newstuff.second) {
-        _active_scene->add(c);
-    }
 }
 
 void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {

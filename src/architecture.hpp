@@ -34,6 +34,7 @@ class Architecture {
     bool operator=(const Architecture& arch) const {return uuid == arch.uuid;}
     bool operator<(const Architecture& arch) const {return uuid < arch.uuid;}
 
+    NodesAndConnections load(const std::string& filename);
     NodesAndConnections load(const Json::Value& json,
                              bool clearFirst = true,
                              bool recreateUUIDs = false, 
