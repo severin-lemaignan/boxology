@@ -136,6 +136,17 @@ void MainWindow::addNodeViews() {
     _scene->add(conn);
 }
 
+void MainWindow::save(const std::string& filename) const {
+
+    JsonVisitor json(*arch);
+    auto output = json.visit();
+
+    ofstream json_file(filename, std::ofstream::out);
+
+    json_file << output;
+
+}
+
 void MainWindow::on_actionAdd_node_triggered() {
     auto node = arch->createNode();
 
@@ -148,15 +159,12 @@ void MainWindow::on_actionAdd_node_triggered() {
 }
 
 void MainWindow::on_actionToJson_triggered() {
-    JsonVisitor json(*arch);
-    auto output = json.visit();
 
     auto filename = QFileDialog::getSaveFileName(
         this, "Save architecture to json", "", "*.json");
 
-    ofstream json_file(filename.toStdString(), std::ofstream::out);
+    save(filename.toStdString());
 
-    json_file << output;
 }
 
 void MainWindow::on_actionFromJson_triggered() {

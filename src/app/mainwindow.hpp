@@ -36,6 +36,8 @@ class MainWindow : public QMainWindow {
     void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
    private:
+    void save(const std::string& file) const;
+
     void addNodeViews();
     void addFakeContent();
 
