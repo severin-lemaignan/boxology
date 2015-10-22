@@ -115,22 +115,21 @@ addFakeContent()
 
 void MainWindow::addNodeViews() {
     auto node = arch->createNode();
-    node->name("NLP");
+    node->name("Node 1");
     node->cognitive_function(CognitiveFunction::PERCEPTION);
     auto p1 = node->createPort(
         {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _scene->add(node);
-    gNode->setPos(0, 150);
+    gNode->setPos(30, 170);
 
     auto node2 = arch->createNode();
-    node2->name("KB");
+    node2->name("Node 2");
     auto p2 =
         node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     auto gNode2 = _scene->add(node2);
-    gNode2->setPos(0 + gNode->width() * 1.5, 150);
+    gNode2->setPos(30 + gNode->width() * 2, 170);
 
     node2->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
-    node2->createPort({"input2", Port::Direction::IN, Port::Type::LATENT});
 
     auto conn = arch->createConnection({node, p1}, {node2, p2});
     conn->name = "data";
