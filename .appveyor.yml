@@ -1,0 +1,55 @@
+version: 1.0.{build}
+clone_folder: c:\projects\boxology
+environment:
+  InstallPath: c:\projects\boxology\bin
+  CONFIGURATION: Release
+  BOOST_ROOT: C:\Libraries\boost_1_58_0
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_58_0\stage\lib
+build_script:
+- cmd: >-
+    set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+
+    set PATH=C:\MinGW\bin;%PATH%
+
+    mkdir build
+
+    cd build
+
+    echo Running cmake...
+
+    set CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32;%CMAKE_PREFIX_PATH%
+
+    cmake -DCMAKE_BUILD_TYPE=%CONFIGURATION% -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=%InstallPath% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_USE_STATIC_LIBS="ON" ..
+
+
+    echo Compiling with MinGW...
+
+    cmake --build . --config %CONFIGURATION%
+
+
+    cd ..
+
+    mkdir dist
+
+    copy build\boxology.exe dist
+
+    copy C:\Qt\5.5\mingw492_32\bin\Qt5Core.dll dist
+
+    copy C:\Qt\5.5\mingw492_32\bin\Qt5Gui.dll dist
+
+    copy C:\Qt\5.5\mingw492_32\bin\Qt5Widgets.dll dist
+
+    copy C:\Qt\5.5\mingw492_32\bin\libgcc_s_dw2-1.dll dist
+
+    copy C:\Qt\5.5\mingw492_32\bin\libstdc++-6.dll dist
+
+    copy C:\Qt\5.5\mingw492_32\bin\libwinpthread-1.dll dist
+
+
+
+    echo Zipping the result...
+
+    7z a c:\projects\boxology\boxology.zip dist\* -tzip
+artifacts:
+- path: boxology.zip
+  name: boxology.zip
