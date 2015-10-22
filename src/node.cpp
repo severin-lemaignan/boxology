@@ -19,11 +19,12 @@ Node::~Node() {
     // qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
 }
 
-/* Performs a deep-copy of the current Node, with however a different UUID
+/* Performs a deep-copy of the current Node, with however a new UUID
  */
 NodePtr Node::duplicate() const {
     auto node = make_shared<Node>();
     node->name(_name + " (copy)");
+    node->cognitive_function(_cognitive_function);
 
     for (const auto p : _ports) {
         node->createPort(*p);
