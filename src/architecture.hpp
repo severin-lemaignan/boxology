@@ -62,10 +62,11 @@ class Architecture {
     Connections connections() { return _connections; }
     const Connections connections() const { return _connections; }
 
+    boost::uuids::uuid uuid;
+
     std::string name;
     std::string version;
     std::string description;
-    boost::uuids::uuid uuid;
 
    private:
     Nodes _nodes;

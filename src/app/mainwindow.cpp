@@ -45,14 +45,16 @@
 using namespace std;
 
 MainWindow::MainWindow()
-    : arch(new Architecture),
+    : _root_arch(new Architecture),
+      _active_arch(_root_arch.get()),
       ui(new Ui::MainWindow),
       _view(nullptr),
       _scene(nullptr) {
+
     ui->setupUi(this);
 
     // create and configure scene
-    _scene = make_shared<GraphicsNodeScene>(arch.get(), nullptr, this);
+    _scene = make_shared<GraphicsNodeScene>(_root_arch.get(), nullptr, this);
 
     _scene->setSceneRect(-32000, -32000, 64000, 64000);
 
@@ -80,7 +82,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 }
 
 void MainWindow::spawnInitialNodes() {
-    auto node = arch->createNode();
+    auto node = _root_arch->createNode();
     node->name("Node 1");
     node->cognitive_function(CognitiveFunction::PERCEPTION);
     auto p1 = node->createPort(
@@ -88,7 +90,7 @@ void MainWindow::spawnInitialNodes() {
     auto gNode = _scene->add(node);
     gNode->setPos(30, 170);
 
-    auto node2 = arch->createNode();
+    auto node2 = _root_arch->createNode();
     node2->name("Node 2");
     auto p2 =
         node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
@@ -97,14 +99,14 @@ void MainWindow::spawnInitialNodes() {
 
     node2->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 
-    auto conn = arch->createConnection({node, p1}, {node2, p2});
+    auto conn = _root_arch->createConnection({node, p1}, {node2, p2});
     conn->name = "data";
     _scene->add(conn);
 }
 
 void MainWindow::save(const std::string& filename) const {
 
-    JsonVisitor json(*arch);
+    JsonVisitor json(*_active_arch);
     auto output = json.visit();
 
     ofstream json_file(filename, std::ofstream::out);
@@ -114,7 +116,7 @@ void MainWindow::save(const std::string& filename) const {
 }
 
 void MainWindow::on_actionAdd_node_triggered() {
-    auto node = arch->createNode();
+    auto node = _active_arch->createNode();
 
     node->name("Node");
     node->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
@@ -152,29 +154,32 @@ void MainWindow::on_actionFromJson_triggered() {
         return;
     }
 
-    Architecture* new_arch{new Architecture()};
 
+    // 'Dummy' load to make sure the JSON is valid, without impacting the current arch
+    // -> prevent going in a 'semi-loaded' state
     try {
-        auto newstuff = new_arch->load(root);
-        arch.reset(new_arch);
-
-        _scene->set_description(arch->name, arch->version, arch->description);
-
-        DEBUG("Loaded " << newstuff.first.size() << " nodes and "
-                << newstuff.second.size() << " connections." << endl);
-
-        for (auto n : newstuff.first) {
-            _scene->add(n);
-        }
-        for (auto c : newstuff.second) {
-            _scene->add(c);
-        }
+        Architecture* new_arch{new Architecture()};
+        new_arch->load(root);
     }
     catch (runtime_error e) {
         QMessageBox::warning(0, "Error while loading an architecture",
                 QString::fromStdString(string("Unable to load the architecture from ") +
                 filename.toStdString() + ":\n\n" + e.what()));
         return;
+    }
+
+    auto newstuff = _active_arch->load(root);
+
+    _scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
+
+    DEBUG("Loaded " << newstuff.first.size() << " nodes and "
+            << newstuff.second.size() << " connections." << endl);
+
+    for (auto n : newstuff.first) {
+        _scene->add(n);
+    }
+    for (auto c : newstuff.second) {
+        _scene->add(c);
     }
 }
 

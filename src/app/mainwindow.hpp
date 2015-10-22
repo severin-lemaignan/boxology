@@ -40,7 +40,8 @@ class MainWindow : public QMainWindow {
 
     void spawnInitialNodes();
 
-    std::unique_ptr<Architecture> arch;
+    std::unique_ptr<Architecture> _root_arch;
+    Architecture* _active_arch;
 
     Ui::MainWindow *ui;
 

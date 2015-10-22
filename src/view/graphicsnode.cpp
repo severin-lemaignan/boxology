@@ -481,9 +481,15 @@ void GraphicsNode::setColors(const QColor &base) {
 
 void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
-    sub_structure_scene = new GraphicsNodeScene(sub_structure.get(), this, scene()->parent());
+    if (!_sub_structure_scene) {
+        qDebug() << "Initializing a sub-architecture for node " << QString::fromStdString(_node.lock()->name());
+        _sub_structure.reset(new Architecture(_node.lock()->uuid));
+        _sub_structure->name = _node.lock()->name();
+        _sub_structure->description = _node.lock()->name() + " is...";
+        _sub_structure_scene.reset(new GraphicsNodeScene(_sub_structure.get(), this, scene()->parent()));
+    }
 
-    scene()->views()[0]->setScene(sub_structure_scene);
+    scene()->views()[0]->setScene(_sub_structure_scene.get());
 
     QGraphicsItem::mouseDoubleClickEvent(event);
 }

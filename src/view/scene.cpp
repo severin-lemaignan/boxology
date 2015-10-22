@@ -45,7 +45,7 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     setBackgroundBrush(_brush_background);
 
     // add text field with the architecture name
-    _arch_name->setHtml("<h1>CoolArch</h1>");
+    _arch_name->setHtml("<h1>" + QString::fromStdString(architecture->name) + "</h1>");
 
     _arch_name->setPos(0, 0);
     _arch_name->setDefaultTextColor(_color_bg_text);
@@ -55,7 +55,7 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
             &GraphicsNodeScene::onDescriptionChanged);
 
     // add text field with the architecture version
-    _arch_version->setHtml("<h2>v0.1</h2>");
+    _arch_version->setHtml("<h2>" + QString::fromStdString(architecture->version) + "</h2>");
 
     _arch_version->setPos(0, _arch_name->boundingRect().height());
     _arch_version->setDefaultTextColor(_color_bg_text);
@@ -64,10 +64,8 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     connect(_arch_version, &EditableLabel::contentUpdated, this,
             &GraphicsNodeScene::onDescriptionChanged);
 
-    _arch_desc->setHtml(
-        "The <strong>CoolArch</strong> architecture is based on <a "
-        "href=\"http://example.org\">this article</a> with the following "
-        "modifications...");
+    _arch_desc->setHtml(QString::fromStdString(architecture->description));
+
     _arch_desc->setTextWidth(400);
     _arch_desc->setPos(
         0, _arch_version->y() + _arch_version->boundingRect().height());

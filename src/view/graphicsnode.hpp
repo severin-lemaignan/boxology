@@ -143,9 +143,8 @@ class GraphicsNode : public QGraphicsObject {
     std::vector<std::shared_ptr<GraphicsNodeSocket>> _sources;
     std::vector<std::shared_ptr<GraphicsNodeSocket>> _sinks;
 
-    std::unique_ptr<Architecture> sub_structure;
-    //std::unique_ptr<GraphicsNodeScene> sub_structure_scene;
-    GraphicsNodeScene* sub_structure_scene;
+    std::unique_ptr<Architecture> _sub_structure;
+    std::unique_ptr<GraphicsNodeScene> _sub_structure_scene;
 
 };
 

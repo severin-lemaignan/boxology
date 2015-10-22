@@ -11,7 +11,17 @@
 using namespace std;
 
 
-Architecture::Architecture(boost::uuids::uuid uuid) : uuid(uuid) {}
+Architecture::Architecture(boost::uuids::uuid uuid) : 
+        uuid(uuid),
+        name("CoolArch"),
+        version("0.1"),
+        description(
+            "The <strong>CoolArch</strong> architecture is based on <a "
+            "href=\"http://example.org\">this article</a> with the following "
+            "modifications...") 
+{
+}
+
 Architecture::Architecture() : Architecture(boost::uuids::random_generator()()) {}
 
 NodePtr Architecture::createNode() {
