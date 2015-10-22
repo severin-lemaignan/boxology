@@ -9,19 +9,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3" CACHE STRING "Eigen3 include directory")
-
-find_package(PkgConfig)
-pkg_check_modules(JSONCPP jsoncpp)
-include_directories(${JSONCPP_INCLUDE_DIRS})
+cmake_policy(SET CMP0020 NEW) # automatic linking of qtmain.lib on Windows
 
 # for UUIDs
 find_package(
-    Boost 1.55.0
-    #COMPONENTS
-    #system
-    #program_options
+    Boost 1.43.0
     REQUIRED)
 
 find_package(Qt5Widgets REQUIRED)
@@ -29,17 +21,11 @@ find_package(Qt5Widgets REQUIRED)
 file(GLOB_RECURSE SRC src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.hpp)
 
-# include(${QT_USE_FILE})
 include_directories(
-    # ${EIGEN3_INCLUDE_DIR}
-    # ${Boost_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/src
     )
 add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI})
-target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES}
-    #	pthread
-    #	hdf5
-    #	hdf5_cpp
-    #	${Boost_LIBRARIES}
-    )
+target_link_libraries(${PROJECT_NAME})
+
 qt5_use_modules(${PROJECT_NAME} Widgets)

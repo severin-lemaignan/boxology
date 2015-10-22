@@ -216,6 +216,8 @@ static inline void fixNumericLocale(char* begin, char* end) {
 #endif
 #elif defined(__ANDROID__) || defined(__QNXNTO__)
 #define snprintf snprintf
+#elif __MINGW32__
+#define snprintf snprintf
 #elif __cplusplus >= 201103L
 #define snprintf std::snprintf
 #endif
@@ -4024,6 +4026,8 @@ Value& Path::make(Value& root) const {
 #define snprintf _snprintf
 #endif
 #elif defined(__ANDROID__) || defined(__QNXNTO__)
+#define snprintf snprintf
+#elif __MINGW32__
 #define snprintf snprintf
 #elif __cplusplus >= 201103L
 #define snprintf std::snprintf
