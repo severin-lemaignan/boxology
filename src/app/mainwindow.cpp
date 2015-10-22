@@ -70,9 +70,7 @@ MainWindow::MainWindow()
                 &MainWindow::onCogButtonTriggered);
     }
 
-    // add some content
-    // addFakeContent();
-    addNodeViews();
+    spawnInitialNodes();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -81,40 +79,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
 }
 
-/*
-void MainWindow::
-addFakeContent()
-{
-    // fill with some content
-    QBrush greenBrush(Qt::green);
-    QPen outlinePen(Qt::black);
-    outlinePen.setWidth(2);
-
-    // populate with a of lines
-    auto gridColor = QColor::fromRgbF(0.4, 0.4, 0.4, 1.0);
-    QBrush gridBrush(gridColor);
-    QPen gridPen(gridColor);
-
-    // populate with 'content'
-    auto rect = _scene->addRect(100, 0, 80, 100, outlinePen, greenBrush);
-    rect->setFlag(QGraphicsItem::ItemIsMovable);
-
-    auto text = _scene->addText("scene01", QFont("Ubuntu Mono"));
-    text->setDefaultTextColor(QColor::fromRgbF(1.0, 1.0, 1.0, 1.0));
-    text->setFlag(QGraphicsItem::ItemIsMovable);
-    text->setPos(0, -25);
-
-    auto widget1 = new QPushButton("Hello World");
-    auto proxy1 = _scene->addWidget(widget1);
-    proxy1->setPos(0, 30);
-
-    auto widget2 = new QTextEdit();
-    auto proxy2 = _scene->addWidget(widget2);
-    proxy2->setPos(0, 60);
-}
-*/
-
-void MainWindow::addNodeViews() {
+void MainWindow::spawnInitialNodes() {
     auto node = arch->createNode();
     node->name("Node 1");
     node->cognitive_function(CognitiveFunction::PERCEPTION);
@@ -151,7 +116,7 @@ void MainWindow::save(const std::string& filename) const {
 void MainWindow::on_actionAdd_node_triggered() {
     auto node = arch->createNode();
 
-    node->name("new node");
+    node->name("Node");
     node->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
     node->createPort({"output", Port::Direction::OUT, Port::Type::EXPLICIT});
 

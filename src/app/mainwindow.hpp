@@ -38,8 +38,7 @@ class MainWindow : public QMainWindow {
    private:
     void save(const std::string& file) const;
 
-    void addNodeViews();
-    void addFakeContent();
+    void spawnInitialNodes();
 
     std::unique_ptr<Architecture> arch;
 
