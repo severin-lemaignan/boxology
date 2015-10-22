@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.12)
 project(boxology)
 
 add_definitions(-std=c++11) 
@@ -12,9 +12,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 cmake_policy(SET CMP0020 NEW) # automatic linking of qtmain.lib on Windows
 
 # for UUIDs
-find_package(
-    Boost 1.43.0
-    REQUIRED)
+find_package(Boost 1.43.0 REQUIRED)
 
 find_package(Qt5Widgets REQUIRED)
 
@@ -23,9 +21,9 @@ file(GLOB_RECURSE HEADERS src/*.hpp)
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src # for json/json.h
     )
-add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI})
-target_link_libraries(${PROJECT_NAME})
 
-qt5_use_modules(${PROJECT_NAME} Widgets)
+add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI})
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+
