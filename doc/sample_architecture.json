@@ -1,0 +1,45 @@
+{
+   "connections" : [
+      {
+         "from" : "b639388b-d36c-4aa4-bc97-d83263843d59:output",
+         "name" : "data",
+         "to" : "3d702d4c-29b8-4326-b4d1-1dd73dbb94ef:input",
+         "uuid" : "8debeb35-c827-45db-9d64-18d999213470"
+      }
+   ],
+   "description" : "The <strong>CoolArch</strong> architecture is based on <a href=\"http://example.org\">this article</a> with the following modifications...",
+   "encoding_version" : "0.1",
+   "name" : "CoolArch",
+   "nodes" : [
+      {
+         "cognitive_function" : "Attention",
+         "name" : "Node 2",
+         "ports" : [
+            {
+               "direction" : "in",
+               "name" : "input"
+            },
+            {
+               "direction" : "out",
+               "name" : "output"
+            }
+         ],
+         "position" : [ 407, 240 ],
+         "uuid" : "3d702d4c-29b8-4326-b4d1-1dd73dbb94ef"
+      },
+      {
+         "cognitive_function" : "Perception",
+         "name" : "Node 1",
+         "ports" : [
+            {
+               "direction" : "out",
+               "name" : "output"
+            }
+         ],
+         "position" : [ 68, 144 ],
+         "uuid" : "b639388b-d36c-4aa4-bc97-d83263843d59"
+      }
+   ],
+   "uuid" : "e3cf8ea5-42ed-47f2-a119-831410ae14f9",
+   "version" : "0.1"
+}
