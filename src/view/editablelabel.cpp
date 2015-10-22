@@ -8,11 +8,12 @@
 
 EditableLabel::EditableLabel(QGraphicsItem *parent)
     : QGraphicsTextItem(parent) {
-    this->setDefaultTextColor(Qt::white);
-    this->setTextInteractionFlags(Qt::TextEditorInteraction |
-                                  Qt::LinksAccessibleByMouse);
-    this->setCursor(Qt::IBeamCursor);
-    this->setOpenExternalLinks(true);
+
+    setDefaultTextColor(Qt::white);
+    setTextInteractionFlags(Qt::TextEditorInteraction |
+                            Qt::LinksAccessibleByMouse);
+    setCursor(Qt::IBeamCursor);
+    setOpenExternalLinks(true);
 }
 
 void EditableLabel::keyPressEvent(QKeyEvent *event) {
@@ -44,10 +45,43 @@ EditableDescription::EditableDescription(QGraphicsItem *parent)
     : EditableLabel(parent),
       _is_editing(false),
       _typewriter_font(QFontDatabase::systemFont(QFontDatabase::FixedFont)) {
+
+    setTextInteractionFlags(Qt::TextBrowserInteraction);
+    setToolTip("Double click to edit");
+    unsetCursor();
     _typewriter_font.setPixelSize(12);
 }
 
 void EditableDescription::focusInEvent(QFocusEvent *event) {
+    EditableLabel::focusInEvent(event);
+}
+
+void EditableDescription::focusOutEvent(QFocusEvent *event) {
+
+    if(_is_editing) {
+        setTextInteractionFlags(Qt::TextBrowserInteraction);
+        setToolTip("Double click to edit");
+        unsetCursor();
+        _is_editing = false;
+
+        auto content = toPlainText();
+
+        setTextWidth(_base_width);
+        setZValue(_base_z);
+        setFont(_base_font);
+
+        setHtml(content);
+    }
+
+    EditableLabel::focusOutEvent(event);
+}
+
+void EditableDescription::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    setCursor(Qt::IBeamCursor);
+    setToolTip("");
+
     _is_editing = true;
 
     _base_width = textWidth();
@@ -62,20 +96,8 @@ void EditableDescription::focusInEvent(QFocusEvent *event) {
 
     setPlainText(content);
 
-    EditableLabel::focusInEvent(event);
-}
+    EditableLabel::mouseDoubleClickEvent(event);
 
-void EditableDescription::focusOutEvent(QFocusEvent *event) {
-    _is_editing = false;
-
-    auto content = toPlainText();
-
-    setTextWidth(_base_width);
-    setZValue(_base_z);
-    setFont(_base_font);
-
-    setHtml(content);
-    EditableLabel::focusOutEvent(event);
 }
 
 void EditableDescription::paint(QPainter *painter,

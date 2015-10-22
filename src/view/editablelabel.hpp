@@ -5,6 +5,7 @@
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
 
+
 class EditableLabel : public QGraphicsTextItem {
     Q_OBJECT
    public:
@@ -26,6 +27,7 @@ class EditableDescription : public EditableLabel {
 
     void focusInEvent(QFocusEvent *event) override;
     void focusOutEvent(QFocusEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
 
