@@ -11,6 +11,8 @@
 #include <set>
 #include <string>
 #include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+
 
 #include "node.hpp"
 #include "connection.hpp"
@@ -26,10 +28,20 @@ class Architecture {
     typedef std::pair<std::set<NodePtr>, std::set<ConnectionPtr>>
         NodesAndConnections;
 
-    Architecture(){};
+    Architecture();
+    Architecture(boost::uuids::uuid uuid);
 
-    NodesAndConnections update(const Json::Value& json, bool clearFirst = false,
-                               bool recreateUUIDs = false);
+    bool operator=(const Architecture& arch) const {return uuid == arch.uuid;}
+    bool operator<(const Architecture& arch) const {return uuid < arch.uuid;}
+
+    NodesAndConnections load(const Json::Value& json,
+                             bool clearFirst = true,
+                             bool recreateUUIDs = false, 
+                             bool metadata = true);
+
+    NodesAndConnections import(const Json::Value& json) {
+        return load(json, false, false, false);
+    }
 
     NodePtr createNode();
     NodePtr createNode(const boost::uuids::uuid& uuid);
@@ -53,10 +65,13 @@ class Architecture {
     std::string name;
     std::string version;
     std::string description;
+    boost::uuids::uuid uuid;
 
    private:
     Nodes _nodes;
     Connections _connections;
+
+    boost::uuids::uuid get_uuid(const std::string& uuid, const std::string& ctxt = "");
 };
 
 #endif  // ARCHITECTURE_HPP

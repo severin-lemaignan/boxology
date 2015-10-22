@@ -13,6 +13,7 @@ void JsonVisitor::startUp(const Architecture& architecture) {
     root["name"] = architecture.name;
     root["version"] = architecture.version;
     root["description"] = architecture.description;
+    root["uuid"] = boost::lexical_cast<std::string>(architecture.uuid);
 }
 
 void JsonVisitor::tearDown() {

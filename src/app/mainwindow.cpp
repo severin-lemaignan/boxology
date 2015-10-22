@@ -23,6 +23,7 @@
 #include <QString>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include <iostream>
 #include <fstream>
@@ -180,23 +181,35 @@ void MainWindow::on_actionFromJson_triggered() {
     try {
         json_file >> root;
     } catch (Json::RuntimeError jre) {
-        cerr << "Syntax error in " << filename.toStdString()
-             << "! Model not loaded." << endl;
+        QMessageBox::warning(0, "Error while loading an architecture",
+                QString::fromStdString(string("Unable to load the architecture from ") +
+                filename.toStdString() + ":\n\nJSON syntax error."));
         return;
     }
 
-    auto newstuff = arch->update(root);
+    Architecture* new_arch{new Architecture()};
 
-    _scene->set_description(arch->name, arch->version, arch->description);
+    try {
+        auto newstuff = new_arch->load(root);
+        arch.reset(new_arch);
 
-    DEBUG("Loaded " << newstuff.first.size() << " nodes and "
-                    << newstuff.second.size() << " connections." << endl);
+        _scene->set_description(arch->name, arch->version, arch->description);
 
-    for (auto n : newstuff.first) {
-        _scene->add(n);
+        DEBUG("Loaded " << newstuff.first.size() << " nodes and "
+                << newstuff.second.size() << " connections." << endl);
+
+        for (auto n : newstuff.first) {
+            _scene->add(n);
+        }
+        for (auto c : newstuff.second) {
+            _scene->add(c);
+        }
     }
-    for (auto c : newstuff.second) {
-        _scene->add(c);
+    catch (runtime_error e) {
+        QMessageBox::warning(0, "Error while loading an architecture",
+                QString::fromStdString(string("Unable to load the architecture from ") +
+                filename.toStdString() + ":\n\n" + e.what()));
+        return;
     }
 }
 

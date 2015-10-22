@@ -10,6 +10,10 @@
 
 using namespace std;
 
+
+Architecture::Architecture(boost::uuids::uuid uuid) : uuid(uuid) {}
+Architecture::Architecture() : Architecture(boost::uuids::random_generator()()) {}
+
 NodePtr Architecture::createNode() {
     auto node = std::make_shared<Node>();
     _nodes.insert(node);
@@ -86,9 +90,10 @@ void Architecture::removeConnection(Socket from, Socket to) {
     }
 }
 
-Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
+Architecture::NodesAndConnections Architecture::load(const Json::Value& json,
                                                        bool clearFirst,
-                                                       bool recreateUUIDs) {
+                                                       bool recreateUUIDs,
+                                                       bool metadata) {
     set<NodePtr> newnodes;
     set<ConnectionPtr> newconnections;
 
@@ -96,9 +101,15 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
     DEBUG("Reading the architecture (encoding: v." << version << ")..."
                                                    << endl);
 
-    name = json.get("name", "<no name>").asString();
-    version = json.get("version", "v0.1").asString();
-    description = json.get("description", "(no description yet)").asString();
+    if(metadata) {
+        name = json.get("name", "<no name>").asString();
+        version = json.get("version", "v0.1").asString();
+        description = json.get("description", "(no description yet)").asString();
+
+        if(!recreateUUIDs) {
+            uuid = get_uuid(json["uuid"].asString(), "Architecture");
+        }
+    }
 
     set<boost::uuids::uuid> existing_uuids;
 
@@ -118,8 +129,7 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
     /////   NODES
     //////////////////////////////////////////
     for (auto n : json["nodes"]) {
-        auto uuid =
-            boost::lexical_cast<boost::uuids::uuid>(n["uuid"].asString());
+        auto uuid = get_uuid(n["uuid"].asString(), "Node");
 
         NodePtr node;
 
@@ -168,8 +178,7 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
     /////   CONNECTIONS
     //////////////////////////////////////////
     for (auto c : json["connections"]) {
-        auto uuid =
-            boost::lexical_cast<boost::uuids::uuid>(c["uuid"].asString());
+        auto uuid = get_uuid(c["uuid"].asString(), "Connection");
 
         if (!recreateUUIDs && existing_uuids.count(uuid)) {
             cerr << "Already existing UUID <" << uuid << ">! ";
@@ -178,12 +187,12 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
         }
 
         auto from_uuid_str = c["from"].asString().substr(0, 36);
-        auto from_uuid = boost::lexical_cast<boost::uuids::uuid>(from_uuid_str);
+        auto from_uuid = get_uuid(from_uuid_str, "Connection 'from'");
         auto from = node(from_uuid);
         auto from_port = c["from"].asString().substr(37);
 
         auto to_uuid_str = c["to"].asString().substr(0, 36);
-        auto to_uuid = boost::lexical_cast<boost::uuids::uuid>(to_uuid_str);
+        auto to_uuid = get_uuid(to_uuid_str, "Connection 'to'");
         auto to = node(to_uuid);
         auto to_port = c["to"].asString().substr(37);
 
@@ -207,4 +216,19 @@ Architecture::NodesAndConnections Architecture::update(const Json::Value& json,
     }
 
     return {newnodes, newconnections};
+}
+
+boost::uuids::uuid Architecture::get_uuid(const std::string& uuid, const string& ctxt) {
+
+    if (uuid.empty()) {
+        throw runtime_error((ctxt.empty() ? ctxt : ctxt + ": ") + "No UUID!");
+    }
+
+    try {
+        return boost::lexical_cast<boost::uuids::uuid>(uuid);
+    }
+    catch (const boost::bad_lexical_cast& e ) {
+        throw runtime_error((ctxt.empty() ? ctxt : ctxt + ": ") + "Invalid UUID: " + uuid);
+    }
+
 }
