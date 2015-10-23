@@ -35,6 +35,9 @@
    <addaction name="actionFromJson"/>
    <addaction name="actionToJson"/>
    <addaction name="separator"/>
+   <addaction name="actionSave_to_SVG"/>
+   <addaction name="actionExport_to_TikZ"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QToolBar" name="cognitionToolbar">
    <property name="windowTitle">
@@ -82,6 +85,27 @@
    </property>
    <property name="toolTip">
     <string>Load from JSON</string>
+   </property>
+  </action>
+  <action name="actionSave_to_SVG">
+   <property name="icon">
+    <iconset>
+        <normaloff>:/icons/svg.png</normaloff>:/icons/svg.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save to SVG</string>
+   </property>
+   <property name="toolTip">
+    <string>Export to SVG</string>
+   </property>
+  </action>
+  <action name="actionExport_to_TikZ">
+   <property name="icon">
+    <iconset>
+        <normaloff>:/icons/tikz.png</normaloff>:/icons/tikz.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export to TikZ</string>
    </property>
   </action>
  </widget>

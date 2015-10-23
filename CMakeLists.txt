@@ -23,6 +23,7 @@ cmake_policy(SET CMP0020 NEW) # automatic linking of qtmain.lib on Windows
 find_package(Boost 1.43.0 REQUIRED)
 
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Svg REQUIRED)
 
 file(GLOB_RECURSE SRC src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.hpp)
@@ -33,5 +34,5 @@ include_directories(
     )
 
 add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI} ${QT_RC})
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Svg)
 

@@ -24,6 +24,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSvgGenerator>
 
 #include <iostream>
 #include <fstream>
@@ -145,10 +146,14 @@ void MainWindow::on_actionAdd_node_triggered() {
 
 void MainWindow::on_actionToJson_triggered() {
 
-    auto filename = QFileDialog::getSaveFileName(
-        this, "Save architecture to json", "", "*.json");
+    auto newPath = QFileDialog::getSaveFileName(
+        this, "Save architecture to json", _jsonPath, "JSON file (*.json)");
 
-    save(filename.toStdString());
+    if (newPath.isEmpty())
+        return;
+
+    _jsonPath = newPath;
+    save(_jsonPath.toStdString());
 
 }
 
@@ -194,3 +199,30 @@ void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
         node->node().lock()->cognitive_function(cognitive_function);
     }
 }
+
+void MainWindow::on_actionSave_to_SVG_triggered() {
+
+    QString newPath = QFileDialog::getSaveFileName(0, tr("Save SVG"),
+        _svgPath, tr("SVG files (*.svg)"));
+
+    if (newPath.isEmpty())
+        return;
+
+    _svgPath = newPath;
+    saveSvg(_svgPath);
+}
+
+void MainWindow::saveSvg(const QString& path) const
+{
+
+    QSvgGenerator generator;
+    generator.setFileName(path);
+    generator.setSize(QSize(500, 500));
+    generator.setViewBox(QRect(0, 0, 200, 200));
+    generator.setTitle(tr("SVG Generator Example Drawing"));
+    generator.setDescription(tr("An SVG drawing created by the SVG Generator "
+                                "Example provided with Qt."));
+    QPainter painter(&generator);
+    _view->render(&painter);
+}
+
