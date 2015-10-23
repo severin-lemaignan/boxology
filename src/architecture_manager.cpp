@@ -1,4 +1,3 @@
-
 #define DEBUG(x)                                                      \
     do {                                                              \
         std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] " << x; \
@@ -6,7 +5,6 @@
 
 #include <iostream>
 
-#include <QDir>
 #include <QStandardPaths>
 #include <QDirIterator>
 
@@ -24,6 +22,10 @@ ArchitectureManager::ArchitectureManager() {
 
 void ArchitectureManager::initialize() {
 
+    // look for all models in the current path
+    initializeFromPath(QDir());
+
+    // look for all models in the application shared data path
     auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
 
     if(!dir.cd(QString::fromStdString(CONFIG_PATH))) {
@@ -32,11 +34,20 @@ void ArchitectureManager::initialize() {
         cout << "Created " << dir.path().toStdString() << endl;
     }
 
+    initializeFromPath(dir, true);
+
+}
+
+void ArchitectureManager::initializeFromPath(const QDir& path, bool recursive) {
+
+    QDir dir(path);
+
     QStringList filters;
     filters << "*.json";
     dir.setNameFilters(filters);
 
-    QDirIterator it(dir, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
+    QDirIterator it(dir, 
+                    recursive ? QDirIterator::Subdirectories | QDirIterator::FollowSymlinks : QDirIterator::FollowSymlinks);
 
     while(it.hasNext()) {
         load_model(it.next().toStdString());
@@ -52,6 +63,13 @@ void ArchitectureManager::list_models() {
         cout << "- " << kv.second->name << " (v." << kv.second->version << ")" << endl;
         cout << "  (in " << kv.second->filename << ")" << endl;
     }
+}
+
+Architecture* ArchitectureManager::get_model(const boost::uuids::uuid& uuid) const {
+    if(_models.count(uuid) > 0) {
+        return _models.at(uuid).get();
+    }
+    return nullptr;
 }
 
 void ArchitectureManager::load_model(const string& path) {
