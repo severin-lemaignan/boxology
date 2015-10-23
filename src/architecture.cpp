@@ -101,12 +101,15 @@ void Architecture::removeConnection(Socket from, Socket to) {
     }
 }
 
-Architecture::NodesAndConnections Architecture::load(const Json::Value& json,
-                                                       bool clearFirst,
-                                                       bool recreateUUIDs,
-                                                       bool metadata) {
+Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
+                                               bool clearFirst,
+                                               bool recreateUUIDs,
+                                               bool metadata) {
     set<NodePtr> newnodes;
     set<ConnectionPtr> newconnections;
+
+    set<NodePtr> killednodes;
+    set<ConnectionPtr> killedconnections;
 
     auto version = json.get("encoding_version", "<undefined>").asString();
     DEBUG("Reading the architecture (encoding: v." << version << ")..."
@@ -125,8 +128,10 @@ Architecture::NodesAndConnections Architecture::load(const Json::Value& json,
     set<boost::uuids::uuid> existing_uuids;
 
     if (clearFirst) {
-        _connections.clear();
+        killednodes = _nodes;
+        killedconnections = _connections;
         _nodes.clear();
+        _connections.clear();
     }
 
     for (auto n : _nodes) {
@@ -226,10 +231,10 @@ Architecture::NodesAndConnections Architecture::load(const Json::Value& json,
         newconnections.insert(connection);
     }
 
-    return {newnodes, newconnections};
+    return {{newnodes, newconnections}, {killednodes, killedconnections}};
 }
 
-Architecture::NodesAndConnections Architecture::load(const std::string& filename) {
+Architecture::ToAddToRemove Architecture::load(const std::string& filename) {
 
     Json::Value root;
     ifstream json_file(filename);

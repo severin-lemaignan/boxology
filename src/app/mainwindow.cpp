@@ -166,9 +166,15 @@ void MainWindow::on_actionFromJson_triggered() {
 
 
     try {
-        auto newstuff = _active_arch->load(filename.toStdString());
+        auto toaddtoremove = _active_arch->load(filename.toStdString());
+        auto newstuff = toaddtoremove.first;
+        auto killedstuff = toaddtoremove.second;
 
         _active_scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
+
+        for (auto n : killedstuff.first) {
+            _active_scene->remove(n);
+        }
 
         DEBUG("Loaded " << newstuff.first.size() << " nodes and "
                 << newstuff.second.size() << " connections." << endl);

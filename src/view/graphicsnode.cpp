@@ -301,22 +301,22 @@ void GraphicsNode::refreshNode() {
     set_difference(existing.begin(), existing.end(), in_node.begin(),
                    in_node.end(), inserter(to_remove, to_remove.begin()));
 
-    for (auto it = _sinks.begin(); it < _sinks.end();) {
-        if (to_remove.count((*it)->socket().port.lock())) {
-            (*it)->disconnect();
-            scene()->removeItem((*it).get());
-            it = _sinks.erase(it);
+    for (auto port = _sinks.begin(); port < _sinks.end();) {
+        if (to_remove.count((*port)->socket().port.lock())) {
+            (*port)->disconnect();
+            scene()->removeItem((*port).get());
+            port = _sinks.erase(port);
         } else {
-            ++it;
+            ++port;
         }
     }
-    for (auto it = _sources.begin(); it < _sources.end();) {
-        if (to_remove.count((*it)->socket().port.lock())) {
-            (*it)->disconnect();
-            scene()->removeItem((*it).get());
-            it = _sources.erase(it);
+    for (auto port = _sources.begin(); port < _sources.end();) {
+        if (to_remove.count((*port)->socket().port.lock())) {
+            (*port)->disconnect();
+            scene()->removeItem((*port).get());
+            port = _sources.erase(port);
         } else {
-            ++it;
+            ++port;
         }
     }
 

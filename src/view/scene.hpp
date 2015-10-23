@@ -24,6 +24,8 @@ class GraphicsNodeScene : public QGraphicsScene {
                       QObject* parent = 0);
 
     std::shared_ptr<GraphicsNode> add(NodePtr node);
+    void remove(std::shared_ptr<GraphicsNode> node);
+    void remove(NodePtr node);
     std::shared_ptr<GraphicsDirectedEdge> add(ConnectionPtr connection);
     std::shared_ptr<GraphicsDirectedEdge> make_edge();
 

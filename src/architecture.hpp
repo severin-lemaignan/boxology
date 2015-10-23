@@ -25,8 +25,8 @@ class Architecture {
    public:
     typedef std::set<NodePtr> Nodes;
     typedef std::set<ConnectionPtr> Connections;
-    typedef std::pair<std::set<NodePtr>, std::set<ConnectionPtr>>
-        NodesAndConnections;
+    typedef std::pair<std::set<NodePtr>, std::set<ConnectionPtr>> NodesAndConnections;
+    typedef std::pair<NodesAndConnections, NodesAndConnections> ToAddToRemove;
 
     Architecture();
     Architecture(boost::uuids::uuid uuid);
@@ -34,14 +34,14 @@ class Architecture {
     bool operator=(const Architecture& arch) const {return uuid == arch.uuid;}
     bool operator<(const Architecture& arch) const {return uuid < arch.uuid;}
 
-    NodesAndConnections load(const std::string& filename);
-    NodesAndConnections load(const Json::Value& json,
+    ToAddToRemove load(const Json::Value& json,
                              bool clearFirst = true,
                              bool recreateUUIDs = false, 
                              bool metadata = true);
+    ToAddToRemove load(const std::string& filename);
 
     NodesAndConnections import(const Json::Value& json) {
-        return load(json, false, false, false);
+        return load(json, false, false, false).first;
     }
 
     NodePtr createNode();

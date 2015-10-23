@@ -89,6 +89,37 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
     return gNode;
 }
 
+void GraphicsNodeScene::remove(std::shared_ptr<GraphicsNode> graphicNode) {
+
+    auto node = graphicNode->node();
+    if (node.expired()) {
+        qWarning() << "Deleting a GraphicsNode fir an already deleted node!";
+    }
+    else {
+        architecture->removeNode(node.lock());
+    }
+
+    graphicNode.get()->setSelected(false);
+    graphicNode.get()->disconnect();
+
+    _nodes.erase(graphicNode);
+
+}
+
+void GraphicsNodeScene::remove(NodePtr node) {
+
+    set<shared_ptr<GraphicsNode>> to_remove;
+    for(auto gn : _nodes) {
+        if(!gn->node().expired() && gn->node().lock() == node) {
+            to_remove.insert(gn);
+        }
+    }
+
+    for(auto gn : to_remove) {
+        remove(gn);
+    }
+}
+
 shared_ptr<GraphicsDirectedEdge> GraphicsNodeScene::add(
     ConnectionPtr connection) {
     auto from = connection->from.node.lock();
@@ -242,16 +273,7 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_X:
         case Qt::Key_Delete: {
             for (auto graphicNode : selected()) {
-                auto node = graphicNode->node();
-                if (node.expired()) {
-                    throw std::logic_error(
-                        "Attempting to delete an already deleted node!");
-                }
-                graphicNode.get()->setSelected(false);
-                graphicNode.get()->disconnect();
-
-                architecture->removeNode(node.lock());
-                _nodes.erase(graphicNode);
+                remove(graphicNode);
             }
             break;
         }
