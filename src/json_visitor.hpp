@@ -13,10 +13,10 @@
 class JsonVisitor : public Visitor {
     using Visitor::Visitor;  // inheriting Visitor's ctor
 
-    void startUp(const Architecture& architecture);
-    void onNode(std::shared_ptr<const Node>);
-    void onConnection(std::shared_ptr<const Connection>);
-    void tearDown();
+    void startUp() override;
+    void onNode(std::shared_ptr<const Node>) override;
+    void onConnection(std::shared_ptr<const Connection>) override;
+    void tearDown() override;
 
    private:
     Json::Value root;

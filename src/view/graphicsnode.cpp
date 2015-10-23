@@ -341,8 +341,12 @@ void GraphicsNode::updateNodePos() {
         throw logic_error("We should not be accessing a dead node!");
     }
 
-    _node.lock()->x(x());
-    _node.lock()->y(y());
+    auto node = _node.lock();
+    node->x(x());
+    node->y(y());
+    node->width(width());
+    node->height(height());
+
 }
 
 void GraphicsNode::add_sink() {

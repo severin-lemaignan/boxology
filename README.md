@@ -21,3 +21,4 @@ Main features
 - Connect them together;
 - Label them with their main cognitive role;
 - Save/load in a simple JSON format.
+- Export to SVG and LaTeX (TikZ)

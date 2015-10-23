@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void JsonVisitor::startUp(const Architecture& architecture) {
+void JsonVisitor::startUp() {
     root["encoding_version"] = "0.1";
     root["name"] = architecture.name;
     root["version"] = architecture.version;

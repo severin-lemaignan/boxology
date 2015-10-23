@@ -12,7 +12,7 @@ class Visitor {
     std::string visit();
 
    protected:
-    virtual void startUp(const Architecture& architecture){};
+    virtual void startUp(){};
     virtual void beginNodes(){};
     virtual void onNode(std::shared_ptr<const Node>) = 0;
     virtual void endNodes(){};
@@ -23,8 +23,7 @@ class Visitor {
 
     std::string _content;
 
-   private:
-    const Architecture& _architecture;
+    const Architecture& architecture;
 };
 
 

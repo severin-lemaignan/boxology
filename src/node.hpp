@@ -61,10 +61,15 @@ struct Node : public QObject {
     CognitiveFunction cognitive_function() const { return _cognitive_function; }
     void cognitive_function(CognitiveFunction cognitive_function);
 
+    // geometry -- 100% optional -- may not be set -- only used for visualization needs
     double x() const { return _x; }
     void x(double x) { _x = x; }
     double y() const { return _y; }
     void y(double y) { _y = y; }
+    double width() const { return _width; }
+    void width(double width) { _width = width; }
+    double height() const { return _height; }
+    void height(double height) { _height = height; }
 
     PortPtr createPort(const Port port);
     void remove_port(PortPtr port);
@@ -78,8 +83,8 @@ signals:
     void dirty();
 
    private:
-    // the node's position in whatever 2D space
-    double _x, _y;
+    // the node's geometry in whatever 2D space
+    double _x, _y, _width, _height;
 
     std::string _name;
     CognitiveFunction _cognitive_function;

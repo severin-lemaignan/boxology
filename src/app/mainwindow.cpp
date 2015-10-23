@@ -38,6 +38,7 @@
 #include "../view/edge.hpp"
 
 #include "../json_visitor.hpp"
+#include "../tikz_visitor.hpp"
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
@@ -232,3 +233,27 @@ void MainWindow::saveSvg(const QString& path) const
     _view->render(&painter);
 }
 
+void MainWindow::on_actionExport_to_TikZ_triggered()
+{
+
+    QString newPath = QFileDialog::getSaveFileName(0, tr("Export to TikZ"),
+        _tikzPath, tr("TikZ files (*.tex)"));
+
+    if (newPath.isEmpty())
+        return;
+
+    _tikzPath = newPath;
+    saveTikZ(_tikzPath.toStdString());
+
+}
+
+void MainWindow::saveTikZ(const std::string& filename) const {
+
+    TikzVisitor tikz(*_active_arch);
+    auto output = tikz.visit();
+
+    ofstream tikz_file(filename, std::ofstream::out);
+
+    tikz_file << output;
+
+}

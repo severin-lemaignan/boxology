@@ -102,7 +102,7 @@
   <action name="actionExport_to_TikZ">
    <property name="icon">
     <iconset>
-        <normaloff>:/icons/tikz.png</normaloff>:/icons/tikz.png</iconset>
+        <normaloff>:/icons/tex.png</normaloff>:/icons/tex.png</iconset>
    </property>
    <property name="text">
     <string>Export to TikZ</string>

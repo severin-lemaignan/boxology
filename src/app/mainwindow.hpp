@@ -36,10 +36,12 @@ class MainWindow : public QMainWindow {
     void on_actionToJson_triggered();
     void on_actionFromJson_triggered();
     void on_actionSave_to_SVG_triggered();
+    void on_actionExport_to_TikZ_triggered();
     void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
    private:
     void save(const std::string& filename) const;
+    void saveTikZ(const std::string& filename) const;
     void saveSvg(const QString& filename) const;
 
     std::string hierarchy_name(const std::string& name, GraphicsNodeScene* scene);

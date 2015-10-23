@@ -3,19 +3,19 @@
 using namespace std;
 
 Visitor::Visitor(const Architecture& architecture)
-    : _architecture(architecture) {}
+    : architecture(architecture) {}
 
 string Visitor::visit() {
-    startUp(_architecture);
+    startUp();
 
     beginNodes();
-    for (const auto node : _architecture.nodes()) {
+    for (const auto node : architecture.nodes()) {
         onNode(node);
     }
     endNodes();
 
     beginConnections();
-    for (const auto connection : _architecture.connections()) {
+    for (const auto connection : architecture.connections()) {
         onConnection(connection);
     }
     endConnections();

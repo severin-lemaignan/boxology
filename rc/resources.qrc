@@ -3,5 +3,6 @@
         <file>icon.svg</file>
         <file>tikz.png</file>
         <file>svg.png</file>
+        <file>tex.png</file>
     </qresource>
 </RCC>
