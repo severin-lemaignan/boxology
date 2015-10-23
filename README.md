@@ -1,4 +1,4 @@
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/68myndowa9icr7e1?svg=true)](https://ci.appveyor.com/project/severin-lemaignan/boxology)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/bfwtu7orjfwxookx?svg=true)](https://ci.appveyor.com/project/severin-lemaignan/boxology)
 
 Boxology
 ========
