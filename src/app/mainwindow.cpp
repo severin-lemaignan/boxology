@@ -40,7 +40,6 @@
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include "test_qobjects.hpp"
 
 using namespace std;
 
