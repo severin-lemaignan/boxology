@@ -34,10 +34,6 @@ class Architecture {
     bool operator=(const Architecture& arch) const {return uuid == arch.uuid;}
     bool operator<(const Architecture& arch) const {return uuid < arch.uuid;}
 
-    ToAddToRemove load(const Json::Value& json,
-                             bool clearFirst = true,
-                             bool recreateUUIDs = false, 
-                             bool metadata = true);
     ToAddToRemove load(const std::string& filename);
 
     NodesAndConnections import(const Json::Value& json) {
@@ -68,8 +64,14 @@ class Architecture {
     std::string name;
     std::string version;
     std::string description;
+    std::string filename;
 
    private:
+    ToAddToRemove load(const Json::Value& json,
+                             bool clearFirst = true,
+                             bool recreateUUIDs = false, 
+                             bool metadata = true);
+
     Nodes _nodes;
     Connections _connections;
 

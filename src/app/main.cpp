@@ -11,6 +11,7 @@
 
 #include "mainwindow.hpp"
 #include "../json_visitor.hpp"
+#include "../architecture_manager.hpp"
 
 using namespace std;
 
@@ -27,10 +28,21 @@ int main(int argc, char *argv[]) {
                                      "\n\nRun the application with no arguments to start the GUI.");
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument("architecture", "The architecture to process (json file)");
+    parser.addPositionalArgument("model", "The model to process (JSON file)");
+
+    parser.addOptions({
+            {{"l", "list-models"},
+            "Lists available models"}
+            });
 
     // Process the actual command line arguments given by the user
     parser.process(app);
+
+    if (parser.isSet("list-models")) {
+        auto manager = ArchitectureManager();
+        manager.list_models();
+        return 0;
+    }
 
     auto args = parser.positionalArguments();
     if(args.empty()) {

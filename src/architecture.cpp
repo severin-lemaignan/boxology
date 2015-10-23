@@ -117,7 +117,7 @@ Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
 
     if(metadata) {
         name = json.get("name", "<no name>").asString();
-        version = json.get("version", "v0.1").asString();
+        version = json.get("version", "0.1").asString();
         description = json.get("description", "(no description yet)").asString();
 
         if(!recreateUUIDs) {
@@ -248,6 +248,8 @@ Architecture::ToAddToRemove Architecture::load(const std::string& filename) {
 
     // if we reach this point, no exception was raised while loading the arch from the
     // JSON file. We can load it into ourselves.
+
+    this->filename = filename;
     return load(root);
 }
 

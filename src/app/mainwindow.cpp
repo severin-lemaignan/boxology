@@ -55,6 +55,8 @@ MainWindow::MainWindow()
 
     ui->setupUi(this);
 
+    manager.list_models();
+
     // create and configure scene
     _root_scene = make_shared<GraphicsNodeScene>(_root_arch.get(), nullptr, this);
 
