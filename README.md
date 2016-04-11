@@ -21,3 +21,16 @@ Main features
 - Save/load in a simple JSON format;
 - Export to PNG, SVG and LaTeX (TikZ).
 
+Requirements
+------------
+
+- Qt5
+- Boost (successfully tested with 1.58, but older version may work equally well)
+- `qmake` or `CMake >= 3.0`
+
+Supported platforms
+-------------------
+
+- Linux (main dev platform)
+- Windows (compiles and runs fine with QtCreator + VS2015)
+
