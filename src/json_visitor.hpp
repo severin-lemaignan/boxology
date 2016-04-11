@@ -11,7 +11,9 @@
 #include "json/json.h"
 
 class JsonVisitor : public Visitor {
-    using Visitor::Visitor;  // inheriting Visitor's ctor
+
+   public:
+    JsonVisitor(const Architecture& architecture) : Visitor(architecture) {}
 
     void startUp() override;
     void onNode(std::shared_ptr<const Node>) override;
