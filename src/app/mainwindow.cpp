@@ -228,11 +228,37 @@ void MainWindow::saveSvg(const QString& path) const
     generator.setFileName(path);
     generator.setSize(QSize(500, 500));
     generator.setViewBox(QRect(0, 0, 200, 200));
-    generator.setTitle(tr("SVG Generator Example Drawing"));
-    generator.setDescription(tr("An SVG drawing created by the SVG Generator "
-                                "Example provided with Qt."));
+    generator.setTitle(tr("Boxology diagram"));
+    generator.setDescription(tr("A Boxology diagram"));
     QPainter painter(&generator);
     _view->render(&painter);
+}
+
+void MainWindow::on_actionExport_to_PNG_triggered() {
+
+    QString newPath = QFileDialog::getSaveFileName(0, tr("Save PNG"),
+        _pngPath, tr("PNG files (*.png)"));
+
+    if (newPath.isEmpty())
+        return;
+
+    _pngPath = newPath;
+    savePng(_pngPath);
+}
+
+
+void MainWindow::savePng(const QString& path) const
+{
+
+    const int RESOLUTION = 300; //dpi
+    auto width = _view->visibleRegion().boundingRect().width() / _view->physicalDpiX() * RESOLUTION;
+    auto height = _view->visibleRegion().boundingRect().height() / _view->physicalDpiY() * RESOLUTION;
+    QImage image(width,height,QImage::Format_ARGB32);
+
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    _view->render(&painter);
+    image.save(path);
 }
 
 void MainWindow::on_actionExport_to_TikZ_triggered()

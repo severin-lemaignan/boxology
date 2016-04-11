@@ -4,5 +4,6 @@
         <file>tikz.png</file>
         <file>svg.png</file>
         <file>tex.png</file>
+        <file>image.png</file>
     </qresource>
 </RCC>

@@ -36,12 +36,15 @@ class MainWindow : public QMainWindow {
     void on_actionAdd_node_triggered();
     void on_actionToJson_triggered();
     void on_actionFromJson_triggered();
+    void on_actionExport_to_PNG_triggered();
     void on_actionSave_to_SVG_triggered();
     void on_actionExport_to_TikZ_triggered();
     void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
+
    private:
     void save(const std::string& filename) const;
+    void savePng(const QString& filename) const;
     void saveTikZ(const std::string& filename) const;
     void saveSvg(const QString& filename) const;
 
@@ -63,6 +66,7 @@ class MainWindow : public QMainWindow {
 
 
     QString _jsonPath;
+    QString _pngPath;
     QString _svgPath;
     QString _tikzPath;
 };

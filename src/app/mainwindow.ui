@@ -35,6 +35,7 @@
    <addaction name="actionFromJson"/>
    <addaction name="actionToJson"/>
    <addaction name="separator"/>
+   <addaction name="actionExport_to_PNG"/>
    <addaction name="actionSave_to_SVG"/>
    <addaction name="actionExport_to_TikZ"/>
    <addaction name="separator"/>
@@ -90,7 +91,7 @@
   <action name="actionSave_to_SVG">
    <property name="icon">
     <iconset>
-        <normaloff>:/icons/svg.png</normaloff>:/icons/svg.png</iconset>
+     <normaloff>:/icons/svg.png</normaloff>:/icons/svg.png</iconset>
    </property>
    <property name="text">
     <string>Save to SVG</string>
@@ -102,10 +103,22 @@
   <action name="actionExport_to_TikZ">
    <property name="icon">
     <iconset>
-        <normaloff>:/icons/tex.png</normaloff>:/icons/tex.png</iconset>
+     <normaloff>:/icons/tex.png</normaloff>:/icons/tex.png</iconset>
    </property>
    <property name="text">
     <string>Export to TikZ</string>
+   </property>
+  </action>
+  <action name="actionExport_to_PNG">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icons/image.png</normaloff>:/icons/image.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export to PNG</string>
+   </property>
+   <property name="toolTip">
+    <string>Export to PNG</string>
    </property>
   </action>
  </widget>
