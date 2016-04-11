@@ -231,7 +231,10 @@ void MainWindow::saveSvg(const QString& path) const
     generator.setTitle(tr("Boxology diagram"));
     generator.setDescription(tr("A Boxology diagram"));
     QPainter painter(&generator);
+
+    _view->hideBackground();
     _view->render(&painter);
+    _view->showBackground();
 }
 
 void MainWindow::on_actionExport_to_PNG_triggered() {
@@ -257,7 +260,11 @@ void MainWindow::savePng(const QString& path) const
 
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
+
+    _view->hideBackground();
     _view->render(&painter);
+    _view->showBackground();
+
     image.save(path);
 }
 

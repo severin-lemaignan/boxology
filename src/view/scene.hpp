@@ -44,6 +44,8 @@ class GraphicsNodeScene : public QGraphicsScene {
 
     bool dontGrabKeyPresses;
 
+    bool paintBackground;
+
 
    protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;

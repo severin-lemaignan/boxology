@@ -40,12 +40,16 @@ class GraphicsNodeView : public QGraphicsView {
     explicit GraphicsNodeView(QWidget *parent = nullptr);
     GraphicsNodeView(QGraphicsScene *scene, QWidget *parent = nullptr);
 
+    void hideBackground();
+    void showBackground();
+
    protected:
     virtual void wheelEvent(QWheelEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
+
 
    private:
     void middleMouseButtonPress(QMouseEvent *event);
