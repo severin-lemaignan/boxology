@@ -1,5 +1,3 @@
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/bfwtu7orjfwxookx?svg=true)](https://ci.appveyor.com/project/severin-lemaignan/boxology)
-
 Boxology
 ========
 
@@ -31,6 +29,8 @@ Requirements
 Supported platforms
 -------------------
 
-- Linux (main dev platform)
-- Windows (compiles and runs fine with QtCreator + VS2015)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/bfwtu7orjfwxookx?svg=true)](https://ci.appveyor.com/project/severin-lemaignan/boxology)
 
+- Linux (main dev platform)
+- Windows (compiles and runs fine with QtCreator + VS2015). Download the
+  [lastest binary for Windows 64bit](https://ci.appveyor.com/project/severin-lemaignan/boxology/build/artifacts).

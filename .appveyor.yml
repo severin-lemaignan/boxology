@@ -1,52 +1,40 @@
 version: 1.0.{build}
 clone_folder: c:\projects\boxology
+
 environment:
   InstallPath: c:\projects\boxology\bin
   CONFIGURATION: Release
   BOOST_ROOT: C:\Libraries\boost_1_58_0
   BOOST_LIBRARYDIR: C:\Libraries\boost_1_58_0\stage\lib
+
+init:
+- set QTDIR=C:\Qt\5.6\msvc2015_64
+- set PATH=%QTDIR%\bin;%PATH%
+# Setup MSVC - VS 2015
+- CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+
 build_script:
+- qmake.exe boxology.pro -r -spec win32-msvc2015 BOOST_ROOT=%BOOST_ROOT%
+- nmake
 - cmd: >-
-    set PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-
-    set PATH=C:\MinGW\bin;%PATH%
-
-    mkdir build
-
-    cd build
-
-    echo Running cmake...
-
-    set CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32;%CMAKE_PREFIX_PATH%
-
-    cmake -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=%InstallPath% -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_USE_STATIC_LIBS="ON" ..
-
-
-    echo Compiling with MinGW...
-
-    cmake --build . --config Release
-
-
-    cd ..
 
     mkdir boxology-%APPVEYOR_BUILD_VERSION%
 
     cd boxology-%APPVEYOR_BUILD_VERSION%
 
+    mkdir platforms
 
-    copy ..\build\boxology.exe .
+    copy ..\release\boxology.exe .
 
-    copy C:\Qt\5.5\mingw492_32\bin\Qt5Core.dll .
+    copy %QTDIR%\bin\Qt5Core.dll .
 
-    copy C:\Qt\5.5\mingw492_32\bin\Qt5Gui.dll .
+    copy %QTDIR%\bin\Qt5Gui.dll .
 
-    copy C:\Qt\5.5\mingw492_32\bin\Qt5Widgets.dll .
+    copy %QTDIR%\bin\Qt5Widgets.dll .
 
-    copy C:\Qt\5.5\mingw492_32\bin\libgcc_s_dw2-1.dll .
+    copy %QTDIR%\bin\Qt5Svg.dll .
 
-    copy C:\Qt\5.5\mingw492_32\bin\libwinpthread-1.dll .
-
-    copy C:\Qt\5.5\mingw492_32\bin\libstd~1.dll .
+    copy %QTDIR%\plugins\platforms\qwindows.dll platforms
 
 
     echo Zipping the result...
