@@ -40,8 +40,8 @@ class GraphicsNodeView : public QGraphicsView {
     explicit GraphicsNodeView(QWidget *parent = nullptr);
     GraphicsNodeView(QGraphicsScene *scene, QWidget *parent = nullptr);
 
-    void hideBackground();
-    void showBackground();
+    void hideHelpers();
+    void showHelpers();
 
    protected:
     virtual void wheelEvent(QWheelEvent *event);

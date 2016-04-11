@@ -140,6 +140,9 @@ void GraphicsNodeSocket::placeLabel() {
 
 QPointF GraphicsNodeSocket::sceneAnchorPos() const { return mapToScene(0, 0); }
 
+void GraphicsNodeSocket::hideHelpers() {_delete_button->hide();}
+void GraphicsNodeSocket::showHelpers() {_delete_button->show();}
+
 void GraphicsNodeSocket::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem * /*option*/,
                                QWidget * /*widget*/) {

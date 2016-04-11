@@ -44,8 +44,8 @@ class GraphicsNodeScene : public QGraphicsScene {
 
     bool dontGrabKeyPresses;
 
-    bool paintBackground;
-
+    void hideHelpers();
+    void showHelpers();
 
    protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
@@ -57,6 +57,8 @@ class GraphicsNodeScene : public QGraphicsScene {
     QColor _color_dark;
     QColor _color_null;
     QColor _color_bg_text;
+
+    bool _paintBackground;
 
     QPen _pen_light;
     QPen _pen_dark;

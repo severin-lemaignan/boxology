@@ -320,9 +320,9 @@ GraphicsNodeSocket *GraphicsNodeView::socket_at(QPoint pos) {
         return nullptr;
 }
 
-void GraphicsNodeView::hideBackground() {
-     dynamic_cast<GraphicsNodeScene *>(scene())->paintBackground = false;
+void GraphicsNodeView::hideHelpers() {
+     dynamic_cast<GraphicsNodeScene *>(scene())->hideHelpers();
 }
-void GraphicsNodeView::showBackground() {
-     dynamic_cast<GraphicsNodeScene *>(scene())->paintBackground = true;
+void GraphicsNodeView::showHelpers() {
+     dynamic_cast<GraphicsNodeScene *>(scene())->showHelpers();
 }

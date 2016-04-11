@@ -68,6 +68,9 @@ class GraphicsNode : public QGraphicsObject {
 
     void setColors(const QColor &base);
 
+    void hideHelpers();
+    void showHelpers();
+
     /**
         * set a regular QWidget as central widget
         */

@@ -89,6 +89,9 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
 
     Socket socket() const { return _socket; }
 
+    void hideHelpers();
+    void showHelpers();
+
    protected:
     // event handling
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
