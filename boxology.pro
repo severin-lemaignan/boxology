@@ -66,3 +66,6 @@ HEADERS  += \
 
 FORMS    += \
     src/app/mainwindow.ui
+
+RESOURCES += \
+    rc/resources.qrc
