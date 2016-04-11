@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
-#include "json/json.h"
+#include "../json/json.h"
 
 #include "mainwindow.hpp"
 #include "../json_visitor.hpp"

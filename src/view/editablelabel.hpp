@@ -4,6 +4,7 @@
 #include <QCursor>
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
+#include <QFont>
 
 
 class EditableLabel : public QGraphicsTextItem {
