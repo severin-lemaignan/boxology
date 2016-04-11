@@ -83,6 +83,17 @@ void GraphicsDirectedEdge::set_stop(QPoint p) {
     placeLabel();
 }
 
+void GraphicsDirectedEdge::disableGraphicsEffects()
+{
+    _effect->setEnabled(false);
+}
+
+void GraphicsDirectedEdge::enableGraphicsEffects()
+{
+    _effect->setEnabled(true);
+}
+
+
 void GraphicsDirectedEdge::connect(GraphicsNode* source_node, Port* source_port,
                                    GraphicsNode* sink_node, Port* sink_port) {
     connect_source(source_node->getPort(source_port)

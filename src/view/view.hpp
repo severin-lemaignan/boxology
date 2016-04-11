@@ -42,6 +42,8 @@ class GraphicsNodeView : public QGraphicsView {
 
     void hideHelpers();
     void showHelpers();
+    void disableGraphicsEffects();
+    void enableGraphicsEffects();
 
    protected:
     virtual void wheelEvent(QWheelEvent *event);

@@ -198,9 +198,29 @@ void GraphicsNodeScene::showHelpers()
 
      for (auto node : _nodes) {
         node->showHelpers();
-    }
+     }
 }
 
+void GraphicsNodeScene::disableGraphicsEffects()
+{
+     for (auto node : _nodes) {
+        node->disableGraphicsEffects();
+     }
+     for (auto edge : _edges) {
+        edge->disableGraphicsEffects();
+     }
+
+}
+void GraphicsNodeScene::enableGraphicsEffects()
+{
+     for (auto node : _nodes) {
+        node->enableGraphicsEffects();
+     }
+     for (auto edge : _edges) {
+        edge->enableGraphicsEffects();
+     }
+
+}
 
 set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     set<shared_ptr<GraphicsNode>> selectedNodes;

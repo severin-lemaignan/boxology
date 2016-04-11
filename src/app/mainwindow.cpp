@@ -226,14 +226,16 @@ void MainWindow::saveSvg(const QString& path) const
 
     QSvgGenerator generator;
     generator.setFileName(path);
-    generator.setSize(QSize(500, 500));
-    generator.setViewBox(QRect(0, 0, 200, 200));
+    generator.setSize(_view->visibleRegion().boundingRect().size());
+    generator.setViewBox(_view->visibleRegion().boundingRect());
     generator.setTitle(tr("Boxology diagram"));
     generator.setDescription(tr("A Boxology diagram"));
     QPainter painter(&generator);
 
     _view->hideHelpers();
+    _view->disableGraphicsEffects();
     _view->render(&painter);
+    _view->enableGraphicsEffects();
     _view->showHelpers();
 }
 

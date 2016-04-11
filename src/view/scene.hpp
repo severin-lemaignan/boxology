@@ -46,6 +46,8 @@ class GraphicsNodeScene : public QGraphicsScene {
 
     void hideHelpers();
     void showHelpers();
+    void disableGraphicsEffects();
+    void enableGraphicsEffects();
 
    protected:
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;

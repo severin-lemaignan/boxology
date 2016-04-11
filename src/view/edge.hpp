@@ -63,6 +63,9 @@ class GraphicsDirectedEdge
 
     void setUnderlyingConnection(ConnectionWeakPtr c) { _connection = c; }
 
+    void disableGraphicsEffects();
+    void enableGraphicsEffects();
+
 signals:
     void connectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
     void connectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);

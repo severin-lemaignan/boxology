@@ -70,6 +70,8 @@ class GraphicsNode : public QGraphicsObject {
 
     void hideHelpers();
     void showHelpers();
+    void disableGraphicsEffects();
+    void enableGraphicsEffects();
 
     /**
         * set a regular QWidget as central widget
@@ -83,7 +85,7 @@ class GraphicsNode : public QGraphicsObject {
     void add_sink();
     void add_source();
 
-   protected:
+protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         QGraphicsItem::mousePressEvent(event);
     }

@@ -326,3 +326,10 @@ void GraphicsNodeView::hideHelpers() {
 void GraphicsNodeView::showHelpers() {
      dynamic_cast<GraphicsNodeScene *>(scene())->showHelpers();
 }
+
+void GraphicsNodeView::disableGraphicsEffects() {
+     dynamic_cast<GraphicsNodeScene *>(scene())->disableGraphicsEffects();
+}
+void GraphicsNodeView::enableGraphicsEffects() {
+     dynamic_cast<GraphicsNodeScene *>(scene())->enableGraphicsEffects();
+}

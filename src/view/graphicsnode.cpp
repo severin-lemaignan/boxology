@@ -503,6 +503,16 @@ void GraphicsNode::showHelpers()
 
 }
 
+void GraphicsNode::disableGraphicsEffects()
+{
+    _effect->setEnabled(false);
+}
+
+void GraphicsNode::enableGraphicsEffects()
+{
+    _effect->setEnabled(true);
+}
+
 void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
     if (!_sub_structure_scene) {
