@@ -29,6 +29,8 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
         COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
     jnode["position"].append(node->x());
     jnode["position"].append(node->y());
+    jnode["size"].append(node->width());
+    jnode["size"].append(node->height());
 
     for (const auto port : node->ports()) {
         Json::Value jport;

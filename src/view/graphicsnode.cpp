@@ -39,8 +39,8 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
     : QGraphicsObject(parent),
       _node(node),
       _changed(false),
-      _width(150),
-      _height(120),
+      _width(_node.lock()->width()),
+      _height(_node.lock()->height()),
       _pen_default(QColor("#7F000000")),
       _pen_selected(QColor("#FFFF36A7"))
       // , _pen_selected(QColor("#FFFFA836"))
@@ -179,6 +179,8 @@ void GraphicsNode::setSize(const QPointF size) {
 void GraphicsNode::setSize(const QSizeF size) {
     _width = size.width();
     _height = size.height();
+    updateNodePos();
+
     _changed = true;
     prepareGeometryChange();
     updateGeometry();

@@ -171,6 +171,11 @@ Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
             node->y(n["position"][1].asDouble());
         }
 
+        if (n.isMember("size")) {
+            node->width(n["size"][0].asDouble());
+            node->height(n["size"][1].asDouble());
+        }
+
         for (auto p : n["ports"]) {
             Port::Type type;
             if (p["type"].asString() == "latent")
