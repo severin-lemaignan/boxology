@@ -10,9 +10,9 @@
 using namespace std;
 
 void TikzVisitor::startUp() {
-    ss << "\\documentclass{article}" << endl;
+    ss << "\\documentclass[tikz]{standalone}" << endl;
+    ss << "%\\documentclass[tikz,convert=pdf2svg]{standalone} % generate a SVG file automatically" << endl;
     ss << endl;
-    ss << "\\usepackage{tikz}" << endl;
     ss << "\\usetikzlibrary{positioning}" << endl;
     ss << endl;
     ss << endl;
@@ -27,17 +27,14 @@ void TikzVisitor::startUp() {
     }
     
     ss << "\n\\begin{document}" << endl;
-    ss << "    \\begin{figure}" << endl;
-    ss << "    \\centering" << endl;
     ss << endl;
 
-    ss << "    \\resizebox{\\textwidth}{!}{%" << endl;
-    ss << "    \\begin{tikzpicture}[" << endl;
-    ss << "                 font=\\sffamily," << endl;
-    ss << "                 >=latex," << endl;
-    ss << "                 every edge/.style={draw, very thick}," << endl;
-    ss << "                 node/.style={draw, rounded corners, align=center, inner sep=5pt, fill=black!20}," << endl;
-    ss << "                 label/.style={midway, align=center, "
+    ss << "\\begin{tikzpicture}[" << endl;
+    ss << "             font=\\sffamily," << endl;
+    ss << "             >=latex," << endl;
+    ss << "             every edge/.style={draw, very thick}," << endl;
+    ss << "             node/.style={draw, rounded corners, align=center, inner sep=5pt, fill=black!20}," << endl;
+    ss << "             label/.style={midway, align=center, "
           "fill=white, text width=20mm}]" << endl;
     ss << endl;
 
@@ -46,11 +43,7 @@ void TikzVisitor::startUp() {
 
 void TikzVisitor::tearDown() {
     ss << endl;
-    ss << "    \\end{tikzpicture}" << endl;
-    ss << "    }" << endl;
-    ss << "    \\label{fig:" << make_tex_id(architecture.name) << "}" << endl;
-    ss << "    \\caption{The {\\sc " << architecture.name << "} architecture}" << endl;
-    ss << "    \\end{figure}" << endl;
+    ss << "\\end{tikzpicture}" << endl;
     ss << "\\end{document}" << endl;
 
     _content = ss.str();
