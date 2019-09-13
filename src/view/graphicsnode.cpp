@@ -197,11 +197,18 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change,
             }
             break;
         }
-        case QGraphicsItem::ItemPositionChange:
-        case QGraphicsItem::ItemPositionHasChanged:
+        case QGraphicsItem::ItemPositionChange: {
+            // snap position to grid
+            QPointF newPos = value.toPointF();
+            qreal xV = round(newPos.x()/GRIDSIZE)*GRIDSIZE;
+            qreal yV = round(newPos.y()/GRIDSIZE)*GRIDSIZE;
+            return QPointF(xV, yV);
+        }
+        case QGraphicsItem::ItemPositionHasChanged: {
             propagateChanges();
             updateNodePos();
             break;
+        }
 
         default:
             break;

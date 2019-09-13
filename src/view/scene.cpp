@@ -255,26 +255,25 @@ void GraphicsNodeScene::drawBackground(QPainter *painter, const QRectF &rect) {
     QGraphicsScene::drawBackground(painter, rect);
 
     // augment the painted with grid
-    const int gridsize = 20;
     auto left = static_cast<int>(std::floor(rect.left()));
     auto right = static_cast<int>(std::ceil(rect.right()));
     auto top = static_cast<int>(std::floor(rect.top()));
     auto bottom = static_cast<int>(std::ceil(rect.bottom()));
 
     // compute indices of lines to draw
-    const auto first_left = left - (left % gridsize);
-    const auto first_top = top - (top % gridsize);
+    const auto first_left = left - (left % GRIDSIZE);
+    const auto first_top = top - (top % GRIDSIZE);
 
     // compute lines to draw and
     std::vector<QLine> lines_light;
     std::vector<QLine> lines_dark;
-    for (auto x = first_left; x <= right; x += gridsize) {
+    for (auto x = first_left; x <= right; x += GRIDSIZE) {
         if (x % 100 != 0)
             lines_light.push_back(QLine(x, top, x, bottom));
         else
             lines_dark.push_back(QLine(x, top, x, bottom));
     }
-    for (auto y = first_top; y <= bottom; y += gridsize) {
+    for (auto y = first_top; y <= bottom; y += GRIDSIZE) {
         if (y % 100 != 0)
             lines_light.push_back(QLine(left, y, right, y));
         else

@@ -165,7 +165,11 @@ void GraphicsNodeView::mouseMoveEvent(QMouseEvent *event) {
     } else if (_resize_event && (event->buttons() & Qt::LeftButton)) {
         QPointF size =
             mapToScene(event->pos()) - _resize_event->node->mapToScene(0, 0);
-        _resize_event->node->setSize(size);
+
+        // snap to grid size
+        auto width = round(size.x() / GRIDSIZE) * GRIDSIZE;
+        auto height = round(size.y() / GRIDSIZE) * GRIDSIZE;
+        _resize_event->node->setSize(width, height);
     } else {
         // no button is pressed, so indicate what the user can do with
         // the item by changing the cursor

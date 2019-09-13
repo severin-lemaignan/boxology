@@ -107,10 +107,10 @@ protected:
 
     // TODO: change pairs of sizes to QPointF, QSizeF, or quadrupels to QRectF
 
-    const qreal _hard_min_width = 150.0;
+    const qreal _hard_min_width = 160.0;
     const qreal _hard_min_height = 120.0;
 
-    qreal _min_width = 150.0;
+    qreal _min_width = 160.0;
     qreal _min_height = 120.0;
 
     const qreal _top_margin = 30.0;

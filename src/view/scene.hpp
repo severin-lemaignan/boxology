@@ -15,6 +15,8 @@
 #include "graphicsnode.hpp"
 #include "edge.hpp"
 
+const int GRIDSIZE=20;
+
 class GraphicsNodeScene : public QGraphicsScene {
     Q_OBJECT
 
