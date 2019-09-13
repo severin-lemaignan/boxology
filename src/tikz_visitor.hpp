@@ -20,6 +20,7 @@ private:
     void tearDown() override;
 
 private:
+    std::string sanitize_tex(const std::string& text);
     std::string make_tex_id(const std::string& name);
     std::string tikz_unit(const double dim);
 
@@ -27,8 +28,7 @@ private:
 
     Architecture* _architecture;
 
-    const double scale = 0.13;
-    const double global_scale = 0.6;
+    const double pix2mm = 0.13;
 };
 
 #endif

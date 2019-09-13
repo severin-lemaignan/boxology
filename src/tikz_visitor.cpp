@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <string>
 
+#include <boost/algorithm/string.hpp> // for search and replace
+
 #include "tikz_visitor.hpp"
 
 #include "cognitive_function.hpp"
@@ -36,7 +38,7 @@ void TikzVisitor::startUp() {
     ss << "                 every edge/.style={draw, very thick}," << endl;
     ss << "                 node/.style={draw, rounded corners, align=center, inner sep=5pt, fill=black!20}," << endl;
     ss << "                 label/.style={midway, align=center, "
-          "font=\\scriptsize\\sffamily, fill=white, text width=20mm}]" << endl;
+          "fill=white, text width=20mm}]" << endl;
     ss << endl;
 
 
@@ -63,10 +65,12 @@ void TikzVisitor::onNode(shared_ptr<const Node> node) {
     ss << "        \\node "
           "at (" << tikz_unit(node->x()) << "," << tikz_unit(-node->y()) << ") "
           "[node, "
+          "anchor=north west, "
+          "text width=" << tikz_unit(node->width()) << ", "
           "minimum width=" << tikz_unit(node->width()) << ", "
           "minimum height=" << tikz_unit(node->height()) << ", "
           "fill=" << make_tex_id(COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function())) << "!50]" <<
-          " (" << make_tex_id(node->name()) << ") {" << node->name() << "};";
+          " (" << make_tex_id(node->name()) << ") {" << sanitize_tex(node->name()) << "};";
     ss << endl;
 
     //for (const auto port : node->ports()) {
@@ -86,9 +90,16 @@ void TikzVisitor::onConnection(shared_ptr<const Connection> connection) {
     auto from = connection->from.node.lock();
     auto to = connection->to.node.lock();
 
-    ss << "        \\path (" << make_tex_id(from->name()) << ") "
-           "edge [->, bend right] node[label] {" << connection->name << "}"
-           "(" << make_tex_id(to->name()) << ");" << endl;
+    if (connection->name == "anonymous") {
+        ss << "        \\path (" << make_tex_id(from->name()) << ") "
+            "edge [->, out=0, in=180] "
+            "(" << make_tex_id(to->name()) << ");" << endl;
+    }
+    else {
+        ss << "        \\path (" << make_tex_id(from->name()) << ") "
+            "edge [->, out=0, in=180] node[label] {" << sanitize_tex(connection->name) << "}"
+            "(" << make_tex_id(to->name()) << ");" << endl;
+    }
 
 }
 
@@ -96,9 +107,38 @@ void TikzVisitor::onConnection(shared_ptr<const Connection> connection) {
 string TikzVisitor::tikz_unit(const double dim) {
 
     stringstream ss;
-    ss << (int) (dim * scale) <<"mm";
+    ss << (int) (dim * pix2mm) <<"mm";
     return ss.str();
  
+}
+
+string TikzVisitor::sanitize_tex(const std::string& text) {
+    string result(text);
+
+    // special-case the backslash
+    boost::replace_all(result, "\\", "\\textbackslash");
+
+    map <string, string> tex_substitutions { 
+            {"{", "\\{"},
+            {"}", "\\}"},
+            {"$", "\\$"},
+            {"&", "\\&"},
+            {"#", "\\#"},
+            {"^", "\\textasciicircum{}"},
+            {"_", "\\_"},
+            {"~", "\\textasciitilde{}"},
+            {"%", "\\%"}
+    };
+
+    for (const auto& kv : tex_substitutions) {
+        boost::replace_all(result, kv.first, kv.second);
+    }
+
+    // finish the backslash special-case
+    boost::replace_all(result, "textbackslash", "textbackslash{}");
+
+    return result;
+
 }
 
 string TikzVisitor::make_tex_id(const std::string& name) {
@@ -121,6 +161,10 @@ string TikzVisitor::make_tex_id(const std::string& name) {
         case ')':
         case '<':
         case '>':
+        case '&':
+        case ',':
+        case '/':
+        case '\'':
             break;
         default:
             result += tolower(c);
