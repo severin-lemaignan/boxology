@@ -180,10 +180,27 @@ void GraphicsNodeView::mouseMoveEvent(QMouseEvent *event) {
                 QPointF itemPos = item->mapFromScene(scenePos);
                 if (item->isInSocketCircle(itemPos))
                     viewport()->setCursor(Qt::OpenHandCursor);
+
                 else
                     viewport()->setCursor(Qt::ArrowCursor);
-            } else
+            }
+            else {
+
+            QGraphicsItem *item = itemAt(event->pos());
+            if(item && item->type() == GraphicsNodeItemTypes::TypeNode) {
+                QPointF scenePos = mapToScene(event->pos());
+                QPointF eventPos = item->mapFromScene(scenePos);
+                GraphicsNode *node = static_cast<GraphicsNode *>(item);
+                
+                // resize corner?
+                if (eventPos.x() > (node->width() - 10) && eventPos.y() > (node->height() - 10))
+                    viewport()->setCursor(Qt::SizeFDiagCursor); 
+                else
+                    viewport()->setCursor(Qt::SizeAllCursor);
+            }
+            else
                 viewport()->setCursor(Qt::ArrowCursor);
+            }
         }
         QGraphicsView::mouseMoveEvent(event);
     }
