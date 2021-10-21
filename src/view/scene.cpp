@@ -311,11 +311,6 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             break;
         }
 
-        ///// SAVE
-        case Qt::Key_S:
-            if (!(event->modifiers() == Qt::ControlModifier))
-                break;  // check for Ctrl+S
-
         ///// DUPLICATE
         case Qt::Key_D:
             if (!(event->modifiers() == Qt::ControlModifier))
