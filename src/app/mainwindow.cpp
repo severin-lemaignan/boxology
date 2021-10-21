@@ -33,6 +33,7 @@
 // node editor
 #include "../json_visitor.hpp"
 #include "../tikz_visitor.hpp"
+#include "../md_visitor.hpp"
 #include "../view/cogbutton.hpp"
 #include "../view/edge.hpp"
 #include "../view/graphicsnode.hpp"
@@ -289,7 +290,6 @@ void MainWindow::on_actionExport_to_TikZ_triggered() {
     _tikzPath = newPath;
     saveTikZ(_tikzPath.toStdString());
 }
-
 void MainWindow::saveTikZ(const std::string& filename) const {
     TikzVisitor tikz(*_active_arch);
     auto output = tikz.visit();
@@ -298,3 +298,24 @@ void MainWindow::saveTikZ(const std::string& filename) const {
 
     tikz_file << output;
 }
+
+void MainWindow::on_actionExport_to_Md_triggered() {
+    QString newPath = QFileDialog::getSaveFileName(
+        0, tr("Export to Markdown"), _mdPath, tr("Markdown files (*.md)"));
+
+    if (newPath.isEmpty()) return;
+
+    _mdPath = newPath;
+    saveMd(_mdPath.toStdString());
+}
+
+void MainWindow::saveMd(const std::string& filename) const {
+    MdVisitor md(*_active_arch);
+    auto output = md.visit();
+
+    ofstream md_file(filename, std::ofstream::out);
+
+    md_file << output;
+}
+
+

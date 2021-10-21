@@ -39,6 +39,7 @@ class MainWindow : public QMainWindow {
     void on_actionExport_to_PNG_triggered();
     void on_actionSave_to_SVG_triggered();
     void on_actionExport_to_TikZ_triggered();
+    void on_actionExport_to_Md_triggered();
     void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
    private:
@@ -46,6 +47,7 @@ class MainWindow : public QMainWindow {
                   filename);  // not const, as it modifies the window title
     void savePng(const QString& filename) const;
     void saveTikZ(const std::string& filename) const;
+    void saveMd(const std::string& filename) const;
     void saveSvg(const QString& filename) const;
 
     std::string hierarchy_name(const std::string& name,
@@ -69,6 +71,7 @@ class MainWindow : public QMainWindow {
     QString _pngPath;
     QString _svgPath;
     QString _tikzPath;
+    QString _mdPath;
 };
 
 #endif  // __MAINWINDOW_HPP

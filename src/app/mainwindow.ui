@@ -39,6 +39,7 @@
    <addaction name="actionExport_to_PNG"/>
    <addaction name="actionSave_to_SVG"/>
    <addaction name="actionExport_to_TikZ"/>
+   <addaction name="actionExport_to_Md"/>
    <addaction name="separator"/>
   </widget>
   <widget class="QToolBar" name="cognitionToolbar">
@@ -150,6 +151,18 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionExport_to_Md">
+   <property name="icon">
+    <iconset theme="text-x-generic" resource="../../rc/resources.qrc">
+     <normaloff>:/icons/tex.png</normaloff>:/icons/tex.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export to Markdown</string>
+   </property>
+   <property name="toolTip">
+    <string>Export to Markdown</string>
    </property>
   </action>
  </widget>
