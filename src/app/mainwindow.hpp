@@ -34,6 +34,7 @@ class MainWindow : public QMainWindow {
    private slots:
     void on_actionAdd_node_triggered();
     void on_actionToJson_triggered();
+    void on_actionToJsonAs_triggered();
     void on_actionFromJson_triggered();
     void on_actionExport_to_PNG_triggered();
     void on_actionSave_to_SVG_triggered();

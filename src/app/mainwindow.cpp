@@ -134,6 +134,11 @@ void MainWindow::save(const std::string& filename) {
 
     json_file << output;
 
+    _active_arch->filename = filename;
+
+    ui->statusBar->showMessage(
+        "Saved to " + QString::fromStdString(filename), 3000);
+
     setWindowTitle(QCoreApplication::applicationName() + " - " +
                    QString::fromStdString(filename));
 }
@@ -150,6 +155,16 @@ void MainWindow::on_actionAdd_node_triggered() {
 }
 
 void MainWindow::on_actionToJson_triggered() {
+
+    if (!_active_arch->filename.empty()) {
+        save(_active_arch->filename);
+    }
+    else {
+        on_actionToJsonAs_triggered();
+    }
+}
+
+void MainWindow::on_actionToJsonAs_triggered() {
     auto newPath = QFileDialog::getSaveFileName(
         this, "Save architecture to json", _jsonPath, "JSON file (*.json)");
 
@@ -158,6 +173,7 @@ void MainWindow::on_actionToJson_triggered() {
     _jsonPath = newPath;
     save(_jsonPath.toStdString());
 }
+
 
 void MainWindow::on_actionFromJson_triggered() {
     auto filename = QFileDialog::getOpenFileName(

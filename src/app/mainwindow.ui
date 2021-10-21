@@ -34,6 +34,7 @@
    <addaction name="separator"/>
    <addaction name="actionFromJson"/>
    <addaction name="actionToJson"/>
+   <addaction name="actionToJsonAs"/>
    <addaction name="separator"/>
    <addaction name="actionExport_to_PNG"/>
    <addaction name="actionSave_to_SVG"/>
@@ -76,7 +77,7 @@
     <string>ToJson</string>
    </property>
    <property name="toolTip">
-    <string>Save to JSON</string>
+    <string>JSON Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -134,6 +135,21 @@
    </property>
    <property name="toolTip">
     <string>Export to PNG</string>
+   </property>
+  </action>
+  <action name="actionToJsonAs">
+   <property name="icon">
+    <iconset theme="document-save-as">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>ToJsonAs</string>
+   </property>
+   <property name="toolTip">
+    <string>JSON Save As...</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
  </widget>
