@@ -328,9 +328,12 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Space:
             for (auto graphicNode : selected()) {
                 if (!graphicNode->node().expired()) {
+                    graphicNode->setSelected(false);
                     auto copy = graphicNode->node().lock()->duplicate();
                     architecture->addNode(copy);
-                    this->add(copy)->setPos(graphicNode->pos());
+                    auto duplicatedGraphicNode = this->add(copy);
+                    duplicatedGraphicNode->setPos(graphicNode->pos());
+                    duplicatedGraphicNode->setSelected(true);
                 }
             }
             break;
