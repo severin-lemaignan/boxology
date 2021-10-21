@@ -1,26 +1,26 @@
 /* See LICENSE file for copyright and license details. */
 
-#include <cmath>
+#include "scene.hpp"
+
 #include <QColor>
-#include <QPainter>
-#include <QGraphicsTextItem>
-#include <QKeyEvent>
-#include <QGraphicsView>
 #include <QDebug>
+#include <QGraphicsTextItem>
+#include <QGraphicsView>
+#include <QKeyEvent>
+#include <QPainter>
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
-#include "scene.hpp"
-#include "socket.hpp"
 #include "../app/mainwindow.hpp"
+#include "socket.hpp"
 
 using namespace std;
 
 // TODO: move to graphicsnodeview. use graphicsnodescene for management
 
 GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
-                                     GraphicsNode* parent_node,
-                                     QObject *parent)
+                                     GraphicsNode *parent_node, QObject *parent)
     : QGraphicsScene(parent),
       architecture(architecture),
       parent_node(parent_node),
@@ -47,7 +47,8 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     setBackgroundBrush(_brush_background);
 
     // add text field with the architecture name
-    _arch_name->setHtml("<h1>" + QString::fromStdString(architecture->name) + "</h1>");
+    _arch_name->setHtml("<h1>" + QString::fromStdString(architecture->name) +
+                        "</h1>");
 
     _arch_name->setPos(0, 0);
     _arch_name->setDefaultTextColor(_color_bg_text);
@@ -57,7 +58,8 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
             &GraphicsNodeScene::onDescriptionChanged);
 
     // add text field with the architecture version
-    _arch_version->setHtml("<h2>" + QString::fromStdString(architecture->version) + "</h2>");
+    _arch_version->setHtml(
+        "<h2>" + QString::fromStdString(architecture->version) + "</h2>");
 
     _arch_version->setPos(0, _arch_name->boundingRect().height());
     _arch_version->setDefaultTextColor(_color_bg_text);
@@ -91,12 +93,10 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
 }
 
 void GraphicsNodeScene::remove(std::shared_ptr<GraphicsNode> graphicNode) {
-
     auto node = graphicNode->node();
     if (node.expired()) {
         qWarning() << "Deleting a GraphicsNode fir an already deleted node!";
-    }
-    else {
+    } else {
         architecture->removeNode(node.lock());
     }
 
@@ -104,19 +104,17 @@ void GraphicsNodeScene::remove(std::shared_ptr<GraphicsNode> graphicNode) {
     graphicNode.get()->disconnect();
 
     _nodes.erase(graphicNode);
-
 }
 
 void GraphicsNodeScene::remove(NodePtr node) {
-
     set<shared_ptr<GraphicsNode>> to_remove;
-    for(auto gn : _nodes) {
-        if(!gn->node().expired() && gn->node().lock() == node) {
+    for (auto gn : _nodes) {
+        if (!gn->node().expired() && gn->node().lock() == node) {
             to_remove.insert(gn);
         }
     }
 
-    for(auto gn : to_remove) {
+    for (auto gn : to_remove) {
         remove(gn);
     }
 }
@@ -182,9 +180,7 @@ void GraphicsNodeScene::onDescriptionChanged(const QString &content) {
     architecture->description = _arch_desc->toHtml().toStdString();
 }
 
-void GraphicsNodeScene::hideHelpers()
-{
-
+void GraphicsNodeScene::hideHelpers() {
     _paintBackground = false;
 
     for (auto node : _nodes) {
@@ -192,34 +188,29 @@ void GraphicsNodeScene::hideHelpers()
     }
 }
 
-void GraphicsNodeScene::showHelpers()
-{
+void GraphicsNodeScene::showHelpers() {
     _paintBackground = true;
 
-     for (auto node : _nodes) {
+    for (auto node : _nodes) {
         node->showHelpers();
-     }
+    }
 }
 
-void GraphicsNodeScene::disableGraphicsEffects()
-{
-     for (auto node : _nodes) {
+void GraphicsNodeScene::disableGraphicsEffects() {
+    for (auto node : _nodes) {
         node->disableGraphicsEffects();
-     }
-     for (auto edge : _edges) {
+    }
+    for (auto edge : _edges) {
         edge->disableGraphicsEffects();
-     }
-
+    }
 }
-void GraphicsNodeScene::enableGraphicsEffects()
-{
-     for (auto node : _nodes) {
+void GraphicsNodeScene::enableGraphicsEffects() {
+    for (auto node : _nodes) {
         node->enableGraphicsEffects();
-     }
-     for (auto edge : _edges) {
+    }
+    for (auto edge : _edges) {
         edge->enableGraphicsEffects();
-     }
-
+    }
 }
 
 set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
@@ -248,8 +239,7 @@ void GraphicsNodeScene::set_description(const string &name,
  * logic into the graphicsnodescene
  */
 void GraphicsNodeScene::drawBackground(QPainter *painter, const QRectF &rect) {
-
-    if(!_paintBackground) return;
+    if (!_paintBackground) return;
 
     // call parent method
     QGraphicsScene::drawBackground(painter, rect);
@@ -321,6 +311,11 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             break;
         }
 
+        ///// SAVE
+        case Qt::Key_S:
+            if (!(event->modifiers() == Qt::ControlModifier))
+                break;  // check for Ctrl+S
+
         ///// DUPLICATE
         case Qt::Key_D:
             if (!(event->modifiers() == Qt::ControlModifier))
@@ -352,17 +347,17 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
             }
             break;
         }
-                        
+
         ///// BACK TO PARENT ARCHITECTURE
         case Qt::Key_Escape: {
-            if(parent_node) {
-                auto topwindow = dynamic_cast<MainWindow*>(views()[0]->window());
-                topwindow->set_active_scene(dynamic_cast<GraphicsNodeScene*>(parent_node->scene()));
+            if (parent_node) {
+                auto topwindow =
+                    dynamic_cast<MainWindow *>(views()[0]->window());
+                topwindow->set_active_scene(
+                    dynamic_cast<GraphicsNodeScene *>(parent_node->scene()));
             }
             break;
         }
-
-
 
         ////// NOT HANDLED -> pass forward
         default:

@@ -5,12 +5,11 @@
 
 #include <QMainWindow>
 #include <QPainterPath>
-
 #include <memory>
 
 #include "../architecture.hpp"
-#include "../cognitive_function.hpp"
 #include "../architecture_manager.hpp"
+#include "../cognitive_function.hpp"
 
 class QResizeEvent;
 class GraphicsNodeView;
@@ -30,7 +29,7 @@ class MainWindow : public QMainWindow {
     void set_active_scene(GraphicsNodeScene* scene);
 
    protected:
-    virtual void resizeEvent(QResizeEvent *event);
+    virtual void resizeEvent(QResizeEvent* event);
 
    private slots:
     void on_actionAdd_node_triggered();
@@ -57,7 +56,7 @@ class MainWindow : public QMainWindow {
     std::unique_ptr<Architecture> _root_arch;
     Architecture* _active_arch;
 
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
 
     std::shared_ptr<GraphicsNodeView> _view;
     std::shared_ptr<GraphicsNodeScene> _root_scene;
@@ -65,11 +64,10 @@ class MainWindow : public QMainWindow {
 
     QPainterPath _path;
 
-
     QString _jsonPath;
     QString _pngPath;
     QString _svgPath;
     QString _tikzPath;
 };
 
-#endif // __MAINWINDOW_HPP
+#endif  // __MAINWINDOW_HPP

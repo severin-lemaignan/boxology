@@ -5,41 +5,39 @@
         std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] " << x; \
     } while (0)
 
-#include <QPen>
-#include <QColor>
-#include <QFont>
 #include <QBrush>
+#include <QButtonGroup>
+#include <QColor>
+#include <QColorDialog>
+#include <QFileDialog>
+#include <QFont>
 #include <QGraphicsItem>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsProxyWidget>
-#include <QColorDialog>
-#include <QPushButton>
-#include <QTextEdit>
-#include <QStatusBar>
-#include <QResizeEvent>
-#include <QButtonGroup>
-#include <QString>
 #include <QLineEdit>
-#include <QFileDialog>
 #include <QMessageBox>
+#include <QPen>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QStatusBar>
+#include <QString>
 #include <QSvgGenerator>
-
-#include <iostream>
+#include <QTextEdit>
 #include <fstream>
+#include <iostream>
+
 #include "../json/json.h"
 
 // node editor
-#include "../view/cogbutton.hpp"
-#include "../view/scene.hpp"
-#include "../view/view.hpp"
-#include "../view/graphicsnode.hpp"
-#include "../view/edge.hpp"
-
 #include "../json_visitor.hpp"
 #include "../tikz_visitor.hpp"
-
+#include "../view/cogbutton.hpp"
+#include "../view/edge.hpp"
+#include "../view/graphicsnode.hpp"
+#include "../view/scene.hpp"
+#include "../view/view.hpp"
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
@@ -52,14 +50,13 @@ MainWindow::MainWindow()
       _view(nullptr),
       _root_scene(nullptr),
       _active_scene(nullptr) {
-
     ui->setupUi(this);
 
     manager.list_models();
 
     // create and configure scene
-    _root_scene = make_shared<GraphicsNodeScene>(_root_arch.get(), nullptr, this);
-
+    _root_scene =
+        make_shared<GraphicsNodeScene>(_root_arch.get(), nullptr, this);
 
     _root_scene->setSceneRect(-32000, -32000, 64000, 64000);
 
@@ -81,19 +78,23 @@ MainWindow::MainWindow()
 
     spawnInitialNodes();
 
-    ui->statusBar->showMessage(QString::fromStdString(hierarchy_name("", _root_scene.get())));
+    ui->statusBar->showMessage(
+        QString::fromStdString(hierarchy_name("", _root_scene.get())));
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
-string MainWindow::hierarchy_name(const string& name, GraphicsNodeScene* scene) {
+string MainWindow::hierarchy_name(const string& name,
+                                  GraphicsNodeScene* scene) {
     if (!scene->parent_node) return name;
-    return  hierarchy_name(name, dynamic_cast<GraphicsNodeScene*>(scene->parent_node->scene())) + " > " + scene->architecture->name;
+    return hierarchy_name(name, dynamic_cast<GraphicsNodeScene*>(
+                                    scene->parent_node->scene())) +
+           " > " + scene->architecture->name;
 }
 
 void MainWindow::set_active_scene(GraphicsNodeScene* scene) {
-
-    ui->statusBar->showMessage(QString::fromStdString(hierarchy_name("", scene)));
+    ui->statusBar->showMessage(
+        QString::fromStdString(hierarchy_name("", scene)));
     _active_scene = scene;
     _view->setScene(scene);
 }
@@ -149,39 +150,36 @@ void MainWindow::on_actionAdd_node_triggered() {
 }
 
 void MainWindow::on_actionToJson_triggered() {
-
     auto newPath = QFileDialog::getSaveFileName(
         this, "Save architecture to json", _jsonPath, "JSON file (*.json)");
 
-    if (newPath.isEmpty())
-        return;
+    if (newPath.isEmpty()) return;
 
     _jsonPath = newPath;
     save(_jsonPath.toStdString());
-
 }
 
 void MainWindow::on_actionFromJson_triggered() {
-
     auto filename = QFileDialog::getOpenFileName(
         this, "Select an architecture to open", "", "*.json");
 
     if (filename.isNull()) return;
-
 
     try {
         auto toaddtoremove = _active_arch->load(filename.toStdString());
         auto newstuff = toaddtoremove.first;
         auto killedstuff = toaddtoremove.second;
 
-        _active_scene->set_description(_active_arch->name, _active_arch->version, _active_arch->description);
+        _active_scene->set_description(_active_arch->name,
+                                       _active_arch->version,
+                                       _active_arch->description);
 
         for (auto n : killedstuff.first) {
             _active_scene->remove(n);
         }
 
         DEBUG("Loaded " << newstuff.first.size() << " nodes and "
-                << newstuff.second.size() << " connections." << endl);
+                        << newstuff.second.size() << " connections." << endl);
 
         for (auto n : newstuff.first) {
             _active_scene->add(n);
@@ -190,18 +188,20 @@ void MainWindow::on_actionFromJson_triggered() {
             _active_scene->add(c);
         }
     } catch (Json::RuntimeError jre) {
-        QMessageBox::warning(0, "Error while loading an architecture",
-                QString::fromStdString(string("Unable to load the architecture from ") +
-                    filename.toStdString() + ":\n\nJSON syntax error."));
+        QMessageBox::warning(
+            0, "Error while loading an architecture",
+            QString::fromStdString(
+                string("Unable to load the architecture from ") +
+                filename.toStdString() + ":\n\nJSON syntax error."));
         return;
     } catch (runtime_error e) {
-        QMessageBox::warning(0, "Error while loading an architecture",
-                QString::fromStdString(string("Unable to load the architecture from ") +
-                    filename.toStdString() + ":\n\n" + e.what()));
+        QMessageBox::warning(
+            0, "Error while loading an architecture",
+            QString::fromStdString(
+                string("Unable to load the architecture from ") +
+                filename.toStdString() + ":\n\n" + e.what()));
         return;
     }
-
-
 }
 
 void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
@@ -211,20 +211,16 @@ void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
 }
 
 void MainWindow::on_actionSave_to_SVG_triggered() {
+    QString newPath = QFileDialog::getSaveFileName(0, tr("Save SVG"), _svgPath,
+                                                   tr("SVG files (*.svg)"));
 
-    QString newPath = QFileDialog::getSaveFileName(0, tr("Save SVG"),
-        _svgPath, tr("SVG files (*.svg)"));
-
-    if (newPath.isEmpty())
-        return;
+    if (newPath.isEmpty()) return;
 
     _svgPath = newPath;
     saveSvg(_svgPath);
 }
 
-void MainWindow::saveSvg(const QString& path) const
-{
-
+void MainWindow::saveSvg(const QString& path) const {
     QSvgGenerator generator;
     generator.setFileName(path);
     generator.setSize(_view->visibleRegion().boundingRect().size());
@@ -241,25 +237,22 @@ void MainWindow::saveSvg(const QString& path) const
 }
 
 void MainWindow::on_actionExport_to_PNG_triggered() {
+    QString newPath = QFileDialog::getSaveFileName(0, tr("Save PNG"), _pngPath,
+                                                   tr("PNG files (*.png)"));
 
-    QString newPath = QFileDialog::getSaveFileName(0, tr("Save PNG"),
-        _pngPath, tr("PNG files (*.png)"));
-
-    if (newPath.isEmpty())
-        return;
+    if (newPath.isEmpty()) return;
 
     _pngPath = newPath;
     savePng(_pngPath);
 }
 
-
-void MainWindow::savePng(const QString& path) const
-{
-
-    const int RESOLUTION = 300; //dpi
-    auto width = _view->visibleRegion().boundingRect().width() / _view->physicalDpiX() * RESOLUTION;
-    auto height = _view->visibleRegion().boundingRect().height() / _view->physicalDpiY() * RESOLUTION;
-    QImage image(width,height,QImage::Format_ARGB32);
+void MainWindow::savePng(const QString& path) const {
+    const int RESOLUTION = 300;  // dpi
+    auto width = _view->visibleRegion().boundingRect().width() /
+                 _view->physicalDpiX() * RESOLUTION;
+    auto height = _view->visibleRegion().boundingRect().height() /
+                  _view->physicalDpiY() * RESOLUTION;
+    QImage image(width, height, QImage::Format_ARGB32);
 
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -271,27 +264,21 @@ void MainWindow::savePng(const QString& path) const
     image.save(path);
 }
 
-void MainWindow::on_actionExport_to_TikZ_triggered()
-{
+void MainWindow::on_actionExport_to_TikZ_triggered() {
+    QString newPath = QFileDialog::getSaveFileName(
+        0, tr("Export to TikZ"), _tikzPath, tr("TikZ files (*.tex)"));
 
-    QString newPath = QFileDialog::getSaveFileName(0, tr("Export to TikZ"),
-        _tikzPath, tr("TikZ files (*.tex)"));
-
-    if (newPath.isEmpty())
-        return;
+    if (newPath.isEmpty()) return;
 
     _tikzPath = newPath;
     saveTikZ(_tikzPath.toStdString());
-
 }
 
 void MainWindow::saveTikZ(const std::string& filename) const {
-
     TikzVisitor tikz(*_active_arch);
     auto output = tikz.visit();
 
     ofstream tikz_file(filename, std::ofstream::out);
 
     tikz_file << output;
-
 }
