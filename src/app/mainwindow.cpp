@@ -125,8 +125,7 @@ void MainWindow::spawnInitialNodes() {
     _root_scene->add(conn);
 }
 
-void MainWindow::save(const std::string& filename) const {
-
+void MainWindow::save(const std::string& filename) {
     JsonVisitor json(*_active_arch);
     auto output = json.visit();
 
@@ -134,6 +133,8 @@ void MainWindow::save(const std::string& filename) const {
 
     json_file << output;
 
+    setWindowTitle(QCoreApplication::applicationName() + " - " +
+                   QString::fromStdString(filename));
 }
 
 void MainWindow::on_actionAdd_node_triggered() {

@@ -41,14 +41,15 @@ class MainWindow : public QMainWindow {
     void on_actionExport_to_TikZ_triggered();
     void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
-
    private:
-    void save(const std::string& filename) const;
+    void save(const std::string&
+                  filename);  // not const, as it modifies the window title
     void savePng(const QString& filename) const;
     void saveTikZ(const std::string& filename) const;
     void saveSvg(const QString& filename) const;
 
-    std::string hierarchy_name(const std::string& name, GraphicsNodeScene* scene);
+    std::string hierarchy_name(const std::string& name,
+                               GraphicsNodeScene* scene);
     void spawnInitialNodes();
 
     ArchitectureManager manager;
