@@ -1,20 +1,20 @@
 /* See LICENSE file for copyright and license details. */
 
-#include <QPoint>
-#include <utility>
-#include <algorithm>
-#include <QPainter>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsDropShadowEffect>
-#include <iostream>
-#include <QMetaProperty>
-#include <QDebug>
-
-#include "scene.hpp"
-#include "graphicsnode.hpp"
-#include "socket.hpp"
-
 #include "edge.hpp"
+
+#include <QDebug>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsSceneMouseEvent>
+#include <QMetaProperty>
+#include <QPainter>
+#include <QPoint>
+#include <algorithm>
+#include <iostream>
+#include <utility>
+
+#include "graphicsnode.hpp"
+#include "scene.hpp"
+#include "socket.hpp"
 
 using namespace std;
 
@@ -28,6 +28,8 @@ GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
       _stop(stop),
       _factor(factor) {
     // setFlag(QGraphicsItem::ItemIsSelectable);
+
+    setAcceptHoverEvents(true);
 
     _pen.setColor(Qt::black);
     _pen.setWidth(2);
@@ -71,6 +73,16 @@ void GraphicsDirectedEdge::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     QGraphicsPathItem::mousePressEvent(event);
 }
 
+void GraphicsDirectedEdge::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
+    _pen.setColor("#555555");
+    update();
+}
+
+void GraphicsDirectedEdge::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
+    _pen.setColor(Qt::black);
+    update();
+}
+
 void GraphicsDirectedEdge::set_start(QPoint p) {
     _start = p;
     update_path();
@@ -83,16 +95,13 @@ void GraphicsDirectedEdge::set_stop(QPoint p) {
     placeLabel();
 }
 
-void GraphicsDirectedEdge::disableGraphicsEffects()
-{
+void GraphicsDirectedEdge::disableGraphicsEffects() {
     _effect->setEnabled(false);
 }
 
-void GraphicsDirectedEdge::enableGraphicsEffects()
-{
+void GraphicsDirectedEdge::enableGraphicsEffects() {
     _effect->setEnabled(true);
 }
-
 
 void GraphicsDirectedEdge::connect(GraphicsNode* source_node, Port* source_port,
                                    GraphicsNode* sink_node, Port* sink_port) {

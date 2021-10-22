@@ -3,16 +3,15 @@
 #ifndef __GRAPHICSBEZIEREDGE_HPP__95A023FB_C28F_48F5_9B9C_04F3DB5B7DB1
 #define __GRAPHICSBEZIEREDGE_HPP__95A023FB_C28F_48F5_9B9C_04F3DB5B7DB1
 
-#include <memory>
-
+#include <QGraphicsPathItem>
 #include <QPen>
 #include <QPoint>
 #include <QPointF>
-#include <QGraphicsPathItem>
-#include "graphicsnodedefs.hpp"
+#include <memory>
 
-#include "editablelabel.hpp"
 #include "../connection.hpp"
+#include "editablelabel.hpp"
+#include "graphicsnodedefs.hpp"
 
 class QGraphicsDropShadowEffect;
 class QGraphicsSceneMouseEvent;
@@ -66,12 +65,14 @@ class GraphicsDirectedEdge
     void disableGraphicsEffects();
     void enableGraphicsEffects();
 
-signals:
+   signals:
     void connectionEstablished(std::shared_ptr<GraphicsDirectedEdge> edge);
     void connectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
 
    protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
    private:
     ConnectionWeakPtr _connection;
