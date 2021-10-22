@@ -1,37 +1,33 @@
 /* See LICENSE file for copyright and license details. */
 
-#include <QPushButton>
-#include <QPen>
-#include <QPainter>
-#include <QPainterPath>
-#include <QGraphicsProxyWidget>
-#include <QLineEdit>
-#include <QLabel>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
-#include <QGraphicsTextItem>
-#include <QTextDocument>
+#include "graphicsnode.hpp"
+
+#include <QColorDialog>
+#include <QDebug>
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsProxyWidget>
-#include <QDebug>
-#include <QColorDialog>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsTextItem>
 #include <QGraphicsView>
-
+#include <QLabel>
+#include <QLineEdit>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPen>
+#include <QPushButton>
+#include <QTextDocument>
 #include <algorithm>
 #include <iostream>
-#include <tuple>
 #include <memory>
-
-#include "tinybutton.hpp"
-#include "editablelabel.hpp"
-
-#include "edge.hpp"
-#include "socket.hpp"
-#include "scene.hpp"
+#include <tuple>
 
 #include "../app/mainwindow.hpp"
-
-#include "graphicsnode.hpp"
+#include "edge.hpp"
+#include "editablelabel.hpp"
+#include "scene.hpp"
+#include "socket.hpp"
+#include "tinybutton.hpp"
 
 using namespace std;
 
@@ -114,7 +110,8 @@ GraphicsNode::~GraphicsNode() {
 QRectF GraphicsNode::boundingRect() const {
     return QRectF(-_pen_width / 2.0 - _socket_size, -_pen_width / 2.0,
                   _width + _pen_width / 2.0 + 2.0 * _socket_size,
-                  _height + _pen_width / 2.0).normalized();
+                  _height + _pen_width / 2.0)
+        .normalized();
 }
 
 void GraphicsNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
@@ -200,8 +197,8 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change,
         case QGraphicsItem::ItemPositionChange: {
             // snap position to grid
             QPointF newPos = value.toPointF();
-            qreal xV = round(newPos.x()/GRIDSIZE)*GRIDSIZE;
-            qreal yV = round(newPos.y()/GRIDSIZE)*GRIDSIZE;
+            qreal xV = round(newPos.x() / GRIDSIZE) * GRIDSIZE;
+            qreal yV = round(newPos.y() / GRIDSIZE) * GRIDSIZE;
             return QPointF(xV, yV);
         }
         case QGraphicsItem::ItemPositionHasChanged: {
@@ -355,7 +352,6 @@ void GraphicsNode::updateNodePos() {
     node->y(y());
     node->width(width());
     node->height(height());
-
 }
 
 void GraphicsNode::add_sink() {
@@ -493,8 +489,7 @@ void GraphicsNode::setColors(const QColor &base) {
     update(boundingRect());
 }
 
-void GraphicsNode::hideHelpers()
-{
+void GraphicsNode::hideHelpers() {
     _new_sink_btn->hide();
     _new_source_btn->hide();
 
@@ -502,37 +497,30 @@ void GraphicsNode::hideHelpers()
     for (auto socket : _sinks) socket->hideHelpers();
 }
 
-void GraphicsNode::showHelpers()
-{
+void GraphicsNode::showHelpers() {
     _new_sink_btn->show();
     _new_source_btn->show();
 
     for (auto socket : _sources) socket->showHelpers();
     for (auto socket : _sinks) socket->showHelpers();
-
 }
 
-void GraphicsNode::disableGraphicsEffects()
-{
-    _effect->setEnabled(false);
-}
+void GraphicsNode::disableGraphicsEffects() { _effect->setEnabled(false); }
 
-void GraphicsNode::enableGraphicsEffects()
-{
-    _effect->setEnabled(true);
-}
+void GraphicsNode::enableGraphicsEffects() { _effect->setEnabled(true); }
 
 void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-
     if (!_sub_structure_scene) {
-        qDebug() << "Initializing a sub-architecture for node " << QString::fromStdString(_node.lock()->name());
+        qDebug() << "Initializing a sub-architecture for node "
+                 << QString::fromStdString(_node.lock()->name());
         _sub_structure.reset(new Architecture(_node.lock()->uuid));
         _sub_structure->name = _node.lock()->name();
         _sub_structure->description = _node.lock()->name() + " is...";
-        _sub_structure_scene.reset(new GraphicsNodeScene(_sub_structure.get(), this, scene()->parent()));
+        _sub_structure_scene.reset(new GraphicsNodeScene(
+            _sub_structure.get(), this, scene()->parent()));
     }
 
-    auto topwindow = dynamic_cast<MainWindow*>(scene()->views()[0]->window());
+    auto topwindow = dynamic_cast<MainWindow *>(scene()->views()[0]->window());
     topwindow->set_active_scene(_sub_structure_scene.get());
 
     QGraphicsItem::mouseDoubleClickEvent(event);

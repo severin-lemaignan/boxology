@@ -3,20 +3,19 @@
 #ifndef __GRAPHICSNODE_HPP__0707C377_95A2_4E0B_B98B_7E4813001982
 #define __GRAPHICSNODE_HPP__0707C377_95A2_4E0B_B98B_7E4813001982
 
+#include <QBrush>
+#include <QGraphicsObject>
+#include <QPen>
+#include <QPointF>
+#include <QRectF>
+#include <QString>
+#include <QVariant>
 #include <vector>
 
-#include <QPen>
-#include <QBrush>
-#include <QRectF>
-#include <QPointF>
-#include <QGraphicsObject>
-#include <QVariant>
-#include <QString>
-
+#include "../architecture.hpp"
+#include "../node.hpp"
 #include "edge.hpp"
 #include "graphicsnodedefs.hpp"
-#include "../node.hpp"
-#include "../architecture.hpp"
 
 class QWidget;
 class QPushButton;
@@ -74,8 +73,8 @@ class GraphicsNode : public QGraphicsObject {
     void enableGraphicsEffects();
 
     /**
-        * set a regular QWidget as central widget
-        */
+     * set a regular QWidget as central widget
+     */
     void setCentralWidget(QWidget *widget);
 
     void refreshNode();
@@ -85,7 +84,7 @@ class GraphicsNode : public QGraphicsObject {
     void add_sink();
     void add_source();
 
-protected:
+   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         QGraphicsItem::mousePressEvent(event);
     }
@@ -150,7 +149,6 @@ protected:
 
     std::unique_ptr<Architecture> _sub_structure;
     std::unique_ptr<GraphicsNodeScene> _sub_structure_scene;
-
 };
 
 #endif /* __GRAPHICSNODE_HPP__0707C377_95A2_4E0B_B98B_7E4813001982 */

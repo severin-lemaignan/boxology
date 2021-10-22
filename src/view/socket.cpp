@@ -1,25 +1,23 @@
 /* See LICENSE file for copyright and license details. */
 
-#include <QPainter>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneDragDropEvent>
-#include <QGraphicsScene>
-#include <QFont>
-#include <QFontMetrics>
-#include <QList>
-#include <QDrag>
-#include <QMimeData>
-#include <QMessageBox>
+#include "socket.hpp"
 
 #include <QDebug>
-
-#include <iostream>
+#include <QDrag>
+#include <QFont>
+#include <QFontMetrics>
+#include <QGraphicsScene>
+#include <QGraphicsSceneDragDropEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QList>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QPainter>
 #include <algorithm>
+#include <iostream>
 
-#include "tinybutton.hpp"
 #include "edge.hpp"
-
-#include "socket.hpp"
+#include "tinybutton.hpp"
 
 using namespace std;
 
@@ -28,10 +26,11 @@ using namespace std;
 
 #define PEN_COLOR_CIRCLE QColor("#FF000000")
 #define PEN_COLOR_TEXT QColor("#FFFFFFFF")
-#define BRUSH_COLOR_SINK QColor("#FF0077FF")
-#define BRUSH_COLOR_SOURCE QColor("#FFFF7700")
 #define TEXT_ALIGNMENT_SINK Qt::AlignLeft
 #define TEXT_ALIGNMENT_SOURCE Qt::AlignRight
+// color of sink/source sockets
+#define BRUSH_COLOR_SINK QColor("#FF0077FF")
+#define BRUSH_COLOR_SOURCE QColor("#FFFF7700")
 
 // const qreal height = 20.0;
 // const qreal width = 30.0;
@@ -140,8 +139,8 @@ void GraphicsNodeSocket::placeLabel() {
 
 QPointF GraphicsNodeSocket::sceneAnchorPos() const { return mapToScene(0, 0); }
 
-void GraphicsNodeSocket::hideHelpers() {_delete_button->hide();}
-void GraphicsNodeSocket::showHelpers() {_delete_button->show();}
+void GraphicsNodeSocket::hideHelpers() { _delete_button->hide(); }
+void GraphicsNodeSocket::showHelpers() { _delete_button->show(); }
 
 void GraphicsNodeSocket::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem * /*option*/,

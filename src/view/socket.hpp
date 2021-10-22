@@ -3,20 +3,20 @@
 #ifndef __GRAPHICSNODESOCKET_HPP__99275D3E_35A8_4D63_8E10_995E5DC83C8C
 #define __GRAPHICSNODESOCKET_HPP__99275D3E_35A8_4D63_8E10_995E5DC83C8C
 
-#include <memory>
-#include <set>
-#include <QString>
-#include <QRectF>
+#include <QBrush>
 #include <QGraphicsItem>
 #include <QPen>
-#include <QBrush>
 #include <QPointF>
+#include <QRectF>
 #include <QSizeF>
+#include <QString>
+#include <memory>
+#include <set>
 
+#include "../connection.hpp"
+#include "../node.hpp"
 #include "editablelabel.hpp"
 #include "graphicsnodedefs.hpp"
-#include "../node.hpp"
-#include "../connection.hpp"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneDragDropEvent;
@@ -37,7 +37,7 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     virtual QRectF boundingRect() const override;
 
     /*
-    */
+     */
     virtual void paint(QPainter *painter,
                        const QStyleOptionGraphicsItem *option,
                        QWidget *widget = 0) override;
