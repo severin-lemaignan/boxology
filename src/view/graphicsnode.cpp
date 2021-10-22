@@ -189,9 +189,27 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change,
         case QGraphicsItem::ItemSelectedChange: {
             if (value == true) {
                 setZValue(1);
+
+                for (auto s : _sinks) {
+                    s->highlight = true;
+                }
+
+                for (auto s : _sources) {
+                    s->highlight = true;
+                }
+
             } else {
                 setZValue(0);
+
+                for (auto s : _sinks) {
+                    s->highlight = false;
+                }
+
+                for (auto s : _sources) {
+                    s->highlight = false;
+                }
             }
+            update();
             break;
         }
         case QGraphicsItem::ItemPositionChange: {

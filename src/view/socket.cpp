@@ -28,15 +28,13 @@ using namespace std;
 #define PEN_COLOR_TEXT QColor("#FFFFFFFF")
 #define TEXT_ALIGNMENT_SINK Qt::AlignLeft
 #define TEXT_ALIGNMENT_SOURCE Qt::AlignRight
-// color of sink/source sockets
-#define BRUSH_COLOR_SINK QColor("#FF0077FF")
-#define BRUSH_COLOR_SOURCE QColor("#FFFF7700")
 
 // const qreal height = 20.0;
 // const qreal width = 30.0;
 
 GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
     : QGraphicsItem(parent),
+      highlight(false),
       _socket(socket),
       _socket_type(socket.port.lock()->direction),
       _pen_circle(PEN_COLOR_CIRCLE),

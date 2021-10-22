@@ -18,6 +18,10 @@
 #include "editablelabel.hpp"
 #include "graphicsnodedefs.hpp"
 
+// color of sink/source sockets
+#define BRUSH_COLOR_SINK QColor("#FF0077FF")
+#define BRUSH_COLOR_SOURCE QColor("#FFFF7700")
+
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneDragDropEvent;
 class GraphicsDirectedEdge;
@@ -91,6 +95,9 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
 
     void hideHelpers();
     void showHelpers();
+
+    // if true, the edges connected to this socket will be highlighted
+    bool highlight;
 
    protected:
     // event handling

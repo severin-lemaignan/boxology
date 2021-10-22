@@ -26,12 +26,13 @@ GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
       _effect(new QGraphicsDropShadowEffect()),
       _start(start),
       _stop(stop),
-      _factor(factor) {
+      _factor(factor),
+      _isHovered(false) {
     // setFlag(QGraphicsItem::ItemIsSelectable);
 
     setAcceptHoverEvents(true);
 
-    _pen.setColor(Qt::black);
+    _pen.setColor(DEFAULT_EDGE_COLOR);
     _pen.setWidth(2);
     setZValue(-1);
 
@@ -74,12 +75,12 @@ void GraphicsDirectedEdge::mousePressEvent(QGraphicsSceneMouseEvent* event) {
 }
 
 void GraphicsDirectedEdge::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
-    _pen.setColor("#555555");
+    _isHovered = true;
     update();
 }
 
 void GraphicsDirectedEdge::hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
-    _pen.setColor(Qt::black);
+    _isHovered = false;
     update();
 }
 
@@ -232,6 +233,25 @@ void GraphicsBezierEdge::paint(QPainter* painter,
         painter->setPen(_pen);
     else
         painter->setPen(_active_pen);
+
+    QColor color = DEFAULT_EDGE_COLOR;
+
+    if (_source->highlight) {
+        color = BRUSH_COLOR_SOURCE.darker();
+    }
+    if (_sink->highlight) {
+        color = BRUSH_COLOR_SINK.darker();
+    }
+
+    if (_isHovered) {
+        if (color == DEFAULT_EDGE_COLOR) {
+            color == DEFAULT_EDGE_HIGHLIGHT_COLOR;
+        } else {
+            color = color.lighter();
+        }
+    }
+
+    _pen.setColor(color);
 
     painter->drawPath(path());
 }

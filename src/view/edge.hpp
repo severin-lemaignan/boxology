@@ -21,6 +21,9 @@ class GraphicsNodeSocket;
 // TODO: move specific draw stuff out of the graphics-edge
 //       this may actually lead to the proper data model for a data layer
 
+const QColor DEFAULT_EDGE_COLOR = Qt::black;
+const QColor DEFAULT_EDGE_HIGHLIGHT_COLOR = QColor("#555555");
+
 class GraphicsDirectedEdge
     : public QObject,
       public QGraphicsPathItem,
@@ -101,6 +104,8 @@ class GraphicsDirectedEdge
 
     GraphicsNodeSocket* _source;
     GraphicsNodeSocket* _sink;
+
+    bool _isHovered;
 };
 
 class GraphicsBezierEdge : public GraphicsDirectedEdge {
