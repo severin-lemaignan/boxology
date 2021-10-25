@@ -201,8 +201,6 @@ void GraphicsNodeSocket::connect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
 void GraphicsNodeSocket::disconnect_edge(
     shared_ptr<GraphicsDirectedEdge> edge) {
     _edges.erase(edge);
-    notifyPositionChange();
-    update();
 }
 
 void GraphicsNodeSocket::disconnect() {
