@@ -62,9 +62,6 @@
    <property name="text">
     <string>Add node</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+A</string>
-   </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
    </property>
