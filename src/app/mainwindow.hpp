@@ -27,6 +27,7 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
 
     void set_active_scene(GraphicsNodeScene* scene);
+    void load(const std::string& filename);
 
    protected:
     virtual void resizeEvent(QResizeEvent* event);

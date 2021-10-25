@@ -32,8 +32,8 @@
 
 // node editor
 #include "../json_visitor.hpp"
-#include "../tikz_visitor.hpp"
 #include "../md_visitor.hpp"
+#include "../tikz_visitor.hpp"
 #include "../view/cogbutton.hpp"
 #include "../view/edge.hpp"
 #include "../view/graphicsnode.hpp"
@@ -137,8 +137,8 @@ void MainWindow::save(const std::string& filename) {
 
     _active_arch->filename = filename;
 
-    ui->statusBar->showMessage(
-        "Saved to " + QString::fromStdString(filename), 3000);
+    ui->statusBar->showMessage("Saved to " + QString::fromStdString(filename),
+                               3000);
 
     setWindowTitle(QCoreApplication::applicationName() + " - " +
                    QString::fromStdString(filename));
@@ -156,11 +156,9 @@ void MainWindow::on_actionAdd_node_triggered() {
 }
 
 void MainWindow::on_actionToJson_triggered() {
-
     if (!_active_arch->filename.empty()) {
         save(_active_arch->filename);
-    }
-    else {
+    } else {
         on_actionToJsonAs_triggered();
     }
 }
@@ -175,15 +173,18 @@ void MainWindow::on_actionToJsonAs_triggered() {
     save(_jsonPath.toStdString());
 }
 
-
 void MainWindow::on_actionFromJson_triggered() {
     auto filename = QFileDialog::getOpenFileName(
         this, "Select an architecture to open", "", "*.json");
 
     if (filename.isNull()) return;
 
+    load(filename.toStdString());
+}
+
+void MainWindow::load(const string& filename) {
     try {
-        auto toaddtoremove = _active_arch->load(filename.toStdString());
+        auto toaddtoremove = _active_arch->load(filename);
         auto newstuff = toaddtoremove.first;
         auto killedstuff = toaddtoremove.second;
 
@@ -208,15 +209,15 @@ void MainWindow::on_actionFromJson_triggered() {
         QMessageBox::warning(
             0, "Error while loading an architecture",
             QString::fromStdString(
-                string("Unable to load the architecture from ") +
-                filename.toStdString() + ":\n\nJSON syntax error."));
+                string("Unable to load the architecture from ") + filename +
+                ":\n\nJSON syntax error."));
         return;
     } catch (runtime_error e) {
         QMessageBox::warning(
             0, "Error while loading an architecture",
             QString::fromStdString(
-                string("Unable to load the architecture from ") +
-                filename.toStdString() + ":\n\n" + e.what()));
+                string("Unable to load the architecture from ") + filename +
+                ":\n\n" + e.what()));
         return;
     }
 }
@@ -317,5 +318,4 @@ void MainWindow::saveMd(const std::string& filename) const {
 
     md_file << output;
 }
-
 
