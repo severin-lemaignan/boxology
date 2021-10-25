@@ -178,7 +178,7 @@ void GraphicsNodeScene::onConnectionDisrupted(
 void GraphicsNodeScene::onDescriptionChanged(const QString &content) {
     architecture->name = _arch_name->toPlainText().toStdString();
     architecture->version = _arch_version->toPlainText().toStdString();
-    architecture->description = _arch_desc->toHtml().toStdString();
+    architecture->description = _arch_desc->toPlainText().toStdString();
 }
 
 void GraphicsNodeScene::hideHelpers() {
