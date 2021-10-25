@@ -23,6 +23,7 @@ class GraphicsNodeSocket;
 
 const QColor DEFAULT_EDGE_COLOR = Qt::black;
 const QColor DEFAULT_EDGE_HIGHLIGHT_COLOR = QColor("#555555");
+const QColor DEFAULT_EDGE_COLOR_SELECTED = QColor("#bccb16");
 
 class GraphicsDirectedEdge
     : public QObject,
@@ -73,7 +74,6 @@ class GraphicsDirectedEdge
     void connectionDisrupted(std::shared_ptr<GraphicsDirectedEdge> edge);
 
    protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 

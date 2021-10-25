@@ -3,27 +3,25 @@
 #ifndef __GRAPHICSNODESCENE_HPP__7F9E4C1E_8F4E_4BD2_BDF7_3D4ECEC206B5
 #define __GRAPHICSNODESCENE_HPP__7F9E4C1E_8F4E_4BD2_BDF7_3D4ECEC206B5
 
-#include <set>
-#include <memory>
-
-#include <QRectF>
 #include <QGraphicsScene>
+#include <QRectF>
+#include <memory>
+#include <set>
 
 #include "../architecture.hpp"
-#include "../node.hpp"
 #include "../connection.hpp"
-#include "graphicsnode.hpp"
+#include "../node.hpp"
 #include "edge.hpp"
+#include "graphicsnode.hpp"
 
-const int GRIDSIZE=20;
+const int GRIDSIZE = 20;
 
 class GraphicsNodeScene : public QGraphicsScene {
     Q_OBJECT
 
    public:
-    GraphicsNodeScene(Architecture* architecture, 
-                      GraphicsNode* parent_node = nullptr, 
-                      QObject* parent = 0);
+    GraphicsNodeScene(Architecture* architecture,
+                      GraphicsNode* parent_node = nullptr, QObject* parent = 0);
 
     std::shared_ptr<GraphicsNode> add(NodePtr node);
     void remove(std::shared_ptr<GraphicsNode> node);
@@ -32,6 +30,7 @@ class GraphicsNodeScene : public QGraphicsScene {
     std::shared_ptr<GraphicsDirectedEdge> make_edge();
 
     std::set<std::shared_ptr<GraphicsNode>> selected() const;
+    std::set<std::shared_ptr<GraphicsDirectedEdge>> selectedEdges() const;
 
     Architecture* architecture;
     GraphicsNode* parent_node;

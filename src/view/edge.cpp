@@ -28,7 +28,7 @@ GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
       _stop(stop),
       _factor(factor),
       _isHovered(false) {
-    // setFlag(QGraphicsItem::ItemIsSelectable);
+    setFlag(QGraphicsItem::ItemIsSelectable);
 
     setAcceptHoverEvents(true);
 
@@ -36,7 +36,7 @@ GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
     _pen.setWidth(2);
     setZValue(-1);
 
-    _active_pen.setColor("#bccb16");
+    _active_pen.setColor(DEFAULT_EDGE_COLOR_SELECTED);
     _active_pen.setWidth(2);
 
     _effect->setBlurRadius(15.0);
@@ -68,10 +68,6 @@ GraphicsDirectedEdge::~GraphicsDirectedEdge() {
     // else
     //    qWarning() << "[G] Edge deleted (connection "
     //            << QString::fromStdString(_connection.lock()->name) << ")";
-}
-
-void GraphicsDirectedEdge::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    QGraphicsPathItem::mousePressEvent(event);
 }
 
 void GraphicsDirectedEdge::hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
@@ -236,18 +232,22 @@ void GraphicsBezierEdge::paint(QPainter* painter,
 
     QColor color = DEFAULT_EDGE_COLOR;
 
-    if (_source->highlight) {
-        color = BRUSH_COLOR_SOURCE.darker();
-    }
-    if (_sink->highlight) {
-        color = BRUSH_COLOR_SINK.darker();
-    }
+    if (isSelected()) {
+        color = DEFAULT_EDGE_COLOR_SELECTED;
+    } else {
+        if (_source && _source->highlight() && !(_sink && _sink->highlight())) {
+            color = BRUSH_COLOR_SOURCE.darker();
+        }
+        if (_sink && _sink->highlight() && !(_source && _source->highlight())) {
+            color = BRUSH_COLOR_SINK.darker();
+        }
 
-    if (_isHovered) {
-        if (color == DEFAULT_EDGE_COLOR) {
-            color == DEFAULT_EDGE_HIGHLIGHT_COLOR;
-        } else {
-            color = color.lighter();
+        if (_isHovered) {
+            if (color == DEFAULT_EDGE_COLOR) {
+                color == DEFAULT_EDGE_HIGHLIGHT_COLOR;
+            } else {
+                color = color.lighter();
+            }
         }
     }
 

@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "../app/mainwindow.hpp"
+#include "edge.hpp"
 #include "socket.hpp"
 
 using namespace std;
@@ -95,7 +96,7 @@ shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {
 void GraphicsNodeScene::remove(std::shared_ptr<GraphicsNode> graphicNode) {
     auto node = graphicNode->node();
     if (node.expired()) {
-        qWarning() << "Deleting a GraphicsNode fir an already deleted node!";
+        qWarning() << "Deleting a GraphicsNode for an already deleted node!";
     } else {
         architecture->removeNode(node.lock());
     }
@@ -224,6 +225,17 @@ set<shared_ptr<GraphicsNode>> GraphicsNodeScene::selected() const {
     return selectedNodes;
 }
 
+set<shared_ptr<GraphicsDirectedEdge>> GraphicsNodeScene::selectedEdges() const {
+    set<shared_ptr<GraphicsDirectedEdge>> selectedEdges;
+
+    for (auto e : _edges) {
+        if (e->isSelected()) {
+            selectedEdges.insert(e);
+        }
+    }
+    return selectedEdges;
+}
+
 void GraphicsNodeScene::set_description(const string &name,
                                         const string &version,
                                         const string &desc) {
@@ -307,6 +319,9 @@ void GraphicsNodeScene::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Delete: {
             for (auto graphicNode : selected()) {
                 remove(graphicNode);
+            }
+            for (auto e : selectedEdges()) {
+                e->disconnect();
             }
             break;
         }
