@@ -97,7 +97,8 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     void showHelpers();
 
     // if true, the edges connected to this socket will be highlighted
-    bool highlight;
+    bool highlight() { return _highlight; }
+    void setHighlight(bool status);
 
    protected:
     // event handling
@@ -137,6 +138,8 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
 
     const qreal _min_width = 30;
     const qreal _min_height = 12.0;
+
+    bool _highlight;
 };
 
 #endif /* __GRAPHICSNODESOCKET_HPP__99275D3E_35A8_4D63_8E10_995E5DC83C8C */

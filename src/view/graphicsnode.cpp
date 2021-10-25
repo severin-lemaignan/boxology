@@ -191,22 +191,22 @@ QVariant GraphicsNode::itemChange(GraphicsItemChange change,
                 setZValue(1);
 
                 for (auto s : _sinks) {
-                    s->highlight = true;
+                    s->setHighlight(true);
                 }
 
                 for (auto s : _sources) {
-                    s->highlight = true;
+                    s->setHighlight(true);
                 }
 
             } else {
                 setZValue(0);
 
                 for (auto s : _sinks) {
-                    s->highlight = false;
+                    s->setHighlight(false);
                 }
 
                 for (auto s : _sources) {
-                    s->highlight = false;
+                    s->setHighlight(false);
                 }
             }
             update();

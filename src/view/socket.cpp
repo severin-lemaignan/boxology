@@ -34,7 +34,7 @@ using namespace std;
 
 GraphicsNodeSocket::GraphicsNodeSocket(Socket socket, QGraphicsItem *parent)
     : QGraphicsItem(parent),
-      highlight(false),
+      _highlight(false),
       _socket(socket),
       _socket_type(socket.port.lock()->direction),
       _pen_circle(PEN_COLOR_CIRCLE),
@@ -178,6 +178,14 @@ void GraphicsNodeSocket::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 bool GraphicsNodeSocket::isInSocketCircle(const QPointF &p) const {
     return p.x() >= -_circle_radius && p.x() <= _circle_radius &&
            p.y() >= -_circle_radius && p.y() <= _circle_radius;
+}
+
+void GraphicsNodeSocket::setHighlight(bool status) {
+    if (status != _highlight) {
+        for (auto &e : _edges) e->update();
+    }
+
+    _highlight = status;
 }
 
 void GraphicsNodeSocket::mousePressEvent(QGraphicsSceneMouseEvent *event) {
