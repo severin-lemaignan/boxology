@@ -1,14 +1,13 @@
-#include <QTextCursor>
-#include <QPainter>
+#include "editablelabel.hpp"
+
 #include <QFontDatabase>
+#include <QPainter>
+#include <QTextCursor>
 
 #include "scene.hpp"
 
-#include "editablelabel.hpp"
-
 EditableLabel::EditableLabel(QGraphicsItem *parent)
     : QGraphicsTextItem(parent) {
-
     setDefaultTextColor(Qt::white);
     setTextInteractionFlags(Qt::TextEditorInteraction |
                             Qt::LinksAccessibleByMouse);
@@ -45,7 +44,6 @@ EditableDescription::EditableDescription(QGraphicsItem *parent)
     : EditableLabel(parent),
       _is_editing(false),
       _typewriter_font(QFontDatabase::systemFont(QFontDatabase::FixedFont)) {
-
     setTextInteractionFlags(Qt::TextBrowserInteraction);
     setToolTip("Double click to edit");
     unsetCursor();
@@ -57,8 +55,7 @@ void EditableDescription::focusInEvent(QFocusEvent *event) {
 }
 
 void EditableDescription::focusOutEvent(QFocusEvent *event) {
-
-    if(_is_editing) {
+    if (_is_editing) {
         setTextInteractionFlags(Qt::TextBrowserInteraction);
         setToolTip("Double click to edit");
         unsetCursor();
@@ -76,8 +73,8 @@ void EditableDescription::focusOutEvent(QFocusEvent *event) {
     EditableLabel::focusOutEvent(event);
 }
 
-void EditableDescription::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-
+void EditableDescription::mouseDoubleClickEvent(
+    QGraphicsSceneMouseEvent *event) {
     setTextInteractionFlags(Qt::TextEditorInteraction);
     setCursor(Qt::IBeamCursor);
     setToolTip("");
@@ -97,7 +94,6 @@ void EditableDescription::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     setPlainText(content);
 
     EditableLabel::mouseDoubleClickEvent(event);
-
 }
 
 void EditableDescription::paint(QPainter *painter,

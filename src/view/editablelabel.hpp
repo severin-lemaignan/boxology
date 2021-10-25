@@ -2,10 +2,9 @@
 #define EDITABLELABEL_HPP
 
 #include <QCursor>
+#include <QFont>
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
-#include <QFont>
-
 
 class EditableLabel : public QGraphicsTextItem {
     Q_OBJECT
@@ -18,7 +17,7 @@ class EditableLabel : public QGraphicsTextItem {
 
     void focusOutEvent(QFocusEvent *event) override;
 
-signals:
+   signals:
     void contentUpdated(QString content);
 };
 
