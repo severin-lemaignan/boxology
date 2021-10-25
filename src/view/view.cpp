@@ -1,23 +1,20 @@
 /* See LICENSE file for copyright and license details. */
 
-#include <QWheelEvent>
-#include <QScrollBar>
-#include <QResizeEvent>
-#include <QGraphicsDropShadowEffect>
-#include <QResizeEvent>
-#include <QGraphicsItem>
+#include "view.hpp"
 
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsItem>
+#include <QResizeEvent>
+#include <QScrollBar>
+#include <QWheelEvent>
 #include <iostream>
 
-#include "scene.hpp"
-#include "graphicsnode.hpp"
-#include "socket.hpp"
-#include "graphicsnodedefs.hpp"
-#include "edge.hpp"
-
 #include "../node.hpp"
-
-#include "view.hpp"
+#include "edge.hpp"
+#include "graphicsnode.hpp"
+#include "graphicsnodedefs.hpp"
+#include "scene.hpp"
+#include "socket.hpp"
 
 GraphicsNodeView::GraphicsNodeView(QWidget *parent)
     : GraphicsNodeView(nullptr, parent) {}
@@ -183,23 +180,21 @@ void GraphicsNodeView::mouseMoveEvent(QMouseEvent *event) {
 
                 else
                     viewport()->setCursor(Qt::ArrowCursor);
-            }
-            else {
+            } else {
+                QGraphicsItem *item = itemAt(event->pos());
+                if (item && item->type() == GraphicsNodeItemTypes::TypeNode) {
+                    QPointF scenePos = mapToScene(event->pos());
+                    QPointF eventPos = item->mapFromScene(scenePos);
+                    GraphicsNode *node = static_cast<GraphicsNode *>(item);
 
-            QGraphicsItem *item = itemAt(event->pos());
-            if(item && item->type() == GraphicsNodeItemTypes::TypeNode) {
-                QPointF scenePos = mapToScene(event->pos());
-                QPointF eventPos = item->mapFromScene(scenePos);
-                GraphicsNode *node = static_cast<GraphicsNode *>(item);
-                
-                // resize corner?
-                if (eventPos.x() > (node->width() - 10) && eventPos.y() > (node->height() - 10))
-                    viewport()->setCursor(Qt::SizeFDiagCursor); 
-                else
-                    viewport()->setCursor(Qt::SizeAllCursor);
-            }
-            else
-                viewport()->setCursor(Qt::ArrowCursor);
+                    // resize corner?
+                    if (eventPos.x() > (node->width() - 10) &&
+                        eventPos.y() > (node->height() - 10))
+                        viewport()->setCursor(Qt::SizeFDiagCursor);
+                    else
+                        viewport()->setCursor(Qt::SizeAllCursor);
+                } else
+                    viewport()->setCursor(Qt::ArrowCursor);
             }
         }
         QGraphicsView::mouseMoveEvent(event);
@@ -228,38 +223,20 @@ void GraphicsNodeView::leftMouseButtonPress(QMouseEvent *event) {
                 // initialize a new drag mode event
                 _drag_event = new EdgeDragEvent();
                 auto edges = sock->get_edges();
-                if (edges.size() == 1) {
-                    // get the first edge
-                    for (auto e : edges) {
-                        _tmp_edge = e;
-                        break;
-                    }
 
-                    _drag_event->e = _tmp_edge;
-                    if (sock->socket_type() == Port::Direction::IN) {
-                        _drag_event->e->disconnect_sink();
-                        _drag_event->e->set_stop(mapToScene(event->pos()));
-                        _drag_event->mode = EdgeDragEvent::move_to_sink;
-                    } else {
-                        _drag_event->e->disconnect_source();
-                        _drag_event->e->set_start(mapToScene(event->pos()));
-                        _drag_event->mode = EdgeDragEvent::move_to_source;
-                    }
+                GraphicsNodeScene *gscene =
+                    dynamic_cast<GraphicsNodeScene *>(scene());
+
+                _drag_event->e = gscene->make_edge();
+
+                if (sock->socket_type() == Port::Direction::IN) {
+                    _drag_event->e->set_start(mapToScene(event->pos()));
+                    _drag_event->e->connect_sink(sock);
+                    _drag_event->mode = EdgeDragEvent::connect_to_source;
                 } else {
-                    GraphicsNodeScene *gscene =
-                        dynamic_cast<GraphicsNodeScene *>(scene());
-
-                    _drag_event->e = gscene->make_edge();
-
-                    if (sock->socket_type() == Port::Direction::IN) {
-                        _drag_event->e->set_start(mapToScene(event->pos()));
-                        _drag_event->e->connect_sink(sock);
-                        _drag_event->mode = EdgeDragEvent::connect_to_source;
-                    } else {
-                        _drag_event->e->connect_source(sock);
-                        _drag_event->e->set_stop(mapToScene(event->pos()));
-                        _drag_event->mode = EdgeDragEvent::connect_to_sink;
-                    }
+                    _drag_event->e->connect_source(sock);
+                    _drag_event->e->set_stop(mapToScene(event->pos()));
+                    _drag_event->mode = EdgeDragEvent::connect_to_sink;
                 }
                 event->ignore();
             } else {
@@ -342,15 +319,15 @@ GraphicsNodeSocket *GraphicsNodeView::socket_at(QPoint pos) {
 }
 
 void GraphicsNodeView::hideHelpers() {
-     dynamic_cast<GraphicsNodeScene *>(scene())->hideHelpers();
+    dynamic_cast<GraphicsNodeScene *>(scene())->hideHelpers();
 }
 void GraphicsNodeView::showHelpers() {
-     dynamic_cast<GraphicsNodeScene *>(scene())->showHelpers();
+    dynamic_cast<GraphicsNodeScene *>(scene())->showHelpers();
 }
 
 void GraphicsNodeView::disableGraphicsEffects() {
-     dynamic_cast<GraphicsNodeScene *>(scene())->disableGraphicsEffects();
+    dynamic_cast<GraphicsNodeScene *>(scene())->disableGraphicsEffects();
 }
 void GraphicsNodeView::enableGraphicsEffects() {
-     dynamic_cast<GraphicsNodeScene *>(scene())->enableGraphicsEffects();
+    dynamic_cast<GraphicsNodeScene *>(scene())->enableGraphicsEffects();
 }
