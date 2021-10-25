@@ -167,12 +167,16 @@ void GraphicsNodeSocket::paint(QPainter *painter,
 #endif
 }
 
-void GraphicsNodeSocket::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsItem::mouseMoveEvent(event);
+void GraphicsNodeSocket::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    QGraphicsItem::mousePressEvent(event);
 }
 
 void GraphicsNodeSocket::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsItem::mouseReleaseEvent(event);
+}
+
+void GraphicsNodeSocket::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    QGraphicsItem::mouseMoveEvent(event);
 }
 
 bool GraphicsNodeSocket::isInSocketCircle(const QPointF &p) const {
@@ -186,10 +190,6 @@ void GraphicsNodeSocket::setHighlight(bool status) {
     }
 
     _highlight = status;
-}
-
-void GraphicsNodeSocket::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsItem::mousePressEvent(event);
 }
 
 void GraphicsNodeSocket::connect_edge(shared_ptr<GraphicsDirectedEdge> edge) {
