@@ -3,7 +3,9 @@
 
 #include <memory>
 #include <string>
+
 #include "architecture.hpp"
+#include "node.hpp"
 
 class Visitor {
    public:
@@ -14,7 +16,7 @@ class Visitor {
    protected:
     virtual void startUp(){};
     virtual void beginNodes(){};
-    virtual void onNode(std::shared_ptr<const Node>) = 0;
+    virtual void onNode(ConstNodePtr) = 0;
     virtual void endNodes(){};
     virtual void beginConnections(){};
     virtual void onConnection(std::shared_ptr<const Connection>) = 0;
@@ -25,6 +27,5 @@ class Visitor {
 
     const Architecture& architecture;
 };
-
 
 #endif  // VISITOR_HPP
