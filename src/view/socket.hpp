@@ -100,6 +100,10 @@ class GraphicsNodeSocket : public QObject, public QGraphicsItem {
     bool highlight() { return _highlight; }
     void setHighlight(bool status);
 
+    void setDarkTheme() { _text->setDarkTheme(); }
+
+    void setLightTheme() { _text->setLightTheme(); }
+
    protected:
     // event handling
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

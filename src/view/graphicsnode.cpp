@@ -511,16 +511,32 @@ void GraphicsNode::hideHelpers() {
     _new_sink_btn->hide();
     _new_source_btn->hide();
 
-    for (auto socket : _sources) socket->hideHelpers();
-    for (auto socket : _sinks) socket->hideHelpers();
+    for (auto socket : _sources) {
+        socket->hideHelpers();
+        socket->setLightTheme();
+    }
+    for (auto socket : _sinks) {
+        socket->hideHelpers();
+        socket->setLightTheme();
+    }
+
+    _title_item->setLightTheme();
 }
 
 void GraphicsNode::showHelpers() {
     _new_sink_btn->show();
     _new_source_btn->show();
 
-    for (auto socket : _sources) socket->showHelpers();
-    for (auto socket : _sinks) socket->showHelpers();
+    for (auto socket : _sources) {
+        socket->showHelpers();
+        socket->setDarkTheme();
+    }
+    for (auto socket : _sinks) {
+        socket->showHelpers();
+        socket->setDarkTheme();
+    }
+
+    _title_item->setDarkTheme();
 }
 
 void GraphicsNode::disableGraphicsEffects() { _effect->setEnabled(false); }

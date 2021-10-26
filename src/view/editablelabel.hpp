@@ -6,6 +6,9 @@
 #include <QGraphicsTextItem>
 #include <QKeyEvent>
 
+const static QColor TEXT_DARK_THEME = Qt::white;
+const static QColor TEXT_LIGHT_THEME = QColor("#000000");
+
 class EditableLabel : public QGraphicsTextItem {
     Q_OBJECT
    public:
@@ -16,6 +19,15 @@ class EditableLabel : public QGraphicsTextItem {
     void focusInEvent(QFocusEvent *event) override;
 
     void focusOutEvent(QFocusEvent *event) override;
+
+    void setDarkTheme() {
+        setDefaultTextColor(TEXT_DARK_THEME);
+        update();
+    }
+    void setLightTheme() {
+        setDefaultTextColor(TEXT_LIGHT_THEME);
+        update();
+    }
 
    signals:
     void contentUpdated(QString content);

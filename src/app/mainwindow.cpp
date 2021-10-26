@@ -265,7 +265,7 @@ void MainWindow::on_actionExport_to_PNG_triggered() {
 }
 
 void MainWindow::savePng(const QString& path) const {
-    const int RESOLUTION = 300;  // dpi
+    const int RESOLUTION = 450;  // dpi
     auto width = _view->visibleRegion().boundingRect().width() /
                  _view->physicalDpiX() * RESOLUTION;
     auto height = _view->visibleRegion().boundingRect().height() /

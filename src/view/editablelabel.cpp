@@ -8,7 +8,7 @@
 
 EditableLabel::EditableLabel(QGraphicsItem *parent)
     : QGraphicsTextItem(parent) {
-    setDefaultTextColor(Qt::white);
+    setDefaultTextColor(TEXT_DARK_THEME);
     setTextInteractionFlags(Qt::TextEditorInteraction |
                             Qt::LinksAccessibleByMouse);
     setCursor(Qt::IBeamCursor);
