@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 project(boxology)
 
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
@@ -6,7 +6,8 @@ set(CPACK_PACKAGE_VERSION_MINOR "9")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 
-add_definitions(-std=c++11 -DBOXOLOGY_VERSION=${VERSION}) 
+set (CMAKE_CXX_STANDARD 11)
+add_definitions(-DBOXOLOGY_VERSION=${VERSION}) 
 
 set(CMAKE_BUILD_TYPE DEBUG)
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
