@@ -1,20 +1,20 @@
+image: Visual Studio 2017
 version: 1.0.{build}
 clone_folder: c:\projects\boxology
 
 environment:
   InstallPath: c:\projects\boxology\bin
   CONFIGURATION: Release
-  BOOST_ROOT: C:\Libraries\boost_1_58_0
-  BOOST_LIBRARYDIR: C:\Libraries\boost_1_58_0\stage\lib
+  BOOST_ROOT: C:\Libraries\boost_1_73_0
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_73_0\stage\lib
 
 init:
-- set QTDIR=C:\Qt\5.6\msvc2015_64
+- set QTDIR=C:\Qt\5.13.2\msvc2017_64
 - set PATH=%QTDIR%\bin;%PATH%
-# Setup MSVC - VS 2015
-- CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+- call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 
 build_script:
-- qmake.exe boxology.pro -r -spec win32-msvc2015 BOOST_ROOT=%BOOST_ROOT%
+- qmake.exe boxology.pro -r -spec win32-msvc BOOST_ROOT=%BOOST_ROOT%
 - nmake
 - cmd: >-
 
