@@ -25,7 +25,7 @@ class RosVisitor : public Visitor {
     void tearDown() override;
 
    private:
-    std::map<CognitiveFunction, std::vector<ConstNodePtr>> _nodes;
+    std::vector<ConstNodePtr> nodes_;
 
     std::string ws_path;
 

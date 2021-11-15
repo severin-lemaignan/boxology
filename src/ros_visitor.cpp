@@ -6,13 +6,15 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <algorithm>
+#include <filesystem>
 #include <memory>
 #include <string>
 
-#include "cognitive_function.hpp"
 #include "inja/inja.hpp"
 #include "node.hpp"
+
 using namespace std;
+namespace fs = std::filesystem;
 
 RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
     : Visitor(architecture), ws_path(ws_path) {
@@ -36,6 +38,7 @@ RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
             tpl_path, (QDir(QString::fromStdString(ws_path)).absolutePath() +
                        QDir::separator())
                           .toStdString());
+        env_->set_line_statement("$$$$$");
     } else {
         cout << "[EE] ROS templates not found! Can not generate ROS nodes."
              << endl;
@@ -53,12 +56,26 @@ void RosVisitor::startUp() {
 void RosVisitor::tearDown() {
     if (!env_) return;
 
-    vector<string> tpls{"package.xml"};
+    static const vector<string> tpls{"package.xml", "CMakeLists.txt",
+                                     "src/main.cpp"};
 
-    for (const auto& file : tpls) {
-        cout << "Generating " << file << "..." << endl;
-        auto tpl = env_->parse_template(file);
-        env_->write(tpl, data_, file);
+    for (auto node : nodes_) {
+        cout << "Generating " << node->name() << "..." << endl;
+
+        auto id = make_id(node->name());
+
+        auto rel_path = fs::path("src") / id;
+        auto abs_path = fs::path(ws_path) / rel_path;
+        auto src_path = abs_path / "src";
+        fs::create_directories(src_path);  // will also create 'path'
+
+        data_["project_name"] = id;
+
+        for (const auto& file : tpls) {
+            auto tpl = env_->parse_template(file);
+            // cout << "\t- " << (abs_path / file).string() << endl;
+            env_->write(tpl, data_, (rel_path / file).string());
+        }
     }
 
     cout << "Generation of ROS nodes complete. The generated nodes can be "
@@ -68,9 +85,7 @@ void RosVisitor::tearDown() {
 
 void RosVisitor::beginNodes() {}
 
-void RosVisitor::onNode(shared_ptr<const Node> node) {
-    _nodes[node->cognitive_function()].push_back(node);
-}
+void RosVisitor::onNode(shared_ptr<const Node> node) { nodes_.push_back(node); }
 
 void RosVisitor::endNodes() {}
 

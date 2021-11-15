@@ -24,3 +24,33 @@ string Visitor::visit() {
 
     return _content;
 }
+
+string Visitor::make_id(const std::string& name) {
+    string result;
+
+    for (const char& c : name) {
+        switch (c) {
+            case ' ':
+            case '.':
+            case '-':
+            case '\\':
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '(':
+            case ')':
+            case '<':
+            case '>':
+            case '&':
+            case ',':
+            case '/':
+            case '\'':
+                break;
+            default:
+                result += tolower(c);
+        }
+    }
+
+    return result;
+}
