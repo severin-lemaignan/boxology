@@ -34,6 +34,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src # for json/json.h
     )
 
-add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI} ${QT_RC})
+add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI} ${QT_RC} src/app/mainwindow.ui)
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Svg)
 
