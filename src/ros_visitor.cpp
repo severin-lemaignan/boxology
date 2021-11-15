@@ -60,9 +60,9 @@ void RosVisitor::tearDown() {
                                      "src/main.cpp"};
 
     for (auto node : nodes_) {
-        cout << "Generating " << node->name() << "..." << endl;
-
         auto id = make_id(node->name());
+        cout << "Generating " << node->name() << " as node [" << id << "]..."
+             << endl;
 
         auto rel_path = fs::path("src") / id;
         auto abs_path = fs::path(ws_path) / rel_path;

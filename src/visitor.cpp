@@ -32,6 +32,8 @@ string Visitor::make_id(const std::string& name) {
         switch (c) {
             case ' ':
             case '.':
+            case '+':
+            case '?':
             case '-':
             case '\\':
             case '[':
