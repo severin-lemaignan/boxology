@@ -5,5 +5,7 @@
         <file>svg.png</file>
         <file>tex.png</file>
         <file>image.png</file>
+        <file>ros.svg</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

@@ -41,6 +41,7 @@ class MainWindow : public QMainWindow {
     void on_actionSave_to_SVG_triggered();
     void on_actionExport_to_TikZ_triggered();
     void on_actionExport_to_Md_triggered();
+    void on_actionExport_to_Ros_triggered();
     void onCogButtonTriggered(CognitiveFunction cognitive_function);
 
    private:
@@ -50,6 +51,7 @@ class MainWindow : public QMainWindow {
     void saveTikZ(const std::string& filename) const;
     void saveMd(const std::string& filename) const;
     void saveSvg(const QString& filename) const;
+    void exportRos(const std::string& path) const;
 
     std::string hierarchy_name(const std::string& name,
                                GraphicsNodeScene* scene);
@@ -73,6 +75,7 @@ class MainWindow : public QMainWindow {
     QString _svgPath;
     QString _tikzPath;
     QString _mdPath;
+    QString _rosWsPath;
 };
 
 #endif  // __MAINWINDOW_HPP

@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <qfiledialog.h>
 #define DEBUG(x)                                                      \
     do {                                                              \
         std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] " << x; \
@@ -33,6 +34,7 @@
 // node editor
 #include "../json_visitor.hpp"
 #include "../md_visitor.hpp"
+#include "../ros_visitor.hpp"
 #include "../tikz_visitor.hpp"
 #include "../view/cogbutton.hpp"
 #include "../view/edge.hpp"
@@ -310,6 +312,17 @@ void MainWindow::on_actionExport_to_Md_triggered() {
     saveMd(_mdPath.toStdString());
 }
 
+void MainWindow::on_actionExport_to_Ros_triggered() {
+    QString newPath = QFileDialog::getSaveFileName(
+        0, tr("Choose ROS workspace path"), _rosWsPath, "", nullptr,
+        QFileDialog::ShowDirsOnly);
+
+    if (newPath.isEmpty()) return;
+
+    _rosWsPath = newPath;
+    exportRos(_rosWsPath.toStdString());
+}
+
 void MainWindow::saveMd(const std::string& filename) const {
     MdVisitor md(*_active_arch);
     auto output = md.visit();
@@ -317,5 +330,13 @@ void MainWindow::saveMd(const std::string& filename) const {
     ofstream md_file(filename, std::ofstream::out);
 
     md_file << output;
+}
+
+void MainWindow::exportRos(const std::string& path) const {
+    RosVisitor ros(*_active_arch);
+
+    ros.setWorkspace(path);
+
+    ros.visit();
 }
 

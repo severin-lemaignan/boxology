@@ -40,6 +40,7 @@
    <addaction name="actionSave_to_SVG"/>
    <addaction name="actionExport_to_TikZ"/>
    <addaction name="actionExport_to_Md"/>
+   <addaction name="actionExport_to_Ros"/>
    <addaction name="separator"/>
   </widget>
   <widget class="QToolBar" name="cognitionToolbar">
@@ -160,6 +161,18 @@
    </property>
    <property name="toolTip">
     <string>Export to Markdown</string>
+   </property>
+  </action>
+  <action name="actionExport_to_Ros">
+   <property name="icon">
+    <iconset resource="../../rc/resources.qrc">
+     <normaloff>:/icons/ros.svg</normaloff>:/icons/ros.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Export to ROS</string>
+   </property>
+   <property name="toolTip">
+    <string>Export nodes to ROS nodes</string>
    </property>
   </action>
  </widget>
