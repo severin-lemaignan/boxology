@@ -20,7 +20,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    QCoreApplication::setApplicationName("Boxology");
+    QCoreApplication::setApplicationName("boxology");
     QCoreApplication::setApplicationVersion(STR(BOXOLOGY_VERSION));
 
     QCommandLineParser parser;
@@ -39,9 +39,9 @@ int main(int argc, char *argv[]) {
         {{{"m", "to-markdown"},
           "Export the model to Markdown, without opening the GUI"}});
 
-    parser.addOptions(
-        {{{"t", "to-latex"},
-          "Export the model to a standalone LaTex (Tikz) document, without opening the GUI"}});
+    parser.addOptions({{{"t", "to-latex"},
+                        "Export the model to a standalone LaTex (Tikz) "
+                        "document, without opening the GUI"}});
 
     // Process the actual command line arguments given by the user
     parser.process(app);
@@ -58,10 +58,8 @@ int main(int argc, char *argv[]) {
         win.show();
         return app.exec();
     } else {
-        if (   parser.isSet("to-json") 
-            || parser.isSet("to-markdown")
-            || parser.isSet("to-latex")
-            ) {
+        if (parser.isSet("to-json") || parser.isSet("to-markdown") ||
+            parser.isSet("to-latex")) {
             auto architecture = Architecture();
 
             try {

@@ -1,6 +1,7 @@
 #ifndef ROSVISITOR_HPP
 #define ROSVISITOR_HPP
 
+#include <inja/inja.hpp>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -11,10 +12,8 @@
 #include "visitor.hpp"
 
 class RosVisitor : public Visitor {
-    using Visitor::Visitor;  // inheriting Visitor's ctor
-
    public:
-    void setWorkspace(const std::string& path) { ws_path = path; }
+    RosVisitor(const Architecture& architecture, const std::string& ws_path);
 
    private:
     void startUp() override;
@@ -29,6 +28,9 @@ class RosVisitor : public Visitor {
     std::map<CognitiveFunction, std::vector<ConstNodePtr>> _nodes;
 
     std::string ws_path;
+
+    std::unique_ptr<inja::Environment> env_;
+    nlohmann::json data_;
 };
 
 #endif

@@ -286,7 +286,7 @@ void MainWindow::savePng(const QString& path) const {
 
 void MainWindow::on_actionExport_to_TikZ_triggered() {
     QString newPath = QFileDialog::getSaveFileName(
-        0, tr("Export to TikZ"), _tikzPath, tr("TikZ files (*.tex)"));
+        nullptr, tr("Export to TikZ"), _tikzPath, tr("TikZ files (*.tex)"));
 
     if (newPath.isEmpty()) return;
 
@@ -303,8 +303,9 @@ void MainWindow::saveTikZ(const std::string& filename) const {
 }
 
 void MainWindow::on_actionExport_to_Md_triggered() {
-    QString newPath = QFileDialog::getSaveFileName(
-        0, tr("Export to Markdown"), _mdPath, tr("Markdown files (*.md)"));
+    QString newPath =
+        QFileDialog::getSaveFileName(nullptr, tr("Export to Markdown"), _mdPath,
+                                     tr("Markdown files (*.md)"));
 
     if (newPath.isEmpty()) return;
 
@@ -313,9 +314,8 @@ void MainWindow::on_actionExport_to_Md_triggered() {
 }
 
 void MainWindow::on_actionExport_to_Ros_triggered() {
-    QString newPath = QFileDialog::getSaveFileName(
-        0, tr("Choose ROS workspace path"), _rosWsPath, "", nullptr,
-        QFileDialog::ShowDirsOnly);
+    QString newPath = QFileDialog::getExistingDirectory(
+        nullptr, tr("Choose ROS workspace path"), _rosWsPath);
 
     if (newPath.isEmpty()) return;
 
@@ -333,9 +333,7 @@ void MainWindow::saveMd(const std::string& filename) const {
 }
 
 void MainWindow::exportRos(const std::string& path) const {
-    RosVisitor ros(*_active_arch);
-
-    ros.setWorkspace(path);
+    RosVisitor ros(*_active_arch, path);
 
     ros.visit();
 }
