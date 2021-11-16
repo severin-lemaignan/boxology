@@ -110,6 +110,9 @@ void RosVisitor::tearDown() {
 void RosVisitor::beginNodes() {}
 
 void RosVisitor::onNode(shared_ptr<const Node> node) {
+    // ignore TF nodes
+    if (node->name() == "TF" || node->name() == "tf") return;
+
     nlohmann::json jnode;
     jnode["id"] = make_id(node->name());
     jnode["name"] = node->name();
