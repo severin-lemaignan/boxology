@@ -4,7 +4,7 @@
 #include "std_msgs/String.h"
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "{{ project_name }}");
+    ros::init(argc, argv, "{{ id }}");
 
     ros::NodeHandle n;
 

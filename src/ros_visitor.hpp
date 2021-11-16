@@ -30,6 +30,7 @@ class RosVisitor : public Visitor {
     std::string ws_path;
 
     std::unique_ptr<inja::Environment> env_;
+    std::unique_ptr<inja::Environment> env_main_node_;
     nlohmann::json data_;
 };
 

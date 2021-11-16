@@ -1,0 +1,11 @@
+<launch>
+
+    {% for node in nodes %}
+    <!-- launching {{ node.name }} ({{ node.id }}) -->
+    <node pkg="{{ node.id }}" name="{{ node.id }}" type="node" output="screen">
+        <remap from="image" to="$(arg image_topic)"/>
+    </node>
+
+    {% endfor %}
+
+</launch>

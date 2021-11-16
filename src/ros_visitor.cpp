@@ -1,7 +1,6 @@
+#include <nlohmann/json_fwd.hpp>
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
-
-#include "ros_visitor.hpp"
 
 #include <QDir>
 #include <QStandardPaths>
@@ -12,22 +11,21 @@
 
 #include "inja/inja.hpp"
 #include "node.hpp"
+#include "ros_visitor.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
 
 RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
     : Visitor(architecture), ws_path(ws_path) {
-    string tpl_path;
+    fs::path tpl_path;
 
     for (auto p :
          QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)) {
-        auto path = QDir(p + "/templates/ros");
-        cout << "Looking for ROS templates in "
-             << path.absolutePath().toStdString() << endl;
+        tpl_path = fs::path(p.toStdString()) / "templates" / "ros";
+        cout << "Looking for ROS templates in " << tpl_path << endl;
 
-        if (path.exists()) {
-            tpl_path = (path.absolutePath() + QDir::separator()).toStdString();
+        if (fs::exists(tpl_path)) {
             break;
         }
     }
@@ -35,10 +33,17 @@ RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
     if (!tpl_path.empty()) {
         cout << "Using ROS templates found at " << tpl_path << endl;
         env_ = make_unique<inja::Environment>(
-            tpl_path, (QDir(QString::fromStdString(ws_path)).absolutePath() +
-                       QDir::separator())
-                          .toStdString());
+            (tpl_path / "default").string() + fs::path::preferred_separator,
+            ws_path + fs::path::preferred_separator);
+
         env_->set_line_statement("$$$$$");
+
+        env_main_node_ = make_unique<inja::Environment>(
+            (tpl_path / "main_node").string() + fs::path::preferred_separator,
+            ws_path + fs::path::preferred_separator);
+
+        env_main_node_->set_line_statement("$$$$$");
+
     } else {
         cout << "[EE] ROS templates not found! Can not generate ROS nodes."
              << endl;
@@ -48,6 +53,7 @@ RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
 void RosVisitor::startUp() {
     data_["path"] = ws_path;
     data_["name"] = architecture.name;
+    data_["id"] = make_id(architecture.name);
     data_["boxology_version"] = STR(BOXOLOGY_VERSION);
     data_["version"] = architecture.version;
     data_["description"] = architecture.description;
@@ -56,12 +62,32 @@ void RosVisitor::startUp() {
 void RosVisitor::tearDown() {
     if (!env_) return;
 
-    static const vector<string> tpls{"package.xml", "CMakeLists.txt",
-                                     "src/main.cpp"};
+    ///////////////////////////////////////////////////////
+    // Create parent node with main launchfile
+    //
+    vector<string> main_node_tpls{"package.xml", "CMakeLists.txt",
+                                  "launch/start_all.launch"};
 
-    for (auto node : nodes_) {
-        auto id = make_id(node->name());
-        cout << "Generating " << node->name() << " as node [" << id << "]..."
+    auto id = make_id(architecture.name);
+    auto rel_path = fs::path("src") / id;
+    auto abs_path = fs::path(ws_path) / rel_path;
+    auto launch_path = abs_path / "launch";
+    fs::create_directories(launch_path);  // will also create 'path'
+
+    for (const auto& file : main_node_tpls) {
+        auto tpl = env_main_node_->parse_template(file);
+        env_main_node_->write(tpl, data_, (rel_path / file).string());
+    }
+
+    ///////////////////////////////////////////////////////
+    // Create all the nodes
+    //
+    vector<string> default_tpls{"package.xml", "CMakeLists.txt",
+                                "src/main.cpp"};
+
+    for (auto node : data_["nodes"]) {
+        string id(node["id"]);
+        cout << "Generating " << node["name"] << " as node [" << id << "]..."
              << endl;
 
         auto rel_path = fs::path("src") / id;
@@ -69,12 +95,10 @@ void RosVisitor::tearDown() {
         auto src_path = abs_path / "src";
         fs::create_directories(src_path);  // will also create 'path'
 
-        data_["project_name"] = id;
-
-        for (const auto& file : tpls) {
+        for (const auto& file : default_tpls) {
             auto tpl = env_->parse_template(file);
             // cout << "\t- " << (abs_path / file).string() << endl;
-            env_->write(tpl, data_, (rel_path / file).string());
+            env_->write(tpl, node, (rel_path / file).string());
         }
     }
 
@@ -85,7 +109,25 @@ void RosVisitor::tearDown() {
 
 void RosVisitor::beginNodes() {}
 
-void RosVisitor::onNode(shared_ptr<const Node> node) { nodes_.push_back(node); }
+void RosVisitor::onNode(shared_ptr<const Node> node) {
+    nlohmann::json jnode;
+    jnode["id"] = make_id(node->name());
+    jnode["name"] = node->name();
+
+    jnode["boxology_version"] = STR(BOXOLOGY_VERSION);
+
+    if (node->sub_architecture) {
+        jnode["version"] = node->sub_architecture->version;
+        jnode["description"] = node->sub_architecture->description;
+    } else {
+        jnode["version"] = "0.0.1";
+        jnode["description"] = node->name();
+    }
+
+    data_["nodes"].push_back(jnode);
+
+    nodes_.push_back(node);
+}
 
 void RosVisitor::endNodes() {}
 
