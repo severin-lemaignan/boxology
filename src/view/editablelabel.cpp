@@ -91,7 +91,7 @@ void EditableDescription::mouseDoubleClickEvent(
     setZValue(1000);
     setFont(_typewriter_font);
 
-    setPlainText(content);
+    // setPlainText(content);
 
     EditableLabel::mouseDoubleClickEvent(event);
 }

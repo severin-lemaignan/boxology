@@ -79,6 +79,15 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     this->addItem(_arch_desc);
     connect(_arch_desc, &EditableLabel::contentUpdated, this,
             &GraphicsNodeScene::onDescriptionChanged);
+
+    // if nodes/connections are already present in the architecture, create
+    // corresponding GraphicsItems
+    for (auto n : architecture->nodes()) {
+        add(n);
+    }
+    for (auto c : architecture->connections()) {
+        add(c);
+    }
 }
 
 shared_ptr<GraphicsNode> GraphicsNodeScene::add(NodePtr node) {

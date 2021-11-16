@@ -103,32 +103,34 @@ void Architecture::removeConnection(Socket from, Socket to) {
     }
 }
 
-const Json::Value& getArchitecture(const Json::Value& root,
-                                   const string& uuid) {
+const Json::Value& get_architecture(const Json::Value& root,
+                                    const boost::uuids::uuid uuid) {
+    string uuid_str(boost::lexical_cast<std::string>(uuid));
+
     for (size_t idx = 0; idx < root["architectures"].size(); idx++) {
         if (root["architectures"][Json::ArrayIndex(idx)]["uuid"].asString() ==
-            uuid) {
+            uuid_str) {
             return root["architectures"][Json::ArrayIndex(idx)];
         }
     }
-    return Json::Value::null;
+    throw runtime_error(string("No architecture with UUID ") + uuid_str);
 }
 
-Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
-                                               bool clearFirst,
-                                               bool recreateUUIDs,
-                                               bool metadata, bool silent) {
+Architecture::ToAddToRemove Architecture::load(
+    const Json::Value& json, const boost::uuids::uuid root_uuid,
+    bool clearFirst, bool recreateUUIDs, bool metadata, bool silent) {
     set<NodePtr> newnodes;
     set<ConnectionPtr> newconnections;
 
     set<NodePtr> killednodes;
     set<ConnectionPtr> killedconnections;
 
-    if (!silent) {
-        DEBUG("Reading the architecture..." << endl);
-    }
+    auto root = get_architecture(json, root_uuid);
 
-    auto root = getArchitecture(json, json["root"].asString());
+    if (!silent) {
+        DEBUG("Reading the architecture " << root["uuid"].asString() << "..."
+                                          << endl);
+    }
 
     if (metadata) {
         name = root.get("name", "<no name>").asString();
@@ -183,6 +185,22 @@ Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
 
         node->cognitive_function(get_cognitive_function_by_name(
             n.get("cognitive_function", "").asString()));
+
+        if (!n.get("sub_architecture", "").asString().empty()) {
+            auto sub_arch_uuid =
+                get_uuid(n["sub_architecture"].asString(), "Architecture");
+
+            if (!recreateUUIDs) {
+                node->sub_architecture.reset(new Architecture(sub_arch_uuid));
+            } else {
+                node->sub_architecture.reset(new Architecture());
+            }
+            cout << "Loading sub-architecture "
+                 << n["sub_architecture"].asString() << " for node "
+                 << n["name"].asString() << endl;
+            node->sub_architecture->load(json, sub_arch_uuid, true,
+                                         recreateUUIDs, true);
+        }
 
         if (n.isMember("position")) {
             node->x(n["position"][0].asDouble());
@@ -268,14 +286,16 @@ Architecture::ToAddToRemove Architecture::load(const std::string& filename) {
     // 'Dummy' load to make sure the JSON is valid, without impacting the
     // current arch
     // -> prevent going in a 'semi-loaded' state
-    Architecture new_arch;
-    new_arch.load(root, true, false, true, true);
+    // Architecture new_arch;
+    // new_arch.load(root, get_uuid(root["root"].asString(), "Root
+    // architecture"),
+    //              true, false, true, true);
 
     // if we reach this point, no exception was raised while loading the arch
     // from the JSON file. We can load it into ourselves.
 
     this->filename = filename;
-    return load(root);
+    return load(root, get_uuid(root["root"].asString(), "Root architecture"));
 }
 
 boost::uuids::uuid Architecture::get_uuid(const std::string& uuid,

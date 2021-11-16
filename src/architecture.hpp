@@ -36,10 +36,6 @@ class Architecture {
 
     ToAddToRemove load(const std::string& filename);
 
-    NodesAndConnections import(const Json::Value& json) {
-        return load(json, false, false, false).first;
-    }
-
     NodePtr createNode();
     NodePtr createNode(const boost::uuids::uuid& uuid);
 
@@ -67,9 +63,9 @@ class Architecture {
     std::string filename;
 
    private:
-    ToAddToRemove load(const Json::Value& json, bool clearFirst = true,
-                       bool recreateUUIDs = false, bool metadata = true,
-                       bool silent = false);
+    ToAddToRemove load(const Json::Value& json, const boost::uuids::uuid uuid,
+                       bool clearFirst = true, bool recreateUUIDs = false,
+                       bool metadata = true, bool silent = false);
 
     Nodes _nodes;
     Connections _connections;
