@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "../architecture.hpp"
-#include "../architecture_manager.hpp"
 #include "../cognitive_function.hpp"
 
 class QResizeEvent;
@@ -56,8 +55,6 @@ class MainWindow : public QMainWindow {
     std::string hierarchy_name(const std::string& name,
                                GraphicsNodeScene* scene);
     void spawnInitialNodes();
-
-    ArchitectureManager manager;
 
     std::unique_ptr<Architecture> _root_arch;
     Architecture* _active_arch;

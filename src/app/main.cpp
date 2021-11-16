@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <iostream>
 
-#include "../architecture_manager.hpp"
 #include "../json/json.h"
 #include "../json_visitor.hpp"
 #include "../md_visitor.hpp"
@@ -45,12 +44,6 @@ int main(int argc, char *argv[]) {
 
     // Process the actual command line arguments given by the user
     parser.process(app);
-
-    if (parser.isSet("list-models")) {
-        auto manager = ArchitectureManager();
-        manager.list_models();
-        return 0;
-    }
 
     auto args = parser.positionalArguments();
     if (args.empty()) {
