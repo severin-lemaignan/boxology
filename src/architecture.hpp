@@ -68,7 +68,8 @@ class Architecture {
 
    private:
     ToAddToRemove load(const Json::Value& json, bool clearFirst = true,
-                       bool recreateUUIDs = false, bool metadata = true);
+                       bool recreateUUIDs = false, bool metadata = true,
+                       bool silent = false);
 
     Nodes _nodes;
     Connections _connections;
