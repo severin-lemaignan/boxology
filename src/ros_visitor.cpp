@@ -149,6 +149,15 @@ void RosVisitor::tearDown() {
         env_main_node_->write(tpl, data_, (rel_path / file).string());
     }
 
+    auto tpl = env_main_node_->parse_template("launch/start_all_but.launch");
+    for (const auto& kv : LABEL_NAMES) {
+        data_["exclude_label"] = kv.second;
+        env_main_node_->write(tpl, data_,
+                              (rel_path / "launch" /
+                               string("start_all_but_" + kv.second + ".launch"))
+                                  .string());
+    }
+
     ///////////////////////////////////////////////////////
     // Create all the nodes
     //

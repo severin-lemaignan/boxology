@@ -1,0 +1,14 @@
+<launch>
+    <!-- this launch file starts all SPRING nodes except for {{ exclude_label }} nodes. -->
+
+    {% for node in nodes %}
+    {% if node.label != exclude_label %}
+    <!-- launching {{ node.name }} ({{ node.id }}) -->
+    <node pkg="{{ node.id }}" name="{{ node.id }}" type="node" output="screen">
+        <remap from="image" to="$(arg image_topic)"/>
+    </node>
+    
+    {% endif %}
+    {% endfor %}
+
+</launch>
