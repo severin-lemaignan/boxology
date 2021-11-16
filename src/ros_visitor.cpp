@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "cognitive_function.hpp"
 #include "inja/inja.hpp"
 #include "node.hpp"
 #include "ros_visitor.hpp"
@@ -114,8 +115,12 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
     if (node->name() == "TF" || node->name() == "tf") return;
 
     nlohmann::json jnode;
-    jnode["id"] = make_id(node->name());
-    jnode["name"] = node->name();
+
+    auto name = node->name().substr(0, node->name().find("["));
+
+    jnode["id"] = make_id(name);
+    jnode["name"] = name;
+    jnode["label"] = COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
 
     jnode["boxology_version"] = STR(BOXOLOGY_VERSION);
 
