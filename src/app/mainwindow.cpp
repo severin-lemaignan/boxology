@@ -100,6 +100,7 @@ void MainWindow::set_active_scene(GraphicsNodeScene* scene) {
         QString::fromStdString(hierarchy_name("", scene)));
     _active_scene = scene;
     _view->setScene(scene);
+    _active_arch = scene->architecture;
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event) {
@@ -107,7 +108,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 }
 
 void MainWindow::spawnInitialNodes() {
-    auto node = _root_arch->createNode();
+    auto node = _active_arch->createNode();
     node->name("Node 1");
     node->cognitive_function(CognitiveFunction::PERCEPTION);
     auto p1 = node->createPort(
@@ -115,7 +116,7 @@ void MainWindow::spawnInitialNodes() {
     auto gNode = _root_scene->add(node);
     gNode->setPos(30, 170);
 
-    auto node2 = _root_arch->createNode();
+    auto node2 = _active_arch->createNode();
     node2->name("Node 2");
     auto p2 =
         node2->createPort({"input", Port::Direction::IN, Port::Type::EXPLICIT});
@@ -130,14 +131,14 @@ void MainWindow::spawnInitialNodes() {
 }
 
 void MainWindow::save(const std::string& filename) {
-    JsonVisitor json(*_active_arch);
+    JsonVisitor json(*_root_arch.get());
     auto output = json.visit();
 
     ofstream json_file(filename, std::ofstream::out);
 
     json_file << output;
 
-    _active_arch->filename = filename;
+    _root_arch->filename = filename;
 
     ui->statusBar->showMessage("Saved to " + QString::fromStdString(filename),
                                3000);
@@ -158,8 +159,8 @@ void MainWindow::on_actionAdd_node_triggered() {
 }
 
 void MainWindow::on_actionToJson_triggered() {
-    if (!_active_arch->filename.empty()) {
-        save(_active_arch->filename);
+    if (!_root_arch->filename.empty()) {
+        save(_root_arch->filename);
     } else {
         on_actionToJsonAs_triggered();
     }
@@ -186,13 +187,12 @@ void MainWindow::on_actionFromJson_triggered() {
 
 void MainWindow::load(const string& filename) {
     try {
-        auto toaddtoremove = _active_arch->load(filename);
+        auto toaddtoremove = _root_arch->load(filename);
         auto newstuff = toaddtoremove.first;
         auto killedstuff = toaddtoremove.second;
 
-        _active_scene->set_description(_active_arch->name,
-                                       _active_arch->version,
-                                       _active_arch->description);
+        _active_scene->set_description(_root_arch->name, _root_arch->version,
+                                       _root_arch->description);
 
         for (auto n : killedstuff.first) {
             _active_scene->remove(n);
@@ -294,7 +294,7 @@ void MainWindow::on_actionExport_to_TikZ_triggered() {
     saveTikZ(_tikzPath.toStdString());
 }
 void MainWindow::saveTikZ(const std::string& filename) const {
-    TikzVisitor tikz(*_active_arch);
+    TikzVisitor tikz(*_root_arch.get());
     auto output = tikz.visit();
 
     ofstream tikz_file(filename, std::ofstream::out);
@@ -324,7 +324,7 @@ void MainWindow::on_actionExport_to_Ros_triggered() {
 }
 
 void MainWindow::saveMd(const std::string& filename) const {
-    MdVisitor md(*_active_arch);
+    MdVisitor md(*_root_arch.get());
     auto output = md.visit();
 
     ofstream md_file(filename, std::ofstream::out);
@@ -333,7 +333,7 @@ void MainWindow::saveMd(const std::string& filename) const {
 }
 
 void MainWindow::exportRos(const std::string& path) const {
-    RosVisitor ros(*_active_arch, path);
+    RosVisitor ros(*_root_arch.get(), path);
 
     ros.visit();
 }

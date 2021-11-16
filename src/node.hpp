@@ -1,18 +1,18 @@
 #ifndef __NODE_HPP
 #define __NODE_HPP
 
-#include <string>
-#include <memory>
-#include <set>
-#include <map>
-#include <tuple>
-
 #include <QObject>
-
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <tuple>
 
 #include "cognitive_function.hpp"
+
+class Architecture;
 
 struct Port {
    public:
@@ -61,7 +61,8 @@ struct Node : public QObject {
     CognitiveFunction cognitive_function() const { return _cognitive_function; }
     void cognitive_function(CognitiveFunction cognitive_function);
 
-    // geometry -- 100% optional -- may not be set -- only used for visualization needs
+    // geometry -- 100% optional -- may not be set -- only used for
+    // visualization needs
     double x() const { return _x; }
     void x(double x) { _x = x; }
     double y() const { return _y; }
@@ -79,7 +80,9 @@ struct Node : public QObject {
 
     boost::uuids::uuid uuid;
 
-signals:
+    std::shared_ptr<Architecture> sub_architecture;
+
+   signals:
     void dirty();
 
    private:

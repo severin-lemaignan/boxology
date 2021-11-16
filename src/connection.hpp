@@ -1,13 +1,12 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843
-#define __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843
-
-#include <string>
-#include <memory>
+#ifndef CONNECTION_HPP
+#define CONNECTION_HPP
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <memory>
+#include <string>
 
 #include "node.hpp"
 
@@ -51,4 +50,4 @@ typedef std::shared_ptr<Connection> ConnectionPtr;
 typedef std::weak_ptr<Connection> ConnectionWeakPtr;
 typedef std::shared_ptr<const Connection> ConstConnectionPtr;
 
-#endif /* __EDGE_HPP__15CD9D15_3771_45FB_A983_227B5DA2A843 */
+#endif  // CONNECTION_HPP

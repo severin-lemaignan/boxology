@@ -1,17 +1,15 @@
 #ifndef JSONVISITOR_HPP
 #define JSONVISITOR_HPP
 
-#include <string>
-#include <sstream>
 #include <memory>
+#include <sstream>
+#include <string>
 
 #include "architecture.hpp"  // Node
+#include "json/json.h"
 #include "visitor.hpp"
 
-#include "json/json.h"
-
 class JsonVisitor : public Visitor {
-
    public:
     JsonVisitor(const Architecture& architecture) : Visitor(architecture) {}
 
@@ -20,8 +18,11 @@ class JsonVisitor : public Visitor {
     void onConnection(std::shared_ptr<const Connection>) override;
     void tearDown() override;
 
+    Json::Value getJson() const { return root; }
+
    private:
     Json::Value root;
+    Json::Value arch;
 };
 
 #endif

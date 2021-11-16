@@ -1,31 +1,28 @@
-#include <iostream>
-#include <fstream>
-#include "json/json.h"
+#include "architecture.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
-#include "architecture.hpp"
+#include <fstream>
+#include <iostream>
 
 #include "cognitive_function.hpp"
+#include "json/json.h"
 
 using namespace std;
 
+Architecture::Architecture(boost::uuids::uuid uuid)
+    : uuid(uuid),
+      name("NoName Architecture"),
+      version("0.0.1"),
+      description(
+          "The NoName architecture is based on [this "
+          "article](http://example.org) with the following modifications...") {}
 
-Architecture::Architecture(boost::uuids::uuid uuid) : 
-        uuid(uuid),
-        name("CoolArch"),
-        version("0.1"),
-        description(
-            "The <strong>CoolArch</strong> architecture is based on <a "
-            "href=\"http://example.org\">this article</a> with the following "
-            "modifications...") 
-{
-}
-
-Architecture::Architecture() : Architecture(boost::uuids::random_generator()()) {}
+Architecture::Architecture()
+    : Architecture(boost::uuids::random_generator()()) {}
 
 NodePtr Architecture::createNode() {
+    cout << name << ": creating node" << endl;
     auto node = std::make_shared<Node>();
     _nodes.insert(node);
 
@@ -33,13 +30,18 @@ NodePtr Architecture::createNode() {
 }
 
 NodePtr Architecture::createNode(const boost::uuids::uuid& uuid) {
+    cout << name << ": creating node (with UUID)" << endl;
     auto node = std::make_shared<Node>(uuid);
     _nodes.insert(node);
 
     return node;
 }
 
-void Architecture::addNode(NodePtr node) { _nodes.insert(node); }
+void Architecture::addNode(NodePtr node) {
+    cout << name << ": adding node " << node->name() << endl;
+
+    _nodes.insert(node);
+}
 
 void Architecture::removeNode(NodePtr node) {
     // first, delete all connections involving this node
@@ -111,16 +113,15 @@ Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
     set<NodePtr> killednodes;
     set<ConnectionPtr> killedconnections;
 
-    auto version = json.get("encoding_version", "<undefined>").asString();
-    DEBUG("Reading the architecture (encoding: v." << version << ")..."
-                                                   << endl);
+    DEBUG("Reading the architecture..." << endl);
 
-    if(metadata) {
+    if (metadata) {
         name = json.get("name", "<no name>").asString();
-        version = json.get("version", "0.1").asString();
-        description = json.get("description", "(no description yet)").asString();
+        version = json.get("version", "0.0.1").asString();
+        description =
+            json.get("description", "(no description yet)").asString();
 
-        if(!recreateUUIDs) {
+        if (!recreateUUIDs) {
             uuid = get_uuid(json["uuid"].asString(), "Architecture");
         }
     }
@@ -240,35 +241,34 @@ Architecture::ToAddToRemove Architecture::load(const Json::Value& json,
 }
 
 Architecture::ToAddToRemove Architecture::load(const std::string& filename) {
-
     Json::Value root;
     ifstream json_file(filename);
 
     json_file >> root;
 
-    // 'Dummy' load to make sure the JSON is valid, without impacting the current arch
+    // 'Dummy' load to make sure the JSON is valid, without impacting the
+    // current arch
     // -> prevent going in a 'semi-loaded' state
     Architecture new_arch;
     new_arch.load(root);
 
-    // if we reach this point, no exception was raised while loading the arch from the
-    // JSON file. We can load it into ourselves.
+    // if we reach this point, no exception was raised while loading the arch
+    // from the JSON file. We can load it into ourselves.
 
     this->filename = filename;
     return load(root);
 }
 
-boost::uuids::uuid Architecture::get_uuid(const std::string& uuid, const string& ctxt) {
-
+boost::uuids::uuid Architecture::get_uuid(const std::string& uuid,
+                                          const string& ctxt) {
     if (uuid.empty()) {
         throw runtime_error((ctxt.empty() ? ctxt : ctxt + ": ") + "No UUID!");
     }
 
     try {
         return boost::lexical_cast<boost::uuids::uuid>(uuid);
+    } catch (const boost::bad_lexical_cast& e) {
+        throw runtime_error((ctxt.empty() ? ctxt : ctxt + ": ") +
+                            "Invalid UUID: " + uuid);
     }
-    catch (const boost::bad_lexical_cast& e ) {
-        throw runtime_error((ctxt.empty() ? ctxt : ctxt + ": ") + "Invalid UUID: " + uuid);
-    }
-
 }

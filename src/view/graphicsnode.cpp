@@ -547,11 +547,12 @@ void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     if (!_sub_structure_scene) {
         qDebug() << "Initializing a sub-architecture for node "
                  << QString::fromStdString(_node.lock()->name());
-        _sub_structure.reset(new Architecture(_node.lock()->uuid));
-        _sub_structure->name = _node.lock()->name();
-        _sub_structure->description = _node.lock()->name() + " is...";
-        _sub_structure_scene.reset(new GraphicsNodeScene(
-            _sub_structure.get(), this, scene()->parent()));
+        auto &sub_arch = _node.lock()->sub_architecture;
+        sub_arch.reset(new Architecture());
+        sub_arch->name = _node.lock()->name();
+        sub_arch->description = _node.lock()->name() + " is...";
+        _sub_structure_scene.reset(
+            new GraphicsNodeScene(sub_arch.get(), this, scene()->parent()));
     }
 
     auto topwindow = dynamic_cast<MainWindow *>(scene()->views()[0]->window());
