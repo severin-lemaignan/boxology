@@ -18,6 +18,7 @@ Main features
 - Label them with their main cognitive role;
 - Save/load in a simple JSON format;
 - Export to PNG, SVG and LaTeX (TikZ).
+- Export to ROS
 
 Requirements
 ------------
