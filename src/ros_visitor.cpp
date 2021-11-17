@@ -165,6 +165,10 @@ void RosVisitor::tearDown() {
                                   .string());
     }
 
+    auto tpl_clone =
+        env_main_node_->parse_template("../fetch_released_nodes.sh");
+    env_main_node_->write(tpl_clone, data_, "fetch_released_nodes.sh");
+
     ///////////////////////////////////////////////////////
     // Create all the nodes
     //
@@ -173,6 +177,12 @@ void RosVisitor::tearDown() {
 
     for (auto node : data_["nodes"]) {
         string id(node["id"]);
+
+        if (!node["generate"]) {
+            cout << "[II] Node " << node["name"] << " (" << id
+                 << ") is not marked as MOCK. Not generating it." << endl;
+            continue;
+        }
         cout << "Generating " << node["name"] << " as node [" << id << "]..."
              << endl;
 
