@@ -5,7 +5,20 @@
     {% if node.label != exclude_label %}
     <!-- launching {{ node.name }} ({{ node.id }}) -->
     <node pkg="{{ node.id }}" name="{{ node.id }}" type="node" output="screen">
-        <remap from="image" to="$(arg image_topic)"/>
+        {% for port in node.inputs %}
+        {% if existsIn(port, "topic") %}
+        {% if not (port.short == port.topic) %}
+        <remap from="{{ port.short }}" to="{{ port.topic }}"/>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        {% for port in node.outputs %}
+        {% if existsIn(port, "topic") %}
+        {% if not (port.short == port.topic) %}
+        <remap from="{{ port.short }}" to="{{ port.topic }}"/>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
     </node>
     
     {% endif %}
