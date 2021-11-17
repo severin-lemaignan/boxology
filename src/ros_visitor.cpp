@@ -38,13 +38,16 @@ RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
             ws_path + fs::path::preferred_separator);
 
         env_->set_line_statement("$$$$$");
+        env_->set_trim_blocks(true);
+        env_->set_lstrip_blocks(true);
 
         env_main_node_ = make_unique<inja::Environment>(
             (tpl_path / "main_node").string() + fs::path::preferred_separator,
             ws_path + fs::path::preferred_separator);
 
         env_main_node_->set_line_statement("$$$$$");
-
+        env_main_node_->set_trim_blocks(true);
+        env_main_node_->set_lstrip_blocks(true);
     } else {
         cout << "[EE] ROS templates not found! Can not generate ROS nodes."
              << endl;
@@ -128,8 +131,8 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
         jnode["version"] = node->sub_architecture->version;
         jnode["description"] = node->sub_architecture->description;
     } else {
-        jnode["version"] = "0.0.1";
-        jnode["description"] = node->name();
+        jnode["version"] = "1.0.0";
+        jnode["description"] = "";
     }
 
     data_["nodes"].push_back(jnode);
