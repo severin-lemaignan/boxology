@@ -10,6 +10,9 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  {% for dep in dependencies %}
+  {{ dep.0 }}
+  {% endfor %}
 )
 
 ## System dependencies are found with CMake's conventions

@@ -1,21 +1,33 @@
-#include <nlohmann/json_fwd.hpp>
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
-#include <QDir>
+#include "ros_visitor.hpp"
+
 #include <QStandardPaths>
 #include <algorithm>
 #include <filesystem>
 #include <memory>
+#include <nlohmann/json_fwd.hpp>
+#include <regex>
 #include <string>
 
 #include "cognitive_function.hpp"
 #include "inja/inja.hpp"
 #include "node.hpp"
-#include "ros_visitor.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
+
+vector<string> split(string s, const char separator) {
+    istringstream ss;
+    ss.str(s);
+    string segment;
+    std::vector<std::string> seglist;
+    while (std::getline(ss, segment, separator)) {
+        seglist.push_back(segment);
+    }
+    return seglist;
+}
 
 RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
     : Visitor(architecture), ws_path(ws_path) {
@@ -125,6 +137,8 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
     jnode["name"] = name;
     jnode["label"] = COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
 
+    jnode["dependencies"] = nlohmann::json::array();
+
     jnode["boxology_version"] = STR(BOXOLOGY_VERSION);
 
     if (node->sub_architecture) {
@@ -133,6 +147,67 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
     } else {
         jnode["version"] = "1.0.0";
         jnode["description"] = "";
+    }
+
+    //////////////////////////////////////////////
+    // Ports
+    //
+    jnode["inputs"] = nlohmann::json::array();
+    jnode["outputs"] = nlohmann::json::array();
+    for (auto p : node->ports()) {
+        nlohmann::json jport;
+
+        bool isInput = (p->direction == Port::Direction::IN);
+
+        auto name = p->name;
+
+        regex topic_regex("`(.*)` \\[(.*)\\]", regex_constants::ECMAScript);
+        smatch topic_matches;
+        regex tf_regex("`tf: (.*)`", regex_constants::ECMAScript);
+        smatch tf_matches;
+
+        if (regex_search(name, topic_matches, topic_regex)) {
+            jport["type"] = "topic";
+            jport["topic"] = topic_matches[1];
+            jport["short"] = split(jport["topic"], '/').back();
+            auto type = split(topic_matches[2], '/');
+            jport["datatype"] = {type.front(), type.back()};
+            jnode["dependencies"].push_back({type.front(), type.back()});
+
+            cout << "[II] Node " << jnode["id"] << ": "
+                 << (isInput ? "subscribes to" : "publishes") << " topic "
+                 << jport["topic"] << " (short: " << jport["shorttopic"]
+                 << ") of type " << jport["type"] << endl;
+
+        } else if (regex_search(name, tf_matches, tf_regex)) {
+            jport["type"] = "tf";
+            jport["frame"] = tf_matches[1];
+
+            if (isInput) {
+                jport["datatype"] = {"tf", "transform_listener"};
+            }else {
+                jport["datatype"] = {"tf", "transform_broadcaster"};
+            }
+            jnode["dependencies"].push_back(jport["datatype"]);
+
+
+            cout << "[II] Node " << jnode["id"] << ": "
+                 << (isInput ? "listen to" : "broadcasts") << " TF frame "
+                 << jport["frame"] << endl;
+        } else {
+            jport["type"] = "undefined";
+            jport["description"] = name;
+            jport["topic"] = make_id(name);
+            jport["short"] = make_id(name);
+            jport["datatype"] = {"std_msgs", "Empty"};
+            jnode["dependencies"].push_back(jport["datatype"]);
+        }
+
+        if (isInput) {
+            jnode["inputs"].push_back(jport);
+        } else {
+            jnode["outputs"].push_back(jport);
+        }
     }
 
     data_["nodes"].push_back(jnode);
