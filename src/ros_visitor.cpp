@@ -29,6 +29,15 @@ vector<string> split(string s, const char separator) {
     return seglist;
 }
 
+bool contains(const nlohmann::json& container, const nlohmann::json& value) {
+    for (const auto& i : container) {
+        if (i[0] == value[0] && i[1] == value[1]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
     : Visitor(architecture), ws_path(ws_path) {
     fs::path tpl_path;
@@ -172,7 +181,9 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
             jport["short"] = split(jport["topic"], '/').back();
             auto type = split(topic_matches[2], '/');
             jport["datatype"] = {type.front(), type.back()};
-            jnode["dependencies"].push_back({type.front(), type.back()});
+            if (!contains(jnode["dependencies"],jport["datatype"])) {
+                jnode["dependencies"].push_back(jport["datatype"]);
+            }
 
             cout << "[II] Node " << jnode["id"] << ": "
                  << (isInput ? "subscribes to" : "publishes") << " topic "
@@ -188,8 +199,9 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
             }else {
                 jport["datatype"] = {"tf", "transform_broadcaster"};
             }
-            jnode["dependencies"].push_back(jport["datatype"]);
-
+            if (!contains(jnode["dependencies"],jport["datatype"])) {
+                jnode["dependencies"].push_back(jport["datatype"]);
+            }
 
             cout << "[II] Node " << jnode["id"] << ": "
                  << (isInput ? "listen to" : "broadcasts") << " TF frame "
@@ -200,7 +212,11 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
             jport["topic"] = make_id(name);
             jport["short"] = make_id(name);
             jport["datatype"] = {"std_msgs", "Empty"};
-            jnode["dependencies"].push_back(jport["datatype"]);
+            if (!contains(jnode["dependencies"], jport["datatype"])) {
+                jnode["dependencies"].push_back(jport["datatype"]);
+            }
+
+
         }
 
         if (isInput) {
