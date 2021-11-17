@@ -18,7 +18,7 @@ Main features
 - Label them with their main cognitive role;
 - Save/load in a simple JSON format;
 - Export to PNG, SVG and LaTeX (TikZ).
-- Export to ROS
+- Export to ROS (see below for details)
 
 Requirements
 ------------
@@ -35,3 +35,15 @@ Supported platforms
 - Linux (main dev platform)
 - Windows (compiles and runs fine with QtCreator + VS2015). Download the
   [lastest binary for Windows 64bit](https://ci.appveyor.com/project/severin-lemaignan/boxology/build/artifacts).
+  
+  
+ROS support
+-----------
+
+ROS nodes can be automatically generated from the Boxology architecture.
+
+All Boxology nodes are converted into simple ROS nodes in a ROS workspace (ie, all nodes are generated under a `src/` subdirectory, and they can all be built with eg `catkin build` from the top directory).
+
+Boxology attempts to convert the nodes' inputs and outputs into topic subscribers and publishers. This work best if the inputs/ouputs follow the syntax `` `/name/of/topic` [datatype/MyDataType]`` (for instance: `` `/camera/color/image_raw` [sensor_msgs/Image]``. In that case, Boxology will insert the correct headers, and also create the package dependencies in `package.xml` and `CMakeLists.txt` (if topic name and datatype are not specified, default publishers/subscribers using `std_msgs/Empty` messages are created).
+
+Nodes whose name is `TF` or `tf` are not converted into ROS nodes. This makes it easy to indicate connections between nodes and the TF system by creating 'ghost' TF nodes where necessary. However, you can indicate that a node listens or broadcasts specific TF frames by adding `` `tf: /frame` `` inputs or outputs to your node.
