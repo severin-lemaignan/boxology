@@ -158,6 +158,10 @@ void RosVisitor::tearDown() {
                                   .string());
     }
 
+    auto tpl_clone =
+        env_main_node_->parse_template("../fetch_released_nodes.sh");
+    env_main_node_->write(tpl_clone, data_, "fetch_released_nodes.sh");
+
     ///////////////////////////////////////////////////////
     // Create all the nodes
     //
@@ -166,6 +170,12 @@ void RosVisitor::tearDown() {
 
     for (auto node : data_["nodes"]) {
         string id(node["id"]);
+
+        if (!node["generate"]) {
+            cout << "[II] Node " << node["name"] << " (" << id
+                 << ") is not marked as MOCK. Not generating it." << endl;
+            continue;
+        }
         cout << "Generating " << node["name"] << " as node [" << id << "]..."
              << endl;
 
@@ -194,9 +204,19 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
     nlohmann::json jnode;
 
-    auto name = node->name().substr(0, node->name().find("["));
+    auto name = node->name().substr(0, node->name().find("[") - 1);
     if (name.find("DEPENDENCY:") != string::npos) {
         name = name.substr(string("DEPENDENCY:").size());
+    }
+
+    if (name.find("MOCK: ") == string::npos) {
+        // node should *not* be mocked-up
+        jnode["generate"] = false;
+        jnode["repo"] =
+            node->sub_architecture->description.substr(string("REPO:").size());
+    } else {
+        jnode["generate"] = true;
+        name = name.substr(node->name().find("MOCK: ") + 6);
     }
 
     auto [id, id_capitalized] = make_id(name);
