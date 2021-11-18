@@ -69,7 +69,7 @@ MainWindow::MainWindow()
     this->setCentralWidget(_view.get());
 
     // Prepare the cognitive functions buttons in the toolbar
-    for (const auto& kv : COGNITIVE_FUNCTION_NAMES) {
+    for (const auto& kv : LABEL_NAMES) {
         auto grp = new CogButton(kv.first);
         ui->cognitionToolbar->addWidget(grp);
 
@@ -108,7 +108,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 void MainWindow::spawnInitialNodes() {
     auto node = _active_arch->createNode();
     node->name("Node 1");
-    node->cognitive_function(CognitiveFunction::PERCEPTION);
+    node->label(Label::PERCEPTION);
     auto p1 = node->createPort(
         {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _root_scene->add(node);
@@ -222,9 +222,9 @@ void MainWindow::load(const string& filename) {
     }
 }
 
-void MainWindow::onCogButtonTriggered(CognitiveFunction cognitive_function) {
+void MainWindow::onCogButtonTriggered(Label label) {
     for (auto node : _active_scene->selected()) {
-        node->node().lock()->cognitive_function(cognitive_function);
+        node->node().lock()->label(label);
     }
 }
 

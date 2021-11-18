@@ -4,7 +4,7 @@
 #include <boost/algorithm/string.hpp>  // for search and replace
 #include <string>
 
-#include "cognitive_function.hpp"
+#include "label.hpp"
 
 using namespace std;
 
@@ -19,11 +19,11 @@ void TikzVisitor::startUp() {
     ss << endl;
 
     // Generate colors based on what is used for Boxology's GUI
-    for (const auto& kv : COGNITIVE_FUNCTION_COLORS) {
+    for (const auto& kv : LABEL_COLORS) {
         auto color = kv.second;
         transform(color.begin(), color.end(), color.begin(), ::toupper);
 
-        auto[id, id_capitalized] = make_id(COGNITIVE_FUNCTION_NAMES.at(kv.first));
+        auto[id, id_capitalized] = make_id(LABEL_NAMES.at(kv.first));
         ss << "\\definecolor{" << id << "}{HTML}{" << color.substr(1) << "}" << endl;
     }
 
@@ -55,7 +55,7 @@ void TikzVisitor::beginNodes() { ss << "        %%% NODES" << endl; }
 
 void TikzVisitor::onNode(shared_ptr<const Node> node) {
 
-    auto[label_id, label_id_capitalized] = make_id(COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function()));
+    auto[label_id, label_id_capitalized] = make_id(LABEL_NAMES.at(node->label()));
     auto[id, id_capitalized] = make_id(node->name());
 
     ss << "        \\node "

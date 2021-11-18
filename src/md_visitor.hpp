@@ -6,7 +6,7 @@
 #include <string>
 
 #include "architecture.hpp"  // Node
-#include "cognitive_function.hpp"
+#include "label.hpp"
 #include "node.hpp"
 #include "visitor.hpp"
 
@@ -23,7 +23,7 @@ class MdVisitor : public Visitor {
     void tearDown() override;
 
    private:
-    std::map<CognitiveFunction, std::vector<ConstNodePtr>> _nodes;
+    std::map<Label, std::vector<ConstNodePtr>> _nodes;
 
     std::stringstream ss;
 };

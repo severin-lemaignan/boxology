@@ -10,7 +10,7 @@
 #include <string>
 #include <tuple>
 
-#include "cognitive_function.hpp"
+#include "label.hpp"
 
 class Architecture;
 
@@ -58,8 +58,8 @@ struct Node : public QObject {
     std::string name() const { return _name; }
     void name(const std::string& name);
 
-    CognitiveFunction cognitive_function() const { return _cognitive_function; }
-    void cognitive_function(CognitiveFunction cognitive_function);
+    Label label() const { return _label; }
+    void label(Label label);
 
     // geometry -- 100% optional -- may not be set -- only used for
     // visualization needs
@@ -90,7 +90,7 @@ struct Node : public QObject {
     double _x, _y, _width, _height;
 
     std::string _name;
-    CognitiveFunction _cognitive_function;
+    Label _label;
     std::set<PortPtr> _ports;
 };
 

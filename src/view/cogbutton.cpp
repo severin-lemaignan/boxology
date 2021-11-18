@@ -1,16 +1,14 @@
+#include "cogbutton.hpp"
+
 #include <QColorDialog>
 #include <QString>
 
-#include "cogbutton.hpp"
-
 using namespace std;
 
-CogButton::CogButton(CognitiveFunction cognitive_function, QWidget *parent)
-    : QPushButton(parent), _cognitive_function(cognitive_function) {
-    setText(QString::fromStdString(
-        COGNITIVE_FUNCTION_NAMES.at(cognitive_function)));
-    setColor(QString::fromStdString(
-        COGNITIVE_FUNCTION_COLORS.at(cognitive_function)));
+CogButton::CogButton(Label label, QWidget *parent)
+    : QPushButton(parent), _label(label) {
+    setText(QString::fromStdString(LABEL_NAMES.at(label)));
+    setColor(QString::fromStdString(LABEL_COLORS.at(label)));
 }
 
 void CogButton::mousePressEvent(QMouseEvent *e) {
@@ -21,7 +19,7 @@ void CogButton::mousePressEvent(QMouseEvent *e) {
     //    setColor(color);
     //}
     if (e->button() == Qt::LeftButton) {
-        emit triggered(_cognitive_function);
+        emit triggered(_label);
         QPushButton::mousePressEvent(e);
     }
 }

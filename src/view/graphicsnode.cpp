@@ -303,7 +303,7 @@ void GraphicsNode::refreshNode() {
     setTitle(QString::fromStdString(node->name()));
 
     auto color = QColor(QString::fromStdString(
-        COGNITIVE_FUNCTION_COLORS.at(node->cognitive_function())));
+        LABEL_COLORS.at(node->label())));
     color.setAlpha(120);
     setColors(color);
 

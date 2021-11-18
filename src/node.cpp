@@ -13,7 +13,7 @@ const map<Port::Type, std::string> Port::TYPENAME{{Type::EXPLICIT, "[->]"},
 
 Node::Node() : Node(boost::uuids::random_generator()()) {}
 Node::Node(boost::uuids::uuid uuid)
-    : uuid(uuid), _x(0), _y(0), _cognitive_function(CognitiveFunction::OTHER) {}
+    : uuid(uuid), _x(0), _y(0), _label(Label::OTHER) {}
 
 Node::~Node() {
     // qWarning() << "Node " << QString::fromStdString(_name) << " deleted!!";
@@ -24,7 +24,7 @@ Node::~Node() {
 NodePtr Node::duplicate() const {
     auto node = make_shared<Node>();
     node->name(_name + " (copy)");
-    node->cognitive_function(_cognitive_function);
+    node->label(_label);
 
     for (const auto p : _ports) {
         node->createPort(*p);
@@ -64,7 +64,7 @@ void Node::name(const std::string& name) {
     emit dirty();
 }
 
-void Node::cognitive_function(CognitiveFunction cognitive_function) {
-    _cognitive_function = cognitive_function;
+void Node::label(Label label) {
+    _label = label;
     emit dirty();
 }

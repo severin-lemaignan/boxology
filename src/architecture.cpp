@@ -5,8 +5,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "cognitive_function.hpp"
 #include "json/json.h"
+#include "label.hpp"
 
 using namespace std;
 
@@ -183,8 +183,7 @@ Architecture::ToAddToRemove Architecture::load(
             DEBUG("Adding node <" << n["name"].asString() << ">" << endl);
         }
 
-        node->cognitive_function(get_cognitive_function_by_name(
-            n.get("cognitive_function", "").asString()));
+        node->label(get_label_by_name(n.get("label", "").asString()));
 
         if (!n.get("sub_architecture", "").asString().empty()) {
             auto sub_arch_uuid =

@@ -4,7 +4,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <iostream>
 
-#include "cognitive_function.hpp"
+#include "label.hpp"
 #include "json/json.h"
 
 using namespace std;
@@ -29,8 +29,8 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
     Json::Value jnode;
     jnode["uuid"] = boost::lexical_cast<std::string>(node->uuid);
     jnode["name"] = node->name();
-    jnode["cognitive_function"] =
-        COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
+    jnode["label"] =
+        LABEL_NAMES.at(node->label());
     jnode["position"].append(node->x());
     jnode["position"].append(node->y());
     jnode["size"].append(node->width());

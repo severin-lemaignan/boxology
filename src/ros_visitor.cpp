@@ -11,7 +11,7 @@
 #include <regex>
 #include <string>
 
-#include "cognitive_function.hpp"
+#include "label.hpp"
 #include "inja/inja.hpp"
 #include "node.hpp"
 
@@ -184,7 +184,7 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
     jnode["id"] = id;
     jnode["id_capitalized"] = id_capitalized;
     jnode["name"] = name;
-    jnode["label"] = COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
+    jnode["label"] = LABEL_NAMES.at(node->label());
 
     jnode["dependencies"] = nlohmann::json::array();
 

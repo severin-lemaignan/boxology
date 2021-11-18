@@ -7,7 +7,7 @@
 #include <string>
 
 #include "architecture.hpp"  // Node
-#include "cognitive_function.hpp"
+#include "label.hpp"
 #include "node.hpp"
 #include "visitor.hpp"
 

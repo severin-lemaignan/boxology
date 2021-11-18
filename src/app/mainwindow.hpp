@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "../architecture.hpp"
-#include "../cognitive_function.hpp"
+#include "../label.hpp"
 
 class QResizeEvent;
 class GraphicsNodeView;
@@ -41,7 +41,7 @@ class MainWindow : public QMainWindow {
     void on_actionExport_to_TikZ_triggered();
     void on_actionExport_to_Md_triggered();
     void on_actionExport_to_Ros_triggered();
-    void onCogButtonTriggered(CognitiveFunction cognitive_function);
+    void onCogButtonTriggered(Label label);
 
    private:
     void save(const std::string&

@@ -1,5 +1,5 @@
-#ifndef COGNITIVE_FUNCTION_BUTTON_HPP
-#define COGNITIVE_FUNCTION_BUTTON_HPP
+#ifndef LABEL_BUTTON_HPP
+#define LABEL_BUTTON_HPP
 
 #include <string>
 
@@ -7,14 +7,14 @@
 #include <QMouseEvent>
 #include <QColor>
 
-#include "../cognitive_function.hpp"
+#include "../label.hpp"
 
 class CogButton : public QPushButton {
     Q_OBJECT
 
    public:
     CogButton() = delete;
-    CogButton(CognitiveFunction cognitive_function, QWidget *parent = 0);
+    CogButton(Label label, QWidget *parent = 0);
 
     // QColor color() const {return _color;}
 
@@ -22,12 +22,12 @@ class CogButton : public QPushButton {
     void mousePressEvent(QMouseEvent *e);
 
 signals:
-    void triggered(CognitiveFunction cognitive_function);
+    void triggered(Label label);
 
    private:
     void setColor(const QColor &color);
 
-    CognitiveFunction _cognitive_function;
+    Label _label;
 };
 
-#endif  // COGNITIVE_FUNCTION_BUTTON_HPP
+#endif  // LABEL_BUTTON_HPP

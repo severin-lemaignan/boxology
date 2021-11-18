@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <string>
 
-#include "cognitive_function.hpp"
+#include "label.hpp"
 #include "node.hpp"
 
 using namespace std;
@@ -26,7 +26,7 @@ void MdVisitor::tearDown() {
 void MdVisitor::beginNodes() { ss << "## Nodes" << endl; }
 
 void MdVisitor::onNode(shared_ptr<const Node> node) {
-    _nodes[node->cognitive_function()].push_back(node);
+    _nodes[node->label()].push_back(node);
 }
 
 void MdVisitor::endNodes() {
@@ -34,7 +34,7 @@ void MdVisitor::endNodes() {
         for (auto node : kv.second) {
             ss << "### " << node->name() << endl << endl;
             ss << "Team: **"
-               << COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function())
+               << LABEL_NAMES.at(node->label())
                << "**" << endl
                << endl;
 
