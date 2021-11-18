@@ -83,7 +83,7 @@ The ROS nodes are generated from templates that can be found [here](templates/ro
           ...
         ],
         "outputs": [
-          {"name": "<raw input name>",
+          {"name": "<raw output name>",
            "type": "topic|tf|undefined",
            "topic": "<topic> if type is 'topic' or 'undefined'",
            "frame": "<tf frame> if type is 'tf'",
