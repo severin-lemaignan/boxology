@@ -23,7 +23,7 @@ class Visitor {
     virtual void endConnections(){};
     virtual void tearDown(){};
 
-    std::string make_id(const std::string& name);
+    std::tuple<std::string, std::string> make_id(const std::string& name);
 
     std::string _content;
 

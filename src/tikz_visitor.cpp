@@ -23,8 +23,8 @@ void TikzVisitor::startUp() {
         auto color = kv.second;
         transform(color.begin(), color.end(), color.begin(), ::toupper);
 
-        ss << "\\definecolor{" << make_id(COGNITIVE_FUNCTION_NAMES.at(kv.first))
-           << "}{HTML}{" << color.substr(1) << "}" << endl;
+        auto[id, id_capitalized] = make_id(COGNITIVE_FUNCTION_NAMES.at(kv.first));
+        ss << "\\definecolor{" << id << "}{HTML}{" << color.substr(1) << "}" << endl;
     }
 
     ss << "\n\\begin{document}" << endl;
@@ -54,6 +54,10 @@ void TikzVisitor::tearDown() {
 void TikzVisitor::beginNodes() { ss << "        %%% NODES" << endl; }
 
 void TikzVisitor::onNode(shared_ptr<const Node> node) {
+
+    auto[label_id, label_id_capitalized] = make_id(COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function()));
+    auto[id, id_capitalized] = make_id(node->name());
+
     ss << "        \\node "
           "at ("
        << tikz_unit(node->x()) << "," << tikz_unit(-node->y())
@@ -70,9 +74,9 @@ void TikzVisitor::onNode(shared_ptr<const Node> node) {
        << tikz_unit(node->height())
        << ", "
           "fill="
-       << make_id(COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function()))
+       << label_id
        << "!50]"
-       << " (" << make_id(node->name()) << ") {" << sanitize_tex(node->name())
+       << " (" << id << ") {" << sanitize_tex(node->name())
        << "};";
     ss << endl;
 
@@ -93,20 +97,23 @@ void TikzVisitor::onConnection(shared_ptr<const Connection> connection) {
     auto from = connection->from.node.lock();
     auto to = connection->to.node.lock();
 
+    auto[from_id, from_id_capitalized] = make_id(from->name());
+    auto[to_id, to_id_capitalized] = make_id(to->name());
+
     if (connection->name == "anonymous") {
-        ss << "        \\path (" << make_id(from->name())
+        ss << "        \\path (" << from_id 
            << ") "
               "edge [->, out=0, in=180] "
               "("
-           << make_id(to->name()) << ");" << endl;
+           << to_id << ");" << endl;
     } else {
-        ss << "        \\path (" << make_id(from->name())
+        ss << "        \\path (" << from_id
            << ") "
               "edge [->, out=0, in=180] node[label] {"
            << sanitize_tex(connection->name)
            << "}"
               "("
-           << make_id(to->name()) << ");" << endl;
+           << to_id << ");" << endl;
     }
 }
 

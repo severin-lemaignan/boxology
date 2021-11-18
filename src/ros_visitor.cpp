@@ -78,7 +78,8 @@ RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
 void RosVisitor::startUp() {
     data_["path"] = ws_path;
     data_["name"] = architecture.name;
-    data_["id"] = make_id(architecture.name);
+    auto[id, id_capitalized] = make_id(architecture.name);
+    data_["id"] = id;
     data_["boxology_version"] = STR(BOXOLOGY_VERSION);
     data_["version"] = architecture.version;
     data_["description"] = architecture.description;
@@ -93,7 +94,7 @@ void RosVisitor::tearDown() {
     vector<string> main_node_tpls{"package.xml", "CMakeLists.txt",
                                   "launch/start_all.launch"};
 
-    auto id = make_id(architecture.name);
+    auto[id, id_capitalized] = make_id(architecture.name);
     auto rel_path = fs::path("src") / id;
     auto abs_path = fs::path(ws_path) / rel_path;
     auto launch_path = abs_path / "launch";
@@ -142,7 +143,9 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
     auto name = node->name().substr(0, node->name().find("["));
 
-    jnode["id"] = make_id(name);
+    auto[id, id_capitalized] = make_id(name);
+    jnode["id"] = id;
+    jnode["id_capitalized"] = id_capitalized;
     jnode["name"] = name;
     jnode["label"] = COGNITIVE_FUNCTION_NAMES.at(node->cognitive_function());
 
@@ -209,14 +212,13 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
         } else {
             jport["type"] = "undefined";
             jport["description"] = name;
-            jport["topic"] = make_id(name);
-            jport["short"] = make_id(name);
+            auto[id, id_capitalized] = make_id(name);
+            jport["topic"] = id;
+            jport["short"] = id;
             jport["datatype"] = {"std_msgs", "Empty"};
             if (!contains(jnode["dependencies"], jport["datatype"])) {
                 jnode["dependencies"].push_back(jport["datatype"]);
             }
-
-
         }
 
         if (isInput) {
