@@ -12,6 +12,7 @@
 #include "../json_visitor.hpp"
 #include "../md_visitor.hpp"
 #include "../tikz_visitor.hpp"
+#include "../ros_visitor.hpp"
 #include "mainwindow.hpp"
 
 using namespace std;
@@ -30,17 +31,26 @@ int main(int argc, char *argv[]) {
     parser.addPositionalArgument(
         "model", "The model to open/process (Boxology JSON format)");
 
-    parser.addOptions({{{"l", "list-models"}, "Lists available models"}});
+    parser.addOptions({
+            {
+             {"j", "to-json"}, 
+             "Export the model to JSON, without opening the GUI"
+            },
+            {
+             {"m", "to-markdown"}, 
+             "Export the model to Markdown, without opening the GUI"
+            },
+            {
+             {"t", "to-latex"}, 
+             "Export the model to a standalone LaTex (Tikz)"
+            },
+            {
+             {"r", "to-ros"}, 
+             "Export the architecture to a ROS workspace", 
+             "workspace root"
+            }
+          });
 
-    parser.addOptions({{{"j", "to-json"},
-                        "Export the model to JSON, without opening the GUI"}});
-    parser.addOptions(
-        {{{"m", "to-markdown"},
-          "Export the model to Markdown, without opening the GUI"}});
-
-    parser.addOptions({{{"t", "to-latex"},
-                        "Export the model to a standalone LaTex (Tikz) "
-                        "document, without opening the GUI"}});
 
     // Process the actual command line arguments given by the user
     parser.process(app);
@@ -52,7 +62,7 @@ int main(int argc, char *argv[]) {
         return app.exec();
     } else {
         if (parser.isSet("to-json") || parser.isSet("to-markdown") ||
-            parser.isSet("to-latex")) {
+            parser.isSet("to-latex") || parser.isSet("to-ros")) {
             auto architecture = Architecture();
 
             try {
@@ -82,6 +92,13 @@ int main(int argc, char *argv[]) {
             } else if (parser.isSet("to-latex")) {
                 TikzVisitor tikz(architecture);
                 auto output = tikz.visit();
+
+                cout << output;
+
+                return 0;
+            } else if (parser.isSet("to-ros")) {
+                RosVisitor visitor(architecture, parser.value("to-ros").toStdString());
+                auto output = visitor.visit();
 
                 cout << output;
 
