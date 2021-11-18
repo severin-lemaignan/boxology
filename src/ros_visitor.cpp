@@ -38,6 +38,43 @@ bool contains(const nlohmann::json& container, const nlohmann::json& value) {
     return false;
 }
 
+tuple<string, string> prepareTopic(string topic_in) {
+    string topic(topic_in);
+
+    // ROS4HRI
+    regex human_faces_regex("/h/f/\\*/(.*)", regex_constants::ECMAScript);
+    smatch faces;
+    if (regex_search(topic_in, faces, human_faces_regex)) {
+        return {string("/humans/faces/<id>/") + string(faces[1]),
+                string("face_") + string(faces[1])};
+    }
+
+    regex human_bodies_regex("/h/b/\\*/(.*)", regex_constants::ECMAScript);
+    smatch bodies;
+    if (regex_search(topic_in, bodies, human_bodies_regex)) {
+        return {string("/humans/bodies/<id>/") + string(bodies[1]),
+                string("body_") + string(bodies[1])};
+    }
+
+    regex human_voices_regex("/h/v/\\*/(.*)", regex_constants::ECMAScript);
+    smatch voices;
+    if (regex_search(topic_in, voices, human_voices_regex)) {
+        return {string("/humans/voices/<id>/") + string(voices[1]),
+                string("voice_") + string(voices[1])};
+    }
+
+    regex human_persons_regex("/h/f/\\*/(.*)", regex_constants::ECMAScript);
+    smatch persons;
+    if (regex_search(topic_in, persons, human_persons_regex)) {
+        return {string("/humans/persons/<id>/") + string(persons[1]),
+                string("person_") + string(persons[1])};
+    }
+
+    auto shortname = split(topic, '/').back();
+
+    return {topic, shortname};
+}
+
 RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
     : Visitor(architecture), ws_path(ws_path) {
     fs::path tpl_path;
@@ -173,24 +210,25 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
         auto name = p->name;
 
-        regex topic_regex("`(.*)` \\[(.*)\\]", regex_constants::ECMAScript);
+        regex topic_regex("^(/.*) \\[(.*)\\]$", regex_constants::ECMAScript);
         smatch topic_matches;
-        regex tf_regex("`tf: (.*)`", regex_constants::ECMAScript);
+        regex tf_regex("^tf: (.*)$", regex_constants::ECMAScript);
         smatch tf_matches;
 
         if (regex_search(name, topic_matches, topic_regex)) {
             jport["type"] = "topic";
-            jport["topic"] = topic_matches[1];
-            jport["short"] = split(jport["topic"], '/').back();
+            auto [topic, shortname] = prepareTopic(topic_matches[1]);
+            jport["topic"] = topic;
+            jport["short"] = shortname;
             auto type = split(topic_matches[2], '/');
             jport["datatype"] = {type.front(), type.back()};
-            if (!contains(jnode["dependencies"],jport["datatype"])) {
+            if (!contains(jnode["dependencies"], jport["datatype"])) {
                 jnode["dependencies"].push_back(jport["datatype"]);
             }
 
             cout << "[II] Node " << jnode["id"] << ": "
                  << (isInput ? "subscribes to" : "publishes") << " topic "
-                 << jport["topic"] << " (short: " << jport["shorttopic"]
+                 << jport["topic"] << " (short: " << jport["short"]
                  << ") of type " << jport["type"] << endl;
 
         } else if (regex_search(name, tf_matches, tf_regex)) {
@@ -199,10 +237,10 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
             if (isInput) {
                 jport["datatype"] = {"tf", "transform_listener"};
-            }else {
+            } else {
                 jport["datatype"] = {"tf", "transform_broadcaster"};
             }
-            if (!contains(jnode["dependencies"],jport["datatype"])) {
+            if (!contains(jnode["dependencies"], jport["datatype"])) {
                 jnode["dependencies"].push_back(jport["datatype"]);
             }
 
@@ -227,6 +265,18 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
             jnode["outputs"].push_back(jport);
         }
     }
+
+    // ensure package dependencies are only listed *one* time
+    // otherwise catkin complains.
+    set<string> packages;
+    for (const auto& dep : jnode["dependencies"]) {
+        packages.insert(string(dep[0]));
+    }
+    for (const auto& p : packages) {
+        jnode["packages"].push_back(p);
+    }
+
+
 
     data_["nodes"].push_back(jnode);
 

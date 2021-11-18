@@ -50,8 +50,8 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>roscpp</exec_depend>
-  {% for dep in dependencies %}
-  <depend>{{ dep.0 }}</depend>
+  {% for dep in packages %}
+  <depend>{{ dep }}</depend>
   {% endfor %}
 
   <export>
