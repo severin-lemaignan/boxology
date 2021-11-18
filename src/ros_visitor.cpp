@@ -115,7 +115,7 @@ RosVisitor::RosVisitor(const Architecture& architecture, const string& ws_path)
 void RosVisitor::startUp() {
     data_["path"] = ws_path;
     data_["name"] = architecture.name;
-    auto[id, id_capitalized] = make_id(architecture.name);
+    auto [id, id_capitalized] = make_id(architecture.name);
     data_["id"] = id;
     data_["boxology_version"] = STR(BOXOLOGY_VERSION);
     data_["version"] = architecture.version;
@@ -131,7 +131,7 @@ void RosVisitor::tearDown() {
     vector<string> main_node_tpls{"package.xml", "CMakeLists.txt",
                                   "launch/start_all.launch"};
 
-    auto[id, id_capitalized] = make_id(architecture.name);
+    auto [id, id_capitalized] = make_id(architecture.name);
     auto rel_path = fs::path("src") / id;
     auto abs_path = fs::path(ws_path) / rel_path;
     auto launch_path = abs_path / "launch";
@@ -180,7 +180,7 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
     auto name = node->name().substr(0, node->name().find("["));
 
-    auto[id, id_capitalized] = make_id(name);
+    auto [id, id_capitalized] = make_id(name);
     jnode["id"] = id;
     jnode["id_capitalized"] = id_capitalized;
     jnode["name"] = name;
@@ -209,6 +209,7 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
         bool isInput = (p->direction == Port::Direction::IN);
 
         auto name = p->name;
+        jport["name"] = name;
 
         regex topic_regex("^(/.*) \\[(.*)\\]$", regex_constants::ECMAScript);
         smatch topic_matches;
@@ -249,8 +250,7 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
                  << jport["frame"] << endl;
         } else {
             jport["type"] = "undefined";
-            jport["description"] = name;
-            auto[id, id_capitalized] = make_id(name);
+            auto [id, id_capitalized] = make_id(name);
             jport["topic"] = id;
             jport["short"] = id;
             jport["datatype"] = {"std_msgs", "Empty"};
@@ -275,8 +275,6 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
     for (const auto& p : packages) {
         jnode["packages"].push_back(p);
     }
-
-
 
     data_["nodes"].push_back(jnode);
 
