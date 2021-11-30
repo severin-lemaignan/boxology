@@ -185,9 +185,29 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
     nlohmann::json jnode;
 
-    auto name = node->name().substr(0, node->name().find("["));
+    auto name = node->name().substr(0, node->name().find("[") - 1);
     if (name.find("DEPENDENCY:") != string::npos) {
         name = name.substr(string("DEPENDENCY:").size());
+    }
+
+    if (name.find("MOCK: ") == string::npos) {
+        // node should *not* be mocked-up
+
+        if (!node->sub_architecture ||
+            node->sub_architecture->description.size() == 0) {
+            jnode["generate"] = true;
+            cout << "ATTENTION! Node " << name
+                 << " is not marked for mocking-up ('MOCK'), but no repo is "
+                    "provided. Mocking it up anyway."
+                 << endl;
+        } else {
+            jnode["generate"] = false;
+            jnode["repo"] = node->sub_architecture->description.substr(
+                string("REPO:").size());
+        }
+    } else {
+        jnode["generate"] = true;
+        name = name.substr(node->name().find("MOCK: ") + 6);
     }
 
     auto [id, id_capitalized] = make_id(name);
