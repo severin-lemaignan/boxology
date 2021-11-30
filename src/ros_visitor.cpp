@@ -11,8 +11,8 @@
 #include <regex>
 #include <string>
 
-#include "label.hpp"
 #include "inja/inja.hpp"
+#include "label.hpp"
 #include "node.hpp"
 
 using namespace std;
@@ -179,6 +179,9 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
     nlohmann::json jnode;
 
     auto name = node->name().substr(0, node->name().find("["));
+    if (name.find("DEPENDENCY:") != string::npos) {
+        name = name.substr(string("DEPENDENCY:").size());
+    }
 
     auto [id, id_capitalized] = make_id(name);
     jnode["id"] = id;
