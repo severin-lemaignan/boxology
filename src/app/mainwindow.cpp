@@ -301,9 +301,8 @@ void MainWindow::saveTikZ(const std::string& filename) const {
 }
 
 void MainWindow::on_actionExport_to_Md_triggered() {
-    QString newPath =
-        QFileDialog::getSaveFileName(nullptr, tr("Export to Markdown"), _mdPath,
-                                     tr("Markdown files (*.md)"));
+    QString newPath = QFileDialog::getExistingDirectory(
+        nullptr, tr("Choose path for Markdown export"), _rosWsPath);
 
     if (newPath.isEmpty()) return;
 
@@ -321,13 +320,9 @@ void MainWindow::on_actionExport_to_Ros_triggered() {
     exportRos(_rosWsPath.toStdString());
 }
 
-void MainWindow::saveMd(const std::string& filename) const {
-    MdVisitor md(*_root_arch.get());
-    auto output = md.visit();
-
-    ofstream md_file(filename, std::ofstream::out);
-
-    md_file << output;
+void MainWindow::saveMd(const std::string& path) const {
+    MdVisitor md(*_root_arch.get(), path);
+    md.visit();
 }
 
 void MainWindow::exportRos(const std::string& path) const {

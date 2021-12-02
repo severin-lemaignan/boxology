@@ -1,6 +1,7 @@
 #ifndef MDVISITOR_HPP
 #define MDVISITOR_HPP
 
+#include <inja/inja.hpp>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -11,7 +12,8 @@
 #include "visitor.hpp"
 
 class MdVisitor : public Visitor {
-    using Visitor::Visitor;  // inheriting Visitor's ctor
+   public:
+    MdVisitor(const Architecture& architecture, const std::string& ws_path);
 
    private:
     void startUp() override;
@@ -23,9 +25,12 @@ class MdVisitor : public Visitor {
     void tearDown() override;
 
    private:
-    std::map<Label, std::vector<ConstNodePtr>> _nodes;
+    std::vector<ConstNodePtr> nodes_;
 
-    std::stringstream ss;
+    std::string ws_path;
+
+    std::unique_ptr<inja::Environment> env_;
+    nlohmann::json data_;
 };
 
 #endif

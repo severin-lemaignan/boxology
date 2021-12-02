@@ -11,8 +11,8 @@
 #include "../json/json.h"
 #include "../json_visitor.hpp"
 #include "../md_visitor.hpp"
-#include "../tikz_visitor.hpp"
 #include "../ros_visitor.hpp"
+#include "../tikz_visitor.hpp"
 #include "mainwindow.hpp"
 
 using namespace std;
@@ -31,26 +31,15 @@ int main(int argc, char *argv[]) {
     parser.addPositionalArgument(
         "model", "The model to open/process (Boxology JSON format)");
 
-    parser.addOptions({
-            {
-             {"j", "to-json"}, 
-             "Export the model to JSON, without opening the GUI"
-            },
-            {
-             {"m", "to-markdown"}, 
-             "Export the model to Markdown, without opening the GUI"
-            },
-            {
-             {"t", "to-latex"}, 
-             "Export the model to a standalone LaTex (Tikz)"
-            },
-            {
-             {"r", "to-ros"}, 
-             "Export the architecture to a ROS workspace", 
-             "workspace root"
-            }
-          });
-
+    parser.addOptions(
+        {{{"j", "to-json"},
+          "Export the model to JSON, without opening the GUI"},
+         {{"m", "to-markdown"},
+          "Export the model to Markdown, without opening the GUI"},
+         {{"t", "to-latex"}, "Export the model to a standalone LaTex (Tikz)"},
+         {{"r", "to-ros"},
+          "Export the architecture to a ROS workspace",
+          "workspace root"}});
 
     // Process the actual command line arguments given by the user
     parser.process(app);
@@ -83,8 +72,9 @@ int main(int argc, char *argv[]) {
 
                 return 0;
             } else if (parser.isSet("to-markdown")) {
-                MdVisitor md(architecture);
-                auto output = md.visit();
+                MdVisitor visitor(architecture,
+                                  parser.value("to-markdown").toStdString());
+                auto output = visitor.visit();
 
                 cout << output;
 
@@ -97,7 +87,8 @@ int main(int argc, char *argv[]) {
 
                 return 0;
             } else if (parser.isSet("to-ros")) {
-                RosVisitor visitor(architecture, parser.value("to-ros").toStdString());
+                RosVisitor visitor(architecture,
+                                   parser.value("to-ros").toStdString());
                 auto output = visitor.visit();
 
                 cout << output;
