@@ -2,9 +2,10 @@
     <!-- this launch file starts all SPRING nodes except for {{ exclude_label }} nodes. -->
 
     {% for node in nodes %}
+    {% if not (node.bin == "") %}
     {% if node.label != exclude_label %}
     <!-- launching {{ node.name }} ({{ node.id }}) -->
-    <node pkg="{{ node.id }}" name="{{ node.id }}" type="node" output="screen">
+    <node pkg="{{ node.id }}" name="{{ node.id }}" type="{{ node.bin }}" output="screen">
         {% for port in node.inputs %}
         {% if existsIn(port, "topic") %}
         {% if not (port.short == port.topic) %}
@@ -21,6 +22,7 @@
         {% endfor %}
     </node>
     
+    {% endif %}
     {% endif %}
     {% endfor %}
 
