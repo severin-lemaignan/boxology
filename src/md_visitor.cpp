@@ -29,7 +29,7 @@ MdVisitor::MdVisitor(const Architecture& architecture, const string& ws_path)
     for (auto p :
          QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)) {
         tpl_path = fs::path(p.toStdString()) / "templates" / "md";
-        cout << "Looking for Markdown templates in " << tpl_path << endl;
+        cout << "Looking for MD templates in " << tpl_path << endl;
 
         if (fs::exists(tpl_path)) {
             break;
@@ -67,7 +67,7 @@ void MdVisitor::startUp() {
 void MdVisitor::tearDown() {
     if (!env_) return;
 
-    vector<string> tpls{"architecture.md"};
+    vector<string> tpls{"spring-architecture.md"};
 
     auto [id, id_capitalized] = make_id(architecture.name);
 
@@ -93,6 +93,43 @@ void MdVisitor::onNode(shared_ptr<const Node> node) {
     auto name = node->name().substr(0, node->name().find("[") - 1);
     if (name.find("DEPENDENCY:") != string::npos) {
         name = name.substr(string("DEPENDENCY:").size());
+    }
+
+    jnode["bin"] = "node";  // default node name in the MD template is 'node'
+
+    if (name.find("MOCK: ") == string::npos) {
+        // node should *not* be mocked-up
+
+        if (!node->sub_architecture ||
+            node->sub_architecture->description.size() == 0) {
+            jnode["generate"] = true;
+            cout << "ATTENTION! Node " << name
+                 << " is not marked for mocking-up ('MOCK'), but no repo is "
+                    "provided. Mocking it up anyway."
+                 << endl;
+        } else {
+            jnode["generate"] = false;
+
+            stringstream ss(node->sub_architecture->description);
+            string line;
+            while (std::getline(ss, line, '\n')) {
+                if (line.find("REPO:") != string::npos) {
+                    jnode["repo"] = line.substr(string("REPO:").size());
+                    continue;
+                }
+                if (line.find("BIN:") != string::npos) {
+                    jnode["bin"] = line.substr(string("BIN:").size());
+                    continue;
+                }
+                if (line.find("NOT EXECUTABLE") != string::npos) {
+                    jnode["bin"] = "";
+                    continue;
+                }
+            }
+        }
+    } else {
+        jnode["generate"] = true;
+        name = name.substr(node->name().find("MOCK: ") + 6);
     }
 
     auto [id, id_capitalized] = make_id(name);
