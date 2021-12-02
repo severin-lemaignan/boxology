@@ -18,7 +18,11 @@ EditableLabel::EditableLabel(QGraphicsItem *parent)
 void EditableLabel::keyPressEvent(QKeyEvent *event) {
     if ((event->key() == Qt::Key_Enter) || (event->key() == Qt::Key_Return) ||
         (event->key() == Qt::Key_Escape)) {
-        clearFocus();
+        if (event->modifiers() & Qt::ShiftModifier) {
+            QGraphicsTextItem::keyPressEvent(event);
+        } else {
+            clearFocus();
+        }
     } else {
         QGraphicsTextItem::keyPressEvent(event);
     }
@@ -61,13 +65,9 @@ void EditableDescription::focusOutEvent(QFocusEvent *event) {
         unsetCursor();
         _is_editing = false;
 
-        auto content = toPlainText();
-
         setTextWidth(_base_width);
         setZValue(_base_z);
         setFont(_base_font);
-
-        setHtml(content);
     }
 
     EditableLabel::focusOutEvent(event);
@@ -85,13 +85,9 @@ void EditableDescription::mouseDoubleClickEvent(
     _base_z = zValue();
     _base_font = font();
 
-    auto content = toHtml();
-
     setTextWidth(600);
     setZValue(1000);
     setFont(_typewriter_font);
-
-    // setPlainText(content);
 
     EditableLabel::mouseDoubleClickEvent(event);
 }
