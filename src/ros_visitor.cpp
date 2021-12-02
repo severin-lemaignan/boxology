@@ -216,6 +216,8 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
         name = name.substr(string("DEPENDENCY:").size());
     }
 
+    jnode["bin"] = "node";  // default node name in the ROS template is 'node'
+
     if (name.find("MOCK: ") == string::npos) {
         // node should *not* be mocked-up
 
@@ -228,8 +230,23 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
                  << endl;
         } else {
             jnode["generate"] = false;
-            jnode["repo"] = node->sub_architecture->description.substr(
-                string("REPO:").size());
+
+            stringstream ss(node->sub_architecture->description);
+            string line;
+            while (std::getline(ss, line, '\n')) {
+                if (line.find("REPO:") != string::npos) {
+                    jnode["repo"] = line.substr(string("REPO:").size());
+                    continue;
+                }
+                if (line.find("BIN:") != string::npos) {
+                    jnode["bin"] = line.substr(string("BIN:").size());
+                    continue;
+                }
+                if (line.find("NOT EXECUTABLE") != string::npos) {
+                    jnode["bin"] = "";
+                    continue;
+                }
+            }
         }
     } else {
         jnode["generate"] = true;
