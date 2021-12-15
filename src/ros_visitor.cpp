@@ -220,7 +220,7 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
 
     jnode["boxology_version"] = STR(BOXOLOGY_VERSION);
 
-    if (node->sub_architecture) {
+    if (jnode["generate"] == false) {
         jnode["version"] = node->sub_architecture->version;
         jnode["description"] = node->sub_architecture->description;
     } else {
