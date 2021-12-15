@@ -18,7 +18,9 @@
 {% for node in nodes %}
 {% if (node.bin != "") %}
 
-### {{ node.name }} { #{{ node.id }} }
+---
+
+### {{ node.id }}
 
 Node *{{ node.name }}* (id: `{{ node.id }}`) is overseen by {{ node.label }}.
 
