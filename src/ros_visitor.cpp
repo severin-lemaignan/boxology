@@ -231,6 +231,11 @@ void RosVisitor::onNode(shared_ptr<const Node> node) {
                     jnode["repo"] = line.substr(string("REPO:").size());
                     continue;
                 }
+                if (line.find("SUBFOLDER:") != string::npos) {
+                    jnode["repo_subfolder"] =
+                        line.substr(string("SUBFOLDER:").size());
+                    continue;
+                }
                 if (line.find("BIN:") != string::npos) {
                     jnode["bin"] = line.substr(string("BIN:").size());
                     continue;
