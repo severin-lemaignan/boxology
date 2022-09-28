@@ -1,22 +1,28 @@
-# {{ name }}
+---
+title: "{{ name }} -- version {{ version }}"
+subtitle: "{{ description }}"
+author: Séverin Lemaignan
+---
 
-**Version:** {{ version }}
 
-{{ description }}
-
-## Overview of modules
+# Overview of modules
 
 | **Node** | **Partner** | **Status** |
 |----------|-------------|------------|
 {% for node in nodes %}
-| [{{ node.name }}](#{{ node.id }}) | {{ node.label }} | {% if (node.generate) %} mock-up {% else %} released (version {{ node.version }}) {% endif %} {% if (node.bin == "") %} (dependency) {% endif %} |
+| [{{ node.name }}](#{{ node.id }}) | {{ node.label }} | {% if (node.generate) %} not yet implemented {% else %} released (version {{ node.version }}) {% endif %} {% if (node.bin == "") %} (dependency) {% endif %} |
 {% endfor %}
 
-## Detailed description
+# Detailed description
 
+
+{% for partner in sort(labels) %}
+
+
+## {{ partner }}
 
 {% for node in nodes %}
-{% if (node.bin != "") %}
+{% if (node.label == partner and node.bin != "") %}
 
 
 ### {{ node.name }} {#{{ node.id }}}
@@ -27,7 +33,14 @@
 
 #### Status
 
-{% if (node.generate) %} **This node is currently auto-generated (mock-up)** {% else %} **Current release: {{ node.version }}** {% endif %}
+{% if (node.generate) %} This node is not yet implemented.
+{% else %}
+Implemented. Current release/branch: {{ node.version }}
+
+{% if (node.repo) %}
+Source code repository: [{{ node.repo }}]({{ node.repo }})
+{% endif %}
+{% endif %}
 
 
 #### Inputs/outputs
@@ -73,5 +86,6 @@ Module {{ node.name }} (id: `{{ node.id }}`) is overseen by {{ node.label }}.
 
 
 {% endif %}
+{% endfor %}
 {% endfor %}
 
