@@ -6,10 +6,10 @@
 
 ## Overview of modules
 
-| **Node** | **id** | **Partner** | **Status** |
-|----------|--------|-------------|------------|
+| **Node** | **Partner** | **Status** |
+|----------|-------------|------------|
 {% for node in nodes %}
-| [{{ node.name }}](#{{ node.id }}) | {{ node.id }} | {{ node.label }} | {% if (node.generate) %} mock-up {% else %} released (version {{ node.version }}) {% endif %} {% if (node.bin == "") %} (dependency) {% endif %} |
+| [{{ node.name }}](#{{ node.id }}) | {{ node.label }} | {% if (node.generate) %} mock-up {% else %} released (version {{ node.version }}) {% endif %} {% if (node.bin == "") %} (dependency) {% endif %} |
 {% endfor %}
 
 ## Detailed description
@@ -18,13 +18,12 @@
 {% for node in nodes %}
 {% if (node.bin != "") %}
 
----
 
-### {{ node.id }}
-
-Node *{{ node.name }}* (id: `{{ node.id }}`) is overseen by {{ node.label }}.
+### {{ node.name }} {#{{ node.id }}}
 
 {{ node.description }}
+
+*The node {{ node.name }} (id: `{{ node.id }}`) is maintained by {{ node.label }}.*
 
 #### Status
 
