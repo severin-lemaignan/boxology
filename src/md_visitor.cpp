@@ -44,6 +44,7 @@ MdVisitor::MdVisitor(const Architecture& architecture, const string& ws_path)
             ws_path + fs::path::preferred_separator);
 
         env_->set_line_statement("$$$$$");
+        env_->set_comment("{##", "##}");  // Comments
         env_->set_trim_blocks(true);
         env_->set_lstrip_blocks(true);
 
