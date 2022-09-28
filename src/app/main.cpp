@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
+#include <QFileInfo>
 #include <iostream>
 
 #include "../json/json.h"
@@ -72,8 +73,9 @@ int main(int argc, char *argv[]) {
 
                 return 0;
             } else if (parser.isSet("to-markdown")) {
+                QFileInfo src(args[0]);
                 MdVisitor visitor(architecture,
-                                  parser.value("to-markdown").toStdString());
+                                  src.absolutePath().toStdString());
                 auto output = visitor.visit();
 
                 cout << output;
@@ -87,8 +89,9 @@ int main(int argc, char *argv[]) {
 
                 return 0;
             } else if (parser.isSet("to-ros")) {
+                QFileInfo src(args[0]);
                 RosVisitor visitor(architecture,
-                                   parser.value("to-ros").toStdString());
+                                   src.absolutePath().toStdString());
                 auto output = visitor.visit();
 
                 cout << output;
