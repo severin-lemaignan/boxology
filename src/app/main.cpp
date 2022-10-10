@@ -13,6 +13,7 @@
 #include "../json_visitor.hpp"
 #include "../md_visitor.hpp"
 #include "../ros_visitor.hpp"
+#include "../rst_visitor.hpp"
 #include "../tikz_visitor.hpp"
 #include "mainwindow.hpp"
 
@@ -38,6 +39,9 @@ int main(int argc, char *argv[]) {
          {{"m", "to-markdown"},
           "Export the model to Markdown, without opening the GUI"},
          {{"t", "to-latex"}, "Export the model to a standalone LaTex (Tikz)"},
+         {{"s", "to-rst"},
+          "Export the architecture as a reStructured/Sphinx project",
+          "documentation root"},
          {{"r", "to-ros"},
           "Export the architecture to a ROS workspace",
           "workspace root"}});
@@ -52,7 +56,8 @@ int main(int argc, char *argv[]) {
         return app.exec();
     } else {
         if (parser.isSet("to-json") || parser.isSet("to-markdown") ||
-            parser.isSet("to-latex") || parser.isSet("to-ros")) {
+            parser.isSet("to-latex") || parser.isSet("to-ros") ||
+            parser.isSet("to-rst")) {
             auto architecture = Architecture();
 
             try {
@@ -88,8 +93,17 @@ int main(int argc, char *argv[]) {
                 cout << output;
 
                 return 0;
+            } else if (parser.isSet("to-rst")) {
+                QFileInfo src(parser.value("to-rst"));
+                RstVisitor visitor(architecture,
+                                   src.absolutePath().toStdString());
+                auto output = visitor.visit();
+
+                cout << output;
+
+                return 0;
             } else if (parser.isSet("to-ros")) {
-                QFileInfo src(args[0]);
+                QFileInfo src(parser.value("to-ros"));
                 RosVisitor visitor(architecture,
                                    src.absolutePath().toStdString());
                 auto output = visitor.visit();
