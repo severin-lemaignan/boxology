@@ -95,10 +95,10 @@ void EditableDescription::mouseDoubleClickEvent(
 void EditableDescription::paint(QPainter *painter,
                                 const QStyleOptionGraphicsItem *opt,
                                 QWidget *w) {
-    if (_is_editing) {
-        QBrush brush("#ccbbbbbb");
-        painter->setBrush(brush);
-        painter->drawRect(boundingRect());
-    }
+    //if (_is_editing) {
+    //    QBrush brush("#ccbbbbbb");
+    //    painter->setBrush(brush);
+    //    painter->drawRect(boundingRect());
+    //}
     EditableLabel::paint(painter, opt, w);
 }

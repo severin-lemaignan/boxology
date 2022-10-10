@@ -74,7 +74,7 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
     _arch_desc->setTextWidth(400);
     _arch_desc->setPos(
         0, _arch_version->y() + _arch_version->boundingRect().height());
-    _arch_desc->setDefaultTextColor(_color_null);
+    _arch_desc->setDefaultTextColor(_color_bg_text);
 
     this->addItem(_arch_desc);
     connect(_arch_desc, &EditableLabel::contentUpdated, this,
