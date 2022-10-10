@@ -3,6 +3,8 @@
 
 #include "md_visitor.hpp"
 
+#include <curl/curl.h>
+
 #include <QStandardPaths>
 #include <algorithm>
 #include <filesystem>
@@ -21,6 +23,12 @@ namespace fs = std::filesystem;
 vector<string> split(string s, const char separator);
 bool contains(const nlohmann::json& container, const nlohmann::json& value);
 tuple<string, string> prepareTopic(string topic_in);
+
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb,
+                            void* userp) {
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
 
 MdVisitor::MdVisitor(const Architecture& architecture, const string& ws_path)
     : Visitor(architecture), ws_path(ws_path) {
@@ -108,6 +116,7 @@ void MdVisitor::onNode(shared_ptr<const Node> node) {
     jnode["bin"] = "node";  // default node name in the MD template is 'node'
 
     jnode["description"] = "";
+    jnode["short_description"] = "";
     jnode["repo"] = "";
 
     if (name.find("MOCK: ") == string::npos) {
@@ -126,6 +135,24 @@ void MdVisitor::onNode(shared_ptr<const Node> node) {
             stringstream ss(node->sub_architecture->description);
             string line;
             while (std::getline(ss, line, '\n')) {
+                if (line.find("BRIEF:") != string::npos) {
+                    jnode["short_description"] =
+                        line.substr(string("BRIEF:").size());
+                    continue;
+                }
+                if (line.find("FETCH_DOC:") != string::npos) {
+                    string url = line.substr(string("FETCH_DOC:").size());
+                    CURLcode res;
+                    std::string readBuffer;
+                    CURL* curl = curl_easy_init();
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
+                                     WriteCallback);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+                    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+                    res = curl_easy_perform(curl);
+                    jnode["description"] = readBuffer;
+                    continue;
+                }
                 if (line.find("REPO:") != string::npos) {
                     jnode["repo"] = line.substr(string("REPO:").size());
                     continue;

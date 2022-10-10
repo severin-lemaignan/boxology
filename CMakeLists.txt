@@ -23,6 +23,8 @@ cmake_policy(SET CMP0020 NEW) # automatic linking of qtmain.lib on Windows
 # for UUIDs
 find_package(Boost 1.43.0 REQUIRED)
 
+find_package(CURL REQUIRED)
+
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Svg REQUIRED)
 
@@ -31,11 +33,12 @@ file(GLOB_RECURSE HEADERS src/*.hpp)
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
+    ${CURL_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/src # for json/json.h
     )
 
 add_executable(${PROJECT_NAME} ${SRC} ${HEADERS_MOC} ${HEADERS} ${HEADERS_UI} ${QT_RC} src/app/mainwindow.ui)
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Svg)
+target_link_libraries(${PROJECT_NAME} ${CURL_LIBRARIES} Qt5::Widgets Qt5::Svg)
 
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
