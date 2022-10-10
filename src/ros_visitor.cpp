@@ -52,21 +52,21 @@ tuple<string, string> prepareTopic(string topic_in) {
     regex human_bodies_regex("/h/b/\\*/(.*)", regex_constants::ECMAScript);
     smatch bodies;
     if (regex_search(topic_in, bodies, human_bodies_regex)) {
-        return {string("/humans/bodies/TEST_ID_BODY/") + string(bodies[1]),
+        return {string("/humans/bodies/<id>/") + string(bodies[1]),
                 string("body_") + string(bodies[1])};
     }
 
     regex human_voices_regex("/h/v/\\*/(.*)", regex_constants::ECMAScript);
     smatch voices;
     if (regex_search(topic_in, voices, human_voices_regex)) {
-        return {string("/humans/voices/TEST_ID_VOICE/") + string(voices[1]),
+        return {string("/humans/voices/<id>/") + string(voices[1]),
                 string("voice_") + string(voices[1])};
     }
 
     regex human_persons_regex("/h/p/\\*/(.*)", regex_constants::ECMAScript);
     smatch persons;
     if (regex_search(topic_in, persons, human_persons_regex)) {
-        return {string("/humans/persons/TEST_ID_PERSON/") + string(persons[1]),
+        return {string("/humans/persons/<id>/") + string(persons[1]),
                 string("person_") + string(persons[1])};
     }
 
@@ -74,6 +74,13 @@ tuple<string, string> prepareTopic(string topic_in) {
     smatch interactions;
     if (regex_search(topic_in, interactions, human_interactions_regex)) {
         return {string("/humans/interactions/") + string(interactions[1]),
+                string(interactions[1])};
+    }
+
+    regex human_group_regex("/h/g/\\*/(.*)", regex_constants::ECMAScript);
+    smatch groups;
+    if (regex_search(topic_in, groups, human_group_regex)) {
+        return {string("/humans/group/<id>/") + string(interactions[1]),
                 string(interactions[1])};
     }
 
