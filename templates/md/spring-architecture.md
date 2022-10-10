@@ -43,16 +43,31 @@ Source code repository: [{{ node.repo }}]({{ node.repo }})
 {% endif %}
 
 
-#### Inputs/outputs
+#### Inputs
 
 {% for io in node.inputs %}
- - Input: `{{ io.name }}` ({{ io.type }})
+{% if (io.type == "topic") %}
+ - Topic subscription: `{{ io.topic }} [{{ join(io.datatype, "/") }}]`
+
+{% else %}
+ - Input: {% if (io.type != "undefined") %} `{{ io.name }}` ({{ io.type }}) {% else %} {{ io.name }} {% endif %}
+
+{% endif %}
 {% endfor %}
+
+#### Outputs
 
 {% for io in node.outputs %}
- - Output: `{{ io.name }}` ({{ io.type }})
+{% if (io.type == "topic") %}
+ - Topic publication: `{{ io.topic }} [{{ join(io.datatype,"/") }}]`
+
+{% else %}
+ - Output: {% if (io.type != "undefined") %} `{{ io.name }}` ({{ io.type }}) {% else %} {{ io.name }} {% endif %}
+
+{% endif %}
 {% endfor %}
 
+{% if node.dependencies %}
 #### Dependencies
 
 {% for dep in node.dependencies %}
@@ -60,7 +75,10 @@ Source code repository: [{{ node.repo }}]({{ node.repo }})
 {% endfor %}
 
 {% endif %}
-{% endfor %}
+
+{% endif %}
+{% endfor %} {## end loop nodes ##}
+{% endfor %} {## end loop partners ##}
 
 {% for node in nodes %}
 {% if (node.bin == "") %}
@@ -87,5 +105,5 @@ Module {{ node.name }} (id: `{{ node.id }}`) is overseen by {{ node.label }}.
 
 {% endif %}
 {% endfor %}
-{% endfor %}
+
 
