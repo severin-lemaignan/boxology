@@ -302,7 +302,7 @@ void MainWindow::saveTikZ(const std::string& filename) const {
 
 void MainWindow::on_actionExport_to_Md_triggered() {
     QString newPath = QFileDialog::getExistingDirectory(
-        nullptr, tr("Choose path for Markdown export"), _rosWsPath);
+        nullptr, tr("Choose path for Markdown export"), _mdPath);
 
     if (newPath.isEmpty()) return;
 

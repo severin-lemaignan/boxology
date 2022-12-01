@@ -7,10 +7,14 @@ author: Séverin Lemaignan
 
 # Overview of modules
 
-| **Node** | **Partner** | **Status** |
-|----------|-------------|------------|
-{% for node in nodes %}
-| [{{ node.name }}](#{{ node.id }}) | {{ node.label }} | {% if (node.generate) %} not yet implemented {% else %} released (version {{ node.version }}) {% endif %} {% if (node.bin == "") %} (dependency) {% endif %} |
+| **Node** | **Partner** | **Status** | **Description** |
+|----------|-------------|------------|-----------------|
+{% for partner in sort(labels) %}
+{% for node in sort(nodes) %}
+{% if (node.label == partner) %}
+| [{{ node.name }}](#{{ node.id }}) | {{ node.label }} | {% if (node.generate) %} not yet implemented {% else %} released (version {{ node.version }}) {% endif %} {% if (node.bin == "") %} (dependency) {% endif %} | {{ node.short_description }} |
+{% endif %}
+{% endfor %}
 {% endfor %}
 
 # Detailed description

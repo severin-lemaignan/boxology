@@ -85,7 +85,7 @@ void MdVisitor::tearDown() {
                   return n1["id"] < n2["id"];
               });
 
-    vector<string> tpls{"architecture.md"};
+    vector<string> tpls{"spring-architecture.md"};
 
     auto [id, id_capitalized] = make_id(architecture.name);
 
@@ -119,64 +119,61 @@ void MdVisitor::onNode(shared_ptr<const Node> node) {
     jnode["short_description"] = "";
     jnode["repo"] = "";
 
-    if (name.find("MOCK: ") == string::npos) {
-        // node should *not* be mocked-up
+    jnode["generate"] = false;
 
-        if (!node->sub_architecture ||
-            node->sub_architecture->description.size() == 0) {
-            jnode["generate"] = true;
-            cout << "ATTENTION! Node " << name
-                 << " is not marked for mocking-up ('MOCK'), but no repo is "
-                    "provided. Mocking it up anyway."
-                 << endl;
-        } else {
-            jnode["generate"] = false;
-
-            stringstream ss(node->sub_architecture->description);
-            string line;
-            while (std::getline(ss, line, '\n')) {
-                if (line.find("BRIEF:") != string::npos) {
-                    jnode["short_description"] =
-                        line.substr(string("BRIEF:").size());
-                    continue;
-                }
-                if (line.find("FETCH_DOC:") != string::npos) {
-                    string url = line.substr(string("FETCH_DOC:").size());
-                    CURLcode res;
-                    std::string readBuffer;
-                    CURL* curl = curl_easy_init();
-                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
-                                     WriteCallback);
-                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-                    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-                    res = curl_easy_perform(curl);
-                    jnode["description"] = readBuffer;
-                    continue;
-                }
-                if (line.find("REPO:") != string::npos) {
-                    jnode["repo"] = line.substr(string("REPO:").size());
-                    continue;
-                }
-                if (line.find("SUBFOLDER:") != string::npos) {
-                    jnode["repo_subfolder"] =
-                        line.substr(string("SUBFOLDER:").size());
-                    continue;
-                }
-                if (line.find("BIN:") != string::npos) {
-                    jnode["bin"] = line.substr(string("BIN:").size());
-                    continue;
-                }
-                if (line.find("NOT EXECUTABLE") != string::npos) {
-                    jnode["bin"] = "";
-                    continue;
-                }
-                jnode["description"] =
-                    jnode["description"].get<string>() + "\n" + line;
-            }
-        }
-    } else {
-        jnode["generate"] = true;
+    if (name.find("MOCK: ") != string::npos) {
         name = name.substr(node->name().find("MOCK: ") + 6);
+        jnode["generate"] = true;
+    }
+
+    if (!node->sub_architecture ||
+        node->sub_architecture->description.size() == 0) {
+        jnode["generate"] = true;
+        cout << "ATTENTION! Node " << name
+             << " is not marked for mocking-up ('MOCK'), but no repo is "
+                "provided. Mocking it up anyway."
+             << endl;
+    } else {
+        stringstream ss(node->sub_architecture->description);
+        string line;
+        while (std::getline(ss, line, '\n')) {
+            if (line.find("BRIEF:") != string::npos) {
+                jnode["short_description"] =
+                    line.substr(string("BRIEF:").size());
+                continue;
+            }
+            if (line.find("FETCH_DOC:") != string::npos) {
+                string url = line.substr(string("FETCH_DOC:").size());
+                CURLcode res;
+                std::string readBuffer;
+                CURL* curl = curl_easy_init();
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+                curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+                res = curl_easy_perform(curl);
+                jnode["description"] = readBuffer;
+                continue;
+            }
+            if (line.find("REPO:") != string::npos) {
+                jnode["repo"] = line.substr(string("REPO:").size());
+                continue;
+            }
+            if (line.find("SUBFOLDER:") != string::npos) {
+                jnode["repo_subfolder"] =
+                    line.substr(string("SUBFOLDER:").size());
+                continue;
+            }
+            if (line.find("BIN:") != string::npos) {
+                jnode["bin"] = line.substr(string("BIN:").size());
+                continue;
+            }
+            if (line.find("NOT EXECUTABLE") != string::npos) {
+                jnode["bin"] = "";
+                continue;
+            }
+            jnode["description"] =
+                jnode["description"].get<string>() + " " + line;
+        }
     }
 
     auto [id, id_capitalized] = make_id(name);
