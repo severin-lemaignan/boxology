@@ -44,6 +44,10 @@ GraphicsNodeScene::GraphicsNodeScene(Architecture *architecture,
         p->setWidth(0);
     }
 
+    // required to prevent a segfault that sometimes happen when deleting nodes, as the default BSP indexing might keep dangling pointers
+    // see  https://forum.qt.io/topic/71316/qgraphicsscenefinditembsptreevisitor-visit-crashes-due-to-an-obsolete-paintevent-after-qgraphicsscene-removeitem/17
+    setItemIndexMethod(NoIndex);
+
     // initialize the background
     setBackgroundBrush(_brush_background);
 
