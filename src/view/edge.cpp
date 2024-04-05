@@ -33,7 +33,7 @@ GraphicsDirectedEdge::GraphicsDirectedEdge(QPoint start, QPoint stop,
     setAcceptHoverEvents(true);
 
     _pen.setColor(DEFAULT_EDGE_COLOR);
-    _pen.setWidth(2);
+    _pen.setWidth(6);
     setZValue(-1);
 
     _active_pen.setColor(DEFAULT_EDGE_COLOR_SELECTED);
