@@ -7,6 +7,13 @@
 #include "architecture.hpp"
 #include "node.hpp"
 
+enum class EdgeType {
+    TOPIC,
+    SERVICE,
+    ACTION,
+    UNKNOWN
+};
+
 class Visitor {
    public:
     Visitor(const Architecture& architecture);
@@ -24,6 +31,19 @@ class Visitor {
     virtual void tearDown(){};
 
     std::tuple<std::string, std::string> make_id(const std::string& name);
+
+    /**
+     * Returns the edge type of a given string, based on its prefix:
+     * - "topic:" (or string starts with a '/') -> EdgeType::TOPIC
+     * - "service:" -> EdgeType::SERVICE
+     * - "action:" -> EdgeType::ACTION
+     */
+    EdgeType get_edge_type(const std::string& name);
+
+    /**
+     * Returns true if a given string starts with 'node:'
+     */
+    bool is_node_name(const std::string& name);
 
     std::string _content;
 
