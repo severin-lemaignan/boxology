@@ -103,3 +103,7 @@ EdgeType Visitor::get_edge_type(const std::string &name) {
 bool Visitor::is_node_name(const std::string &name) {
     return name.substr(0,5) == "node:";
 }
+
+bool Visitor::is_hardware(const std::string &name) {
+    return name.substr(0,3) == "hw:";
+}
