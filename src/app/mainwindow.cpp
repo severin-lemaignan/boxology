@@ -108,7 +108,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 void MainWindow::spawnInitialNodes() {
     auto node = _active_arch->createNode();
     node->name("Node 1");
-    node->label(Label::PERCEPTION);
+    node->label(Label::SOC_PERCEPTION);
     auto p1 = node->createPort(
         {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
     auto gNode = _root_scene->add(node);

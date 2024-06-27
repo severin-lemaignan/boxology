@@ -5,50 +5,55 @@
 #include <string>
 
 enum class Label {
-    PERCEPTION,
-    ATTENTION,
+    SOC_PERCEPTION,
+    ENV_PERCEPTION,
     LANGUAGE,
     DECISION_MAKING,
-    MEMORY,
+    NAVIGATION,
     REASONING,
-    SOCIOCOGNITION,
-    EMOTIONS,
+    MANIPULATION,
+    EXPRESSIVENESS,
     LEARNING,
-    ACTION,
+    MOTIONS,
     MODEL,
     UI,
+    HARDWARE,
     OTHER
 };
 
 static const std::map<Label, std::string> LABEL_NAMES{
-    {Label::PERCEPTION, "Perception"},
-    {Label::ATTENTION, "Attention"},
-    {Label::LANGUAGE, "Language"},
+    {Label::SOC_PERCEPTION, "Social perception"},
+    {Label::ENV_PERCEPTION, "Environment perception"},
+    {Label::LANGUAGE, "Speech and Language"},
     {Label::DECISION_MAKING, "Decision making"},
-    {Label::MEMORY, "Memory"},
-    {Label::REASONING, "Reasoning"},
-    {Label::SOCIOCOGNITION, "Socio-cog."},
-    {Label::EMOTIONS, "Emotions"},
+    {Label::NAVIGATION, "Navigation"},
+    {Label::REASONING, "Knowledge and Reasoning"},
+    {Label::MANIPULATION, "Manipulation"},
+    {Label::EXPRESSIVENESS, "Expressiveness"},
     {Label::LEARNING, "Learning"},
-    {Label::ACTION, "Action"},
+    {Label::MOTIONS, "Gesture, motions"},
     {Label::MODEL, "Model/data"},
     {Label::UI, "UI"},
-    {Label::OTHER, "Other"}};
+    {Label::HARDWARE, "Hardware"},
+    {Label::OTHER, "Other"},
+};
 
 static const std::map<Label, std::string> LABEL_COLORS{
-    {Label::PERCEPTION, "#53399d"},
-    {Label::ATTENTION, "#0476aa"},
+    {Label::SOC_PERCEPTION, "#53399d"},
+    {Label::ENV_PERCEPTION, "#0476aa"},
     {Label::LANGUAGE, "#9d398b"},
-    {Label::MEMORY, "#ffaa7f"},
+    {Label::NAVIGATION, "#ffaa7f"},
     {Label::DECISION_MAKING, "#e1d620"},
     {Label::REASONING, "#c28e25"},
-    {Label::SOCIOCOGNITION, "#399d40"},
-    {Label::EMOTIONS, "#a11012"},
+    {Label::MANIPULATION, "#399d40"},
+    {Label::EXPRESSIVENESS, "#a11012"},
     {Label::LEARNING, "#2e13ff"},
-    {Label::ACTION, "#75bdff"},
+    {Label::MOTIONS, "#75bdff"},
     {Label::MODEL, "#cca141"},
     {Label::UI, "#ddb241"},
-    {Label::OTHER, "#1a1a1a"}};
+    {Label::HARDWARE, "#1a1a1a"},
+    {Label::OTHER, "#1a1a1a"},
+};
 
 Label get_label_by_name(const std::string& name);
 
