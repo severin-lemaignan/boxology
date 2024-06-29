@@ -1,0 +1,82 @@
+% << name >>
+% Version: << version >>
+% Description: << description >>
+
+\documentclass[tikz,dvisvgm]{standalone}
+
+\usepackage[hypertex]{hyperref} % use this for links with dvisvgm
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+
+\usepackage{fontspec}
+\newfontfamily\defaultfont[Scale=1.0]{Inter} % use that for custom font
+\newfontfamily\monospace[Scale=1.0]{Ubuntu Mono}
+
+\newcommand{\svgnode}[1]{\special{dvisvgm:raw <g class='node' id='#1'>}}
+\newcommand{\svgedge}[1]{\special{dvisvgm:raw <g class='edge' id='#1'>}}
+\newcommand{\svggend}{\special{dvisvgm:raw </g>}}
+
+{% for label in labels %}
+\definecolor{<<label.id>>}{HTML}{<<substr(label.color,1,-1)>>}
+{% endfor %}
+
+\begin{document}
+
+\begin{tikzpicture}[
+             font=\defaultfont,
+             >=latex,
+             every edge/.style={draw, line width=3pt,opacity=0.5},
+             hw_edge/.style={dashed}, 
+             topic_edge/.style={color=blue,text=black}, 
+             service_edge/.style={color=orange,text=black}, 
+             action_edge/.style={color=purple,text=black}, 
+             node/.style={draw, rounded corners, align=center, inner sep=5pt, fill=black!20},
+             label/.style={midway, align=center, fill=white,opacity=0.8},
+             topic/.style={midway, align=center, font=\monospace, fill=white,opacity=0.8},
+             service/.style={midway, align=center, font=\monospace, fill=white,opacity=0.8},
+             action/.style={midway, align=center, font=\monospace, fill=white,opacity=0.8}]
+
+
+    \special{dvisvgm:raw
+    <script type="text/javascript">
+    function animateEdge(node1, node2) {
+    var animation = document.getElementById('animation-' + node1 + '-' + node2);
+    if (!animation) {
+    var edge = document.getElementById(node1 + '-' + node2);
+    var path = edge.getElementsByTagName('path')[0];
+    path.id = 'path-' + node1 + '-' + node2;
+    var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', '1');
+    circle.setAttribute('fill', 'red');
+    var animateMotion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+    animateMotion.setAttribute('dur', '5s');
+    animateMotion.setAttribute('id', 'animation-' + node1 + '-' + node2);
+    animateMotion.setAttribute('repeatCount', 'indefinite');
+    var mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+    mpath.setAttribute('href', '\#path-' + node1 + '-' + node2);
+    animateMotion.appendChild(mpath);
+    circle.appendChild(animateMotion);
+    edge.parentNode.appendChild(circle);
+    }
+    }
+    function animateEdges() {
+    animateEdge('node1', 'node2');
+    }
+    document.addEventListener('DOMContentLoaded', animateEdges);
+    </script>
+    }
+{% for node in nodes %}
+    \svgnode{<< node.id >>}
+    \node at (<< to_mm(node.x) >>mm, -<< to_mm(node.y) >>mm) [node, anchor=north west, minimum width=<< to_mm(node.width) >>mm, minimum height=<< to_mm(node.height) >>mm, fill=<< node.label >>!50] (<< node.id >>) {<< tex_escape(node.name) >>};
+    \svggend
+{% endfor %}
+
+{% for edge in edges %}
+    \svgedge{<< edge.id >>}
+    \path (<<edge.from>>) edge[->,{% if edge.type != "unknown" %}<< edge.type >>_edge,{%endif%} in=<<edge.in_angle>>, out=<<edge.out_angle>>, looseness=0.4] {% if edge.name %}node[{% if edge.type != "unknown" %}<<edge.type>>{%endif%}]{<<tex_escape(edge.name)>>} {%endif%}(<<edge.to>>);
+     \svggend
+{% endfor %}
+
+
+\end{tikzpicture}
+\end{document}
