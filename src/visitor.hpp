@@ -36,6 +36,22 @@ inline void trim(std::string &s) {
 
 enum class EdgeType { TOPIC, SERVICE, ACTION, UNKNOWN };
 
+static const std::map<EdgeType, std::string> ROS_TYPE_NAMES{
+    {EdgeType::TOPIC, "topic"},
+    {EdgeType::SERVICE, "service"},
+    {EdgeType::ACTION, "action"},
+    {EdgeType::UNKNOWN, "unknown"},
+};
+
+enum class NodeType { NODE, HARDWARE, PLUGIN, UNKNOWN };
+
+static const std::map<NodeType, std::string> NODE_TYPE_NAMES{
+    {NodeType::NODE, "node"},
+    {NodeType::HARDWARE, "hardware"},
+    {NodeType::PLUGIN, "plugin"},
+    {NodeType::UNKNOWN, "unknown"},
+};
+
 class Visitor {
 public:
   Visitor(const Architecture &architecture);
@@ -53,6 +69,7 @@ protected:
   virtual void tearDown(){};
 
   std::tuple<std::string, std::string> make_id(const std::string &name);
+  std::string tex_escape(const std::string &name);
 
   /**
    * Returns the edge type of a given string, based on its prefix:
@@ -61,6 +78,7 @@ protected:
    * - "action:" -> EdgeType::ACTION
    */
   EdgeType get_edge_type(const std::string &name);
+  NodeType get_node_type(const std::string &name);
 
   /**
    * Returns true if a given string starts with 'node:'
