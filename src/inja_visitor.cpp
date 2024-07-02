@@ -45,7 +45,7 @@ InjaVisitor::InjaVisitor(const Architecture &architecture,
   }
 
   cerr << "Using template " << input_tpl << endl;
-  env_ = make_unique<inja::Environment>(fs::path(input_tpl).parent_path(),
+  env_ = make_unique<inja::Environment>(fs::current_path().string() + "/",
                                         fs::path(output_path).parent_path());
 
   env_->set_expression("<<", ">>");
@@ -61,8 +61,7 @@ InjaVisitor::InjaVisitor(const Architecture &architecture,
 
   env_->add_callback("make_id", 1, [this](inja::Arguments &args) {
     auto raw = args.at(0)->get<string>();
-    auto [id, _] = this->make_id(raw);
-    return id;
+    return this->make_id(raw);
   });
 
   env_->add_callback("substr", 3, [](inja::Arguments &args) {
@@ -79,14 +78,13 @@ InjaVisitor::InjaVisitor(const Architecture &architecture,
 void InjaVisitor::startUp() {
   data_["path"] = fs::path(output_path).parent_path().string();
   data_["name"] = architecture.name;
-  auto [id, id_capitalized] = make_id(architecture.name);
-  data_["id"] = id;
+  data_["id"] = make_id(architecture.name);
   data_["boxology_version"] = STR(BOXOLOGY_VERSION);
   data_["version"] = architecture.version;
   data_["description"] = architecture.description;
   data_["labels"] = nlohmann::json::array();
   for (const auto &kv : LABEL_NAMES) {
-    auto [id, id_capitalized] = make_id(kv.second);
+    auto id = make_id(kv.second, true);
     auto color = LABEL_COLORS.at(kv.first);
     data_["labels"].push_back(nlohmann::json::object({
         {"id", id},
@@ -110,8 +108,6 @@ void InjaVisitor::tearDown() {
               return e1["id"] < e2["id"];
             });
 
-  auto [id, id_capitalized] = make_id(architecture.name);
-
   cerr << "Generating " << output_path << " using " << input_tpl << "..."
        << endl;
   auto tpl = env_->parse_template(input_tpl);
@@ -129,6 +125,12 @@ void InjaVisitor::onNode(shared_ptr<const Node> node) {
   nlohmann::json jnode;
 
   auto name = node->name().substr(0, node->name().find("[") - 1);
+
+  auto node_type = get_node_type(name);
+  if (name.find(":") != string::npos) {
+    name = name.substr(name.find(":") + 1);
+  }
+
   if (name.find("DEPENDENCY:") != string::npos) {
     name = name.substr(string("DEPENDENCY:").size());
   }
@@ -196,14 +198,13 @@ void InjaVisitor::onNode(shared_ptr<const Node> node) {
     name = name.substr(node->name().find("MOCK: ") + 6);
   }
 
-  auto [id, id_capitalized] = make_id(name);
+  auto [id, id_capitalized] = get_id(node->uuid, name);
   jnode["id"] = id;
   jnode["id_capitalized"] = id_capitalized;
   jnode["name"] = name;
   jnode["type"] = NODE_TYPE_NAMES.at(get_node_type(name));
 
-  auto [label_id, _] = make_id(LABEL_NAMES.at(node->label()));
-  jnode["label"] = label_id;
+  jnode["label"] = make_id(LABEL_NAMES.at(node->label()), true);
 
   jnode["dependencies"] = nlohmann::json::array();
 
@@ -267,7 +268,7 @@ void InjaVisitor::onNode(shared_ptr<const Node> node) {
            << jport["frame"] << endl;
     } else {
       jport["type"] = "undefined";
-      auto [id, id_capitalized] = make_id(name);
+      auto id = make_id(name);
       jport["topic"] = id;
       jport["short"] = id;
       jport["datatype"] = {"std_msgs", "Empty"};
@@ -307,8 +308,8 @@ void InjaVisitor::onConnection(shared_ptr<const Connection> connection) {
   auto from = connection->from.node.lock();
   auto to = connection->to.node.lock();
 
-  auto [from_id, from_id_capitalized] = make_id(from->name());
-  auto [to_id, to_id_capitalized] = make_id(to->name());
+  auto [from_id, from_id_capitalized] = get_id(from->uuid);
+  auto [to_id, to_id_capitalized] = get_id(to->uuid);
 
   auto name = connection->name;
   trim(name);
@@ -316,7 +317,7 @@ void InjaVisitor::onConnection(shared_ptr<const Connection> connection) {
     name = "";
   }
 
-  auto [name_id, _] = make_id(name);
+  auto [name_id, _] = get_id(connection->uuid, name);
 
   auto id = from_id + "_" + to_id + "_" + name_id;
 

@@ -11,6 +11,8 @@
 #include <cctype>
 #include <locale>
 
+#include <boost/uuid/uuid.hpp>
+
 //////// C++ trim functions, from https://stackoverflow.com/a/217605
 // trim from start (in place)
 inline void ltrim(std::string &s) {
@@ -43,12 +45,11 @@ static const std::map<EdgeType, std::string> ROS_TYPE_NAMES{
     {EdgeType::UNKNOWN, "unknown"},
 };
 
-enum class NodeType { NODE, HARDWARE, PLUGIN, UNKNOWN };
+enum class NodeType { NODE, HARDWARE, PLUGIN, SKILL, UNKNOWN };
 
 static const std::map<NodeType, std::string> NODE_TYPE_NAMES{
-    {NodeType::NODE, "node"},
-    {NodeType::HARDWARE, "hardware"},
-    {NodeType::PLUGIN, "plugin"},
+    {NodeType::NODE, "node"},       {NodeType::HARDWARE, "hardware"},
+    {NodeType::PLUGIN, "plugin"},   {NodeType::SKILL, "skill"},
     {NodeType::UNKNOWN, "unknown"},
 };
 
@@ -68,7 +69,10 @@ protected:
   virtual void endConnections(){};
   virtual void tearDown(){};
 
-  std::tuple<std::string, std::string> make_id(const std::string &name);
+  std::string make_id(const std::string &name, bool ignore_duplicates = false);
+  std::tuple<std::string, std::string>
+  get_id(const boost::uuids::uuid &id, const std::string &using_name = "");
+
   std::string tex_escape(const std::string &name);
 
   /**
@@ -94,6 +98,9 @@ protected:
   std::string _content;
 
   const Architecture &architecture;
+
+  std::set<std::string> _used_ids;
+  std::map<boost::uuids::uuid, std::string> _id_mappings;
 };
 
 #endif // VISITOR_HPP

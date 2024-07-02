@@ -1,6 +1,7 @@
 #include "visitor.hpp"
 
 #include <boost/algorithm/string.hpp> // for search and replace
+#include <boost/uuid/uuid_io.hpp>
 #include <regex>
 
 using namespace std;
@@ -33,13 +34,13 @@ string Visitor::visit() {
   startUp();
 
   beginNodes();
-  for (const auto node : architecture.nodes()) {
+  for (const auto &node : architecture.nodes()) {
     onNode(node);
   }
   endNodes();
 
   beginConnections();
-  for (const auto connection : architecture.connections()) {
+  for (const auto &connection : architecture.connections()) {
     onConnection(connection);
   }
   endConnections();
@@ -49,7 +50,40 @@ string Visitor::visit() {
   return _content;
 }
 
-tuple<string, string> Visitor::make_id(const std::string &name) {
+tuple<string, string> Visitor::get_id(const boost::uuids::uuid &id,
+                                      const std::string &using_name) {
+
+  if (_id_mappings.find(id) == _id_mappings.end()) {
+    if (using_name != "") {
+      _id_mappings[id] = make_id(using_name);
+    } else {
+      auto node = architecture.node(id);
+      if (node == nullptr) {
+        auto connection = architecture.connection(id);
+        if (connection == nullptr) {
+          std::stringstream ss;
+          ss << id;
+          throw runtime_error("No node or connection with id " + ss.str() +
+                              "!");
+        }
+        _id_mappings[id] = make_id(connection->name);
+      } else {
+        _id_mappings[id] = make_id(node->name());
+      }
+    }
+  }
+
+  auto result = _id_mappings.at(id);
+
+  string id_capitalized(result);
+  camelCase(id_capitalized);
+  capitalize(id_capitalized);
+
+  return {result, id_capitalized};
+}
+
+string Visitor::make_id(const std::string &name, bool ignore_duplicates) {
+
   string result;
 
   for (const char &c : name) {
@@ -82,11 +116,24 @@ tuple<string, string> Visitor::make_id(const std::string &name) {
 
   string id = regex_replace(result, regex("\\s"), "");
 
-  string id_capitalized(result);
-  camelCase(id_capitalized);
-  capitalize(id_capitalized);
+  if (id.empty()) {
+    id = "anonymous";
+  }
 
-  return {id, id_capitalized};
+  if (!ignore_duplicates) {
+    // check if the id is already in use. If so, append a number to it
+    if (_used_ids.find(id) != _used_ids.end()) {
+      int i = 1;
+      string new_id;
+      do {
+        new_id = id + to_string(i++);
+      } while (_used_ids.find(new_id) != _used_ids.end());
+      id = new_id;
+    }
+  }
+  _used_ids.insert(id);
+
+  return id;
 }
 
 std::string Visitor::tex_escape(const std::string &text) {
@@ -130,6 +177,8 @@ NodeType Visitor::get_node_type(const std::string &name) {
     return NodeType::HARDWARE;
   } else if (name.find("plugin:") != string::npos) {
     return NodeType::PLUGIN;
+  } else if (name.find("skill:") != string::npos) {
+    return NodeType::SKILL;
   } else if (name.find("node:") != string::npos) {
     return NodeType::NODE;
   } else {

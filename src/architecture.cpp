@@ -70,6 +70,14 @@ NodePtr Architecture::node(const boost::uuids::uuid &uuid) {
   return nullptr;
 }
 
+ConstNodePtr Architecture::node(const boost::uuids::uuid &uuid) const {
+  for (auto n : _nodes) {
+    if (n->uuid == uuid)
+      return n;
+  }
+  return nullptr;
+}
+
 ConnectionPtr Architecture::createConnection(Socket from, Socket to) {
   auto connection = std::make_shared<Connection>();
   connection->from = from;
@@ -108,6 +116,15 @@ void Architecture::removeConnection(Socket from, Socket to) {
       break;
     }
   }
+}
+
+ConstConnectionPtr
+Architecture::connection(const boost::uuids::uuid &uuid) const {
+  for (auto c : _connections) {
+    if (c->uuid == uuid)
+      return c;
+  }
+  return nullptr;
 }
 
 const Json::Value &get_architecture(const Json::Value &root,

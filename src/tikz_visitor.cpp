@@ -8,14 +8,13 @@
 
 using namespace std;
 
-void TikzVisitor::startUp()
-{
+void TikzVisitor::startUp() {
   ss << "\\documentclass[tikz]{standalone}" << endl;
   ss << "%\\documentclass[tikz,dvisvgm]{standalone} % generate a SVG via "
-    "dvisvgm. This will keep text as text, and supports links."
+        "dvisvgm. This will keep text as text, and supports links."
      << endl;
   ss << "%\\documentclass[tikz,convert=pdf2svg]{standalone} % generate a SVG "
-    "file automatically"
+        "file automatically"
      << endl;
   ss << endl;
   ss << "\\usepackage{hyperref}" << endl;
@@ -27,18 +26,18 @@ void TikzVisitor::startUp()
   ss << "\\usepackage{fontspec}" << endl;
   ss << "\\newcommand\\defaultfont\\sffamily" << endl;
   ss << "%\\newfontfamily\\defaultfont[Scale=1.0]{Inter} % use that for custom "
-    "font"
+        "font"
      << endl;
   ss << "\\newcommand\\monospace\\ttfamily" << endl;
   ss << "%\\newfontfamily\\monospace[Scale=1.0]{Ubuntu Mono}" << endl;
   ss << endl;
 
   // Generate colors based on what is used for Boxology's GUI
-  for (const auto & kv : LABEL_COLORS) {
+  for (const auto &kv : LABEL_COLORS) {
     auto color = kv.second;
     transform(color.begin(), color.end(), color.begin(), ::toupper);
 
-    auto [id, id_capitalized] = make_id(LABEL_NAMES.at(kv.first));
+    auto id = make_id(LABEL_NAMES.at(kv.first));
     ss << "\\definecolor{" << id << "}{HTML}{" << color.substr(1) << "}"
        << endl;
   }
@@ -49,34 +48,31 @@ void TikzVisitor::startUp()
   ss << "\\begin{tikzpicture}[" << endl;
   ss << "             font=\\defaultfont," << endl;
   ss << "             >=latex," << endl;
-  ss << "             every edge/.style={draw, line width=3pt,opacity=0.5}," << endl;
+  ss << "             every edge/.style={draw, line width=3pt,opacity=0.5},"
+     << endl;
   ss << "             hw_edge/.style={dashed}, " << endl;
-  ss << "             topic_edge/.style={color=blue,text=black}, "
-     << endl;
-  ss << "             service_edge/.style={color=orange,text=black}, "
-     << endl;
-  ss << "             action_edge/.style={color=purple,text=black}, "
-     << endl;
+  ss << "             topic_edge/.style={color=blue,text=black}, " << endl;
+  ss << "             service_edge/.style={color=orange,text=black}, " << endl;
+  ss << "             action_edge/.style={color=purple,text=black}, " << endl;
   ss << "             node/.style={draw, rounded corners, align=center, "
-    "inner sep=5pt, fill=black!20},"
+        "inner sep=5pt, fill=black!20},"
      << endl;
   ss << "             label/.style={midway, align=center, "
-    "fill=white,opacity=0.8},"
+        "fill=white,opacity=0.8},"
      << endl;
   ss << "             topic/.style={midway, align=center, font=\\monospace, "
-    "fill=white,opacity=0.8},"
+        "fill=white,opacity=0.8},"
      << endl;
   ss << "             service/.style={midway, align=center, font=\\monospace, "
-    "fill=white,opacity=0.8},"
+        "fill=white,opacity=0.8},"
      << endl;
   ss << "             action/.style={midway, align=center, font=\\monospace, "
-    "fill=white,opacity=0.8}]"
+        "fill=white,opacity=0.8}]"
      << endl;
   ss << endl;
 }
 
-void TikzVisitor::tearDown()
-{
+void TikzVisitor::tearDown() {
   ss << endl;
   ss << "\\end{tikzpicture}" << endl;
   ss << "\\end{document}" << endl;
@@ -84,36 +80,34 @@ void TikzVisitor::tearDown()
   _content = ss.str();
 }
 
-void TikzVisitor::beginNodes() {ss << "        %%% NODES" << endl;}
+void TikzVisitor::beginNodes() { ss << "        %%% NODES" << endl; }
 
-void TikzVisitor::onNode(shared_ptr<const Node> node)
-{
+void TikzVisitor::onNode(shared_ptr<const Node> node) {
 
-  auto [label_id, label_id_capitalized] =
-    make_id(LABEL_NAMES.at(node->label()));
-  auto [id, id_capitalized] = make_id(node->name());
+  auto label_id = make_id(LABEL_NAMES.at(node->label()));
+  auto [id, id_capitalized] = get_id(node->uuid);
 
   ss << "        \\node "
-    "at ("
+        "at ("
      << tikz_unit(node->x()) << "," << tikz_unit(-node->y())
      << ") "
-    "[node, "
+        "[node, "
      << (is_node_name(node->name()) ? "font=\\monospace, " : "")
      << "anchor=north west, "
-    "text width="
+        "text width="
      << tikz_unit(node->width())
      << ", "
-    "minimum width="
+        "minimum width="
      << tikz_unit(node->width())
      << ", "
-    "minimum height="
+        "minimum height="
      << tikz_unit(node->height())
      << ", "
-    "fill="
+        "fill="
      << label_id << "!50"
-     << (label_id == "modeldata" ?
-  ", cylinder, shape border rotate=90, aspect=0.25" :
-  "")
+     << (label_id == "modeldata"
+             ? ", cylinder, shape border rotate=90, aspect=0.25"
+             : "")
      << "]"
      << " (" << id << ") {" << sanitize_tex(node->name()) << "};";
   ss << endl;
@@ -124,21 +118,19 @@ void TikzVisitor::onNode(shared_ptr<const Node> node)
   //}
 }
 
-void TikzVisitor::beginConnections()
-{
+void TikzVisitor::beginConnections() {
   ss << endl;
   ss << "        %%% CONNECTIONS" << endl;
 }
 
-void TikzVisitor::onConnection(shared_ptr<const Connection> connection)
-{
+void TikzVisitor::onConnection(shared_ptr<const Connection> connection) {
   // connection->name;
 
   auto from = connection->from.node.lock();
   auto to = connection->to.node.lock();
 
-  auto [from_id, from_id_capitalized] = make_id(from->name());
-  auto [to_id, to_id_capitalized] = make_id(to->name());
+  auto [from_id, from_id_capitalized] = get_id(from->uuid);
+  auto [to_id, to_id_capitalized] = get_id(to->uuid);
 
   auto name = connection->name;
   trim(name);
@@ -155,66 +147,64 @@ void TikzVisitor::onConnection(shared_ptr<const Connection> connection)
 
   if (name.size() == 0 || name == "anonymous") {
     ss << "        \\path (" << from_id << ") edge[->, "
-       << ((is_hardware(from->name()) || is_hardware(to->name())) ? "hw_edge, " :
-    "")
+       << ((is_hardware(from->name()) || is_hardware(to->name())) ? "hw_edge, "
+                                                                  : "")
        << "out=" << out << ", in=" << in
        << ", looseness=0.4] "
-      "("
+          "("
        << to_id << ");" << endl;
   } else {
 
     string label;
     switch (edge_type) {
-      case EdgeType::SERVICE:
-        label = "\\href{../services/" + make_href_identifier(name) + ".html}{" +
-          sanitize_tex(name) + "}";
-        break;
-      case EdgeType::ACTION:
-        label = "\\href{../actions/" + make_href_identifier(name) + ".html}{" +
-          sanitize_tex(name) + "}";
-        break;
-      case EdgeType::TOPIC:
-        label = "\\href{../topics/" + make_href_identifier(name) + ".html}{" +
-          sanitize_tex(name) + "}";
-        break;
-      default:
-        label = sanitize_tex(name);
+    case EdgeType::SERVICE:
+      label = "\\href{../services/" + make_href_identifier(name) + ".html}{" +
+              sanitize_tex(name) + "}";
+      break;
+    case EdgeType::ACTION:
+      label = "\\href{../actions/" + make_href_identifier(name) + ".html}{" +
+              sanitize_tex(name) + "}";
+      break;
+    case EdgeType::TOPIC:
+      label = "\\href{../topics/" + make_href_identifier(name) + ".html}{" +
+              sanitize_tex(name) + "}";
+      break;
+    default:
+      label = sanitize_tex(name);
     }
 
     ss << "        \\path (" << from_id << ") edge[->, "
-       << ((is_hardware(from->name()) || is_hardware(to->name())) ?
-    "hw_edge, " :
-    (edge_type == EdgeType::SERVICE ?
-    "service_edge, " :
-    (edge_type == EdgeType::ACTION ?
-    "action_edge, " :
-    (edge_type == EdgeType::TOPIC ? "topic_edge, " :
-    ""))))
+       << ((is_hardware(from->name()) || is_hardware(to->name()))
+               ? "hw_edge, "
+               : (edge_type == EdgeType::SERVICE
+                      ? "service_edge, "
+                      : (edge_type == EdgeType::ACTION
+                             ? "action_edge, "
+                             : (edge_type == EdgeType::TOPIC ? "topic_edge, "
+                                                             : ""))))
        << "out=" << out << ", in=" << in << ", looseness=0.4] node["
-       << (edge_type == EdgeType::SERVICE ?
-    "service" :
-    (edge_type == EdgeType::ACTION ?
-    "action" :
-    (edge_type == EdgeType::TOPIC ? "topic" : "label")))
+       << (edge_type == EdgeType::SERVICE
+               ? "service"
+               : (edge_type == EdgeType::ACTION
+                      ? "action"
+                      : (edge_type == EdgeType::TOPIC ? "topic" : "label")))
        << "] {" << (edge_type == EdgeType::SERVICE ? "\\textbf{" : "")
        << (edge_type == EdgeType::ACTION ? "\\textbf{" : "") << label
        << (edge_type == EdgeType::SERVICE ? "}" : "")
        << (edge_type == EdgeType::ACTION ? "}" : "")
        << "}"
-      "("
+          "("
        << to_id << ");" << endl;
   }
 }
 
-string TikzVisitor::tikz_unit(const double dim)
-{
+string TikzVisitor::tikz_unit(const double dim) {
   stringstream ss;
   ss << (int)(dim * pix2mm) << "mm";
   return ss.str();
 }
 
-string TikzVisitor::make_href_identifier(const std::string & text)
-{
+string TikzVisitor::make_href_identifier(const std::string &text) {
   string result(text);
 
   if (result.substr(0, 8) == "service:") {
@@ -235,19 +225,18 @@ string TikzVisitor::make_href_identifier(const std::string & text)
   }
 
   vector<pair<string, string>> substitutions{
-    {"/*", ""},
-    {"/", "-"},
+      {"/*", ""},
+      {"/", "-"},
   };
 
-  for (const auto & kv : substitutions) {
+  for (const auto &kv : substitutions) {
     boost::replace_all(result, kv.first, kv.second);
   }
 
   return result;
 }
 
-string TikzVisitor::sanitize_tex(const std::string & text)
-{
+string TikzVisitor::sanitize_tex(const std::string &text) {
   string result(text);
 
   if (result.substr(0, 8) == "service:") {
@@ -267,13 +256,13 @@ string TikzVisitor::sanitize_tex(const std::string & text)
   boost::replace_all(result, "\\", "\\textbackslash");
 
   map<string, string> tex_substitutions{
-    {"{", "\\{"}, {"}", "\\}"},
-    {"$", "\\$"}, {"&", "\\&"},
-    {"#", "\\#"}, {"^", "\\textasciicircum{}"},
-    {"_", "\\_"}, {"~", "\\textasciitilde{}"},
-    {"%", "\\%"}};
+      {"{", "\\{"}, {"}", "\\}"},
+      {"$", "\\$"}, {"&", "\\&"},
+      {"#", "\\#"}, {"^", "\\textasciicircum{}"},
+      {"_", "\\_"}, {"~", "\\textasciitilde{}"},
+      {"%", "\\%"}};
 
-  for (const auto & kv : tex_substitutions) {
+  for (const auto &kv : tex_substitutions) {
     boost::replace_all(result, kv.first, kv.second);
   }
 

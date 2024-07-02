@@ -42,6 +42,7 @@ public:
   void addNode(NodePtr node, bool silent = false);
   void removeNode(NodePtr node);
   NodePtr node(const boost::uuids::uuid &uuid);
+  ConstNodePtr node(const boost::uuids::uuid &uuid) const;
 
   Nodes nodes() { return _nodes; }
   const Nodes nodes() const { return _nodes; }
@@ -54,6 +55,8 @@ public:
 
   Connections connections() { return _connections; }
   const Connections connections() const { return _connections; }
+
+  ConstConnectionPtr connection(const boost::uuids::uuid &uuid) const;
 
   boost::uuids::uuid uuid;
 
