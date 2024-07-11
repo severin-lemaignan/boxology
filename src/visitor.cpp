@@ -1,4 +1,5 @@
 #include "visitor.hpp"
+#include "node.hpp"
 
 #include <boost/algorithm/string.hpp> // for search and replace
 #include <boost/uuid/uuid_io.hpp>
@@ -86,14 +87,34 @@ string Visitor::make_id(const std::string &name, bool ignore_duplicates) {
 
   string result;
 
-  for (const char &c : name) {
+  string trimed_name(name);
+
+  // remove leading / if present
+  if (name.substr(0, 1) == "/") {
+    trimed_name = name.substr(1);
+  }
+
+  // replace all '/*' with ''
+  for (size_t pos = 0; (pos = trimed_name.find("/*", pos)) != string::npos;
+       pos += 2) {
+    trimed_name.replace(pos, 2, "");
+  }
+
+  for (const char &c : trimed_name) {
+
+    /*
+    Steps:
+
+    - -, _ are kept as is
+    - / is replaced by -
+    - all other special characters are removed
+    - all other characters are lowercased
+    */
     switch (c) {
     case '.':
     case '`':
     case '+':
     case '?':
-    case '-':
-    case '_':
     case '\\':
     case '[':
     case ']':
@@ -105,9 +126,11 @@ string Visitor::make_id(const std::string &name, bool ignore_duplicates) {
     case '>':
     case '&':
     case ',':
-    case '/':
     case ':':
     case '\'':
+      break;
+    case '/':
+      result += '-';
       break;
     default:
       result += tolower(c);
@@ -160,7 +183,7 @@ std::string Visitor::tex_escape(const std::string &text) {
   return result;
 }
 
-EdgeType Visitor::get_edge_type(const std::string &name) {
+EdgeType Visitor::get_edge_type(const std::string &name) const {
   if (name.find("service:") != string::npos) {
     return EdgeType::SERVICE;
   } else if (name.find("action:") != string::npos) {
@@ -172,10 +195,17 @@ EdgeType Visitor::get_edge_type(const std::string &name) {
   }
 }
 
-NodeType Visitor::get_node_type(const std::string &name) {
-  if (name.find("hw:") != string::npos) {
+NodeType Visitor::get_node_type(ConstNodePtr node) const {
+
+  if (node->label() == Label::MODEL) {
+    return NodeType::MODEL;
+  }
+  if (node->label() == Label::HARDWARE) {
     return NodeType::HARDWARE;
-  } else if (name.find("plugin:") != string::npos) {
+  }
+
+  auto name = node->name();
+  if (name.find("plugin:") != string::npos) {
     return NodeType::PLUGIN;
   } else if (name.find("skill:") != string::npos) {
     return NodeType::SKILL;

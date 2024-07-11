@@ -64,6 +64,13 @@ InjaVisitor::InjaVisitor(const Architecture &architecture,
     return this->make_id(raw);
   });
 
+  env_->add_callback("make_anchor", 1, [this](inja::Arguments &args) {
+    auto raw = args.at(0)->get<string>();
+    // replace all non-alphanumeric characters with '-'
+    std::regex re("[^a-zA-Z0-9]");
+    return std::regex_replace(raw, re, "-");
+  });
+
   env_->add_callback("substr", 3, [](inja::Arguments &args) {
     auto raw = args.at(0)->get<string>();
     return raw.substr(args.at(1)->get<int>(), args.at(2)->get<int>());
@@ -126,7 +133,7 @@ void InjaVisitor::onNode(shared_ptr<const Node> node) {
 
   auto name = node->name().substr(0, node->name().find("[") - 1);
 
-  auto node_type = get_node_type(name);
+  auto node_type = get_node_type(node);
   if (name.find(":") != string::npos) {
     name = name.substr(name.find(":") + 1);
   }
@@ -202,7 +209,8 @@ void InjaVisitor::onNode(shared_ptr<const Node> node) {
   jnode["id"] = id;
   jnode["id_capitalized"] = id_capitalized;
   jnode["name"] = name;
-  jnode["type"] = NODE_TYPE_NAMES.at(get_node_type(name));
+  jnode["safe_name"] = make_id(name, true);
+  jnode["type"] = NODE_TYPE_NAMES.at(node_type);
 
   jnode["label"] = make_id(LABEL_NAMES.at(node->label()), true);
 
@@ -335,6 +343,7 @@ void InjaVisitor::onConnection(shared_ptr<const Connection> connection) {
 
   jnode["id"] = id;
   jnode["name"] = name;
+  jnode["safe_name"] = make_id(name, true);
   jnode["from"] = from_id;
   jnode["to"] = to_id;
   jnode["out_angle"] = out;

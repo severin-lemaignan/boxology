@@ -45,12 +45,12 @@ static const std::map<EdgeType, std::string> ROS_TYPE_NAMES{
     {EdgeType::UNKNOWN, "unknown"},
 };
 
-enum class NodeType { NODE, HARDWARE, PLUGIN, SKILL, UNKNOWN };
+enum class NodeType { NODE, HARDWARE, MODEL, PLUGIN, SKILL, UNKNOWN };
 
 static const std::map<NodeType, std::string> NODE_TYPE_NAMES{
-    {NodeType::NODE, "node"},       {NodeType::HARDWARE, "hardware"},
-    {NodeType::PLUGIN, "plugin"},   {NodeType::SKILL, "skill"},
-    {NodeType::UNKNOWN, "unknown"},
+    {NodeType::NODE, "node"},   {NodeType::HARDWARE, "hardware"},
+    {NodeType::MODEL, "model"}, {NodeType::PLUGIN, "plugin"},
+    {NodeType::SKILL, "skill"}, {NodeType::UNKNOWN, "unknown"},
 };
 
 class Visitor {
@@ -81,8 +81,8 @@ protected:
    * - "service:" -> EdgeType::SERVICE
    * - "action:" -> EdgeType::ACTION
    */
-  EdgeType get_edge_type(const std::string &name);
-  NodeType get_node_type(const std::string &name);
+  EdgeType get_edge_type(const std::string &name) const;
+  NodeType get_node_type(ConstNodePtr node) const;
 
   /**
    * Returns true if a given string starts with 'node:'
