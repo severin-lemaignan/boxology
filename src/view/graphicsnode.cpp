@@ -81,7 +81,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
 
     _effect->setBlurRadius(13.0);
     _effect->setColor(QColor("#99121212"));
-    setGraphicsEffect(_effect);
+    //setGraphicsEffect(_effect);
 
     refreshNode();
 
