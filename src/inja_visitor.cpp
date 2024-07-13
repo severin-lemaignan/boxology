@@ -348,7 +348,7 @@ void InjaVisitor::onConnection(shared_ptr<const Connection> connection) {
   jnode["to"] = to_id;
   jnode["out_angle"] = out;
   jnode["in_angle"] = in;
-  jnode["type"] = ROS_TYPE_NAMES.at(edge_type);
+  jnode["type"] = INTERFACE_TYPE_NAMES.at(edge_type);
 
   data_["edges"].push_back(jnode);
 }

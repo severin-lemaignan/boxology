@@ -1,12 +1,18 @@
 #ifndef NODE_PROPERTIES_HPP
 #define NODE_PROPERTIES_HPP
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDialog>
+#include <QFormLayout>
+#include <QGroupBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <QVBoxLayout>
 
+#include "../label.hpp"
 #include "../node.hpp"
 
 class NodeProperties : public QDialog {
@@ -14,19 +20,58 @@ class NodeProperties : public QDialog {
 
 public:
   NodeProperties(QWidget *parent = nullptr, ConstNodePtr node = nullptr);
-  QString getComboBoxValue() const;
-  QString getLineEditValue() const;
+
+  std::string description() const {
+    return descriptionEdit->text().toStdString();
+  };
+  std::string category() const {
+    return categoryComboBox->currentText().toStdString();
+  };
+  Label functionalDomain() const {
+    return get_label_by_name(domainComboBox->currentText().toStdString());
+  };
+  std::string repoUrl() const { return repoUrlText->text().toStdString(); };
+  std::string docUrl() const { return docUrlText->text().toStdString(); };
+  bool isRosNodeChecked() const { return rosNodeCheckbox->isChecked(); };
+
+  QList<QMap<QString, QString>> topics() const;
+  QList<QMap<QString, QString>> services() const;
+  QList<QMap<QString, QString>> actions() const;
+  QList<QMap<QString, QString>> parameters() const;
 
 private slots:
+  void onRosNodeCheckboxToggled(bool checked);
   void onDoneButtonClicked();
 
 private:
-  QComboBox *comboBox;
-  QLineEdit *lineEdit;
+  QLineEdit *descriptionEdit;
+  QLineEdit *repoUrlText;
+  QLineEdit *docUrlText;
+  QComboBox *categoryComboBox;
+  QComboBox *domainComboBox;
+  QCheckBox *rosNodeCheckbox;
   QPushButton *doneButton;
 
-  QString comboBoxValue;
-  QString lineEditValue;
+  QGroupBox *topicsGroup;
+  QGroupBox *servicesGroup;
+  QGroupBox *actionsGroup;
+  QGroupBox *parametersGroup;
+
+  QTableWidget *topicsTable;
+  QTableWidget *servicesTable;
+  QTableWidget *actionsTable;
+  QTableWidget *parametersTable;
+
+  void createTopicsSection();
+  void createServicesSection();
+  void createActionsSection();
+  void createParametersSection();
+
+  void addTopicRow();
+  void removeTopicRow();
+  void addServiceRow();
+  void addActionRow();
+  void addParameterRow();
 };
 
 #endif // NODE_PROPERTIES_HPP

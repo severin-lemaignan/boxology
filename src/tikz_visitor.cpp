@@ -157,15 +157,15 @@ void TikzVisitor::onConnection(shared_ptr<const Connection> connection) {
 
     string label;
     switch (edge_type) {
-    case EdgeType::SERVICE:
+    case InterfaceType::SERVICE:
       label = "\\href{../services/" + make_href_identifier(name) + ".html}{" +
               sanitize_tex(name) + "}";
       break;
-    case EdgeType::ACTION:
+    case InterfaceType::ACTION:
       label = "\\href{../actions/" + make_href_identifier(name) + ".html}{" +
               sanitize_tex(name) + "}";
       break;
-    case EdgeType::TOPIC:
+    case InterfaceType::TOPIC:
       label = "\\href{../topics/" + make_href_identifier(name) + ".html}{" +
               sanitize_tex(name) + "}";
       break;
@@ -176,22 +176,24 @@ void TikzVisitor::onConnection(shared_ptr<const Connection> connection) {
     ss << "        \\path (" << from_id << ") edge[->, "
        << ((is_hardware(from->name()) || is_hardware(to->name()))
                ? "hw_edge, "
-               : (edge_type == EdgeType::SERVICE
+               : (edge_type == InterfaceType::SERVICE
                       ? "service_edge, "
-                      : (edge_type == EdgeType::ACTION
+                      : (edge_type == InterfaceType::ACTION
                              ? "action_edge, "
-                             : (edge_type == EdgeType::TOPIC ? "topic_edge, "
-                                                             : ""))))
+                             : (edge_type == InterfaceType::TOPIC
+                                    ? "topic_edge, "
+                                    : ""))))
        << "out=" << out << ", in=" << in << ", looseness=0.4] node["
-       << (edge_type == EdgeType::SERVICE
+       << (edge_type == InterfaceType::SERVICE
                ? "service"
-               : (edge_type == EdgeType::ACTION
+               : (edge_type == InterfaceType::ACTION
                       ? "action"
-                      : (edge_type == EdgeType::TOPIC ? "topic" : "label")))
-       << "] {" << (edge_type == EdgeType::SERVICE ? "\\textbf{" : "")
-       << (edge_type == EdgeType::ACTION ? "\\textbf{" : "") << label
-       << (edge_type == EdgeType::SERVICE ? "}" : "")
-       << (edge_type == EdgeType::ACTION ? "}" : "")
+                      : (edge_type == InterfaceType::TOPIC ? "topic"
+                                                           : "label")))
+       << "] {" << (edge_type == InterfaceType::SERVICE ? "\\textbf{" : "")
+       << (edge_type == InterfaceType::ACTION ? "\\textbf{" : "") << label
+       << (edge_type == InterfaceType::SERVICE ? "}" : "")
+       << (edge_type == InterfaceType::ACTION ? "}" : "")
        << "}"
           "("
        << to_id << ");" << endl;

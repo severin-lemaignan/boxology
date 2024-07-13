@@ -36,23 +36,6 @@ inline void trim(std::string &s) {
 }
 ////////////////
 
-enum class EdgeType { TOPIC, SERVICE, ACTION, UNKNOWN };
-
-static const std::map<EdgeType, std::string> ROS_TYPE_NAMES{
-    {EdgeType::TOPIC, "topic"},
-    {EdgeType::SERVICE, "service"},
-    {EdgeType::ACTION, "action"},
-    {EdgeType::UNKNOWN, "unknown"},
-};
-
-enum class NodeType { NODE, HARDWARE, MODEL, PLUGIN, SKILL, UNKNOWN };
-
-static const std::map<NodeType, std::string> NODE_TYPE_NAMES{
-    {NodeType::NODE, "node"},   {NodeType::HARDWARE, "hardware"},
-    {NodeType::MODEL, "model"}, {NodeType::PLUGIN, "plugin"},
-    {NodeType::SKILL, "skill"}, {NodeType::UNKNOWN, "unknown"},
-};
-
 class Visitor {
 public:
   Visitor(const Architecture &architecture);
@@ -77,11 +60,11 @@ protected:
 
   /**
    * Returns the edge type of a given string, based on its prefix:
-   * - "topic:" (or string starts with a '/') -> EdgeType::TOPIC
-   * - "service:" -> EdgeType::SERVICE
-   * - "action:" -> EdgeType::ACTION
+   * - "topic:" (or string starts with a '/') -> InterfaceType::TOPIC
+   * - "service:" -> InterfaceType::SERVICE
+   * - "action:" -> InterfaceType::ACTION
    */
-  EdgeType get_edge_type(const std::string &name) const;
+  InterfaceType get_edge_type(const std::string &name) const;
   NodeType get_node_type(ConstNodePtr node) const;
 
   /**

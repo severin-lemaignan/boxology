@@ -238,13 +238,7 @@ Architecture::load(const Json::Value &json, const boost::uuids::uuid root_uuid,
     }
 
     for (auto p : n["ports"]) {
-      Port::Type type;
-      if (p["type"].asString() == "latent")
-        type = Port::Type::LATENT;
-      else if (p["type"].asString() == "explicit")
-        type = Port::Type::EXPLICIT;
-      else
-        type = Port::Type::OTHER;
+      InterfaceType type = get_interface_type_by_name(p["type"].asString());
 
       node->createPort({p["name"].asString(),
                         p["direction"].asString() == "in"

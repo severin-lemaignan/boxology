@@ -183,15 +183,15 @@ std::string Visitor::tex_escape(const std::string &text) {
   return result;
 }
 
-EdgeType Visitor::get_edge_type(const std::string &name) const {
+InterfaceType Visitor::get_edge_type(const std::string &name) const {
   if (name.find("service:") != string::npos) {
-    return EdgeType::SERVICE;
+    return InterfaceType::SERVICE;
   } else if (name.find("action:") != string::npos) {
-    return EdgeType::ACTION;
+    return InterfaceType::ACTION;
   } else if (name.find("topic:") != string::npos || name.substr(0, 1) == "/") {
-    return EdgeType::TOPIC;
+    return InterfaceType::TOPIC;
   } else {
-    return EdgeType::UNKNOWN;
+    return InterfaceType::UNKNOWN;
   }
 }
 

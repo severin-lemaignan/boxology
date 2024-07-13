@@ -69,6 +69,17 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
   connect(_new_source_btn, &TinyButton::triggered, this,
           &GraphicsNode::add_source);
 
+  menu = new QMenu();
+  for (const auto iface : INTERFACE_TYPE_COLORS) {
+
+    auto option = new QAction(
+        createCircleIcon(QColor(QString::fromStdString(iface.second))),
+        QString::fromStdString(INTERFACE_TYPE_NAMES.at(iface.first)), this);
+    menu->addAction(option);
+    connect(option, &QAction::triggered, this, &GraphicsNode::onOptionSelected);
+    options.push_back(option);
+  }
+
   // alignment?
   /*
      auto opts = q->document()->defaultTextOption();
@@ -83,6 +94,13 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
   refreshNode();
 
   // qWarning() << "[G] Graphic node created";
+}
+
+void GraphicsNode::onOptionSelected() {
+  QAction *selectedAction = qobject_cast<QAction *>(sender());
+  if (selectedAction) {
+    qDebug() << "Selected option:" << selectedAction->text();
+  }
 }
 
 void GraphicsNode::setTitle(const QString &title) {
@@ -247,6 +265,9 @@ shared_ptr<const GraphicsNodeSocket> GraphicsNode::add_socket(PortPtr port) {
     _sources.push_back(s);
   }
 
+  connect(s.get(), &GraphicsNodeSocket::rightClicked, this,
+          &GraphicsNode::showInterfacePopUp);
+
   _changed = true;
   prepareGeometryChange();
   updateGeometry();
@@ -369,12 +390,12 @@ void GraphicsNode::updateNodePos() {
 
 void GraphicsNode::add_sink() {
   _node.lock()->createPort(
-      {"input", Port::Direction::IN, Port::Type::EXPLICIT});
+      {"input", Port::Direction::IN, InterfaceType::UNKNOWN});
 }
 
 void GraphicsNode::add_source() {
   _node.lock()->createPort(
-      {"output", Port::Direction::OUT, Port::Type::EXPLICIT});
+      {"output", Port::Direction::OUT, InterfaceType::UNKNOWN});
 }
 
 void GraphicsNode::updateGeometry() {
@@ -502,6 +523,11 @@ void GraphicsNode::propagateChanges() {
   }
 }
 
+void GraphicsNode::showInterfacePopUp(QGraphicsSceneMouseEvent *event) {
+
+  menu->exec(event->screenPos());
+}
+
 void GraphicsNode::setColors(const QColor &base) {
   _brush_background.setColor(base);
   _brush_title.setColor(base.lighter(110));
@@ -575,11 +601,21 @@ void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
   NodeProperties dialog(nullptr, node);
   if (dialog.exec() == QDialog::Accepted) {
-    QString comboBoxValue = dialog.getComboBoxValue();
-    QString lineEditValue = dialog.getLineEditValue();
-    qDebug() << "ComboBox value:" << comboBoxValue;
-    qDebug() << "LineEdit value:" << lineEditValue;
-  }
+    auto desc = dialog.description();
+    auto category = dialog.category();
 
+    node->label(dialog.functionalDomain());
+  }
   // QGraphicsItem::mouseDoubleClickEvent(event);
+}
+
+QIcon GraphicsNode::createCircleIcon(const QColor &color) const {
+  QPixmap pixmap(16, 16);
+  pixmap.fill(Qt::transparent);
+  QPainter painter(&pixmap);
+  painter.setBrush(color);
+  painter.setPen(Qt::NoPen);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.drawEllipse(0, 0, 16, 16);
+  return QIcon(pixmap);
 }
