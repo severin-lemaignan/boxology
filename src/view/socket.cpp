@@ -15,8 +15,10 @@
 #include <QPainter>
 #include <algorithm>
 #include <iostream>
+#include <qpolygon.h>
 
 #include "edge.hpp"
+#include "node.hpp"
 #include "tinybutton.hpp"
 
 using namespace std;
@@ -143,9 +145,23 @@ void GraphicsNodeSocket::paint(QPainter *painter,
     painter->setPen(_pen_unconnected_circle);
   else
     painter->setPen(_pen_circle);
-  painter->setBrush(_brush_circle);
-  painter->drawEllipse(-_circle_radius, -_circle_radius, _circle_radius * 2,
-                       _circle_radius * 2);
+
+  auto color = QString::fromStdString(
+      INTERFACE_TYPE_COLORS.at(_socket.port.lock()->type));
+
+  painter->setBrush(QColor(color));
+
+  QPolygonF arrow;
+  //  if (_socket.port.lock()->direction == Port::Direction::IN) {
+  arrow << QPointF(-_circle_radius, -_circle_radius)
+        << QPointF(_circle_radius, 0)
+        << QPointF(-_circle_radius, _circle_radius);
+  //} else {
+  //  arrow << QPointF(_circle_radius, -_circle_radius)
+  //        << QPointF(-_circle_radius, 0)
+  //        << QPointF(_circle_radius, _circle_radius);
+  //}
+  painter->drawConvexPolygon(arrow);
 
   placeLabel();
 

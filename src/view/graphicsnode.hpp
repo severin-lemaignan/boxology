@@ -150,6 +150,7 @@ private:
 
   QMenu *menu;
   std::vector<QAction *> options;
+  GraphicsNodeSocket *_clicked_socket;
 
   QString _title;
 

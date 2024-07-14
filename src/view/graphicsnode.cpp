@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <qgraphicsitem.h>
 #include <tuple>
 
 #include "../app/mainwindow.hpp"
@@ -49,7 +50,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
       _effect(new QGraphicsDropShadowEffect()),
       _title_item(new EditableLabel(this)),
       _new_sink_btn(TinyButton::plus(this)),
-      _new_source_btn(TinyButton::plus(this)) {
+      _new_source_btn(TinyButton::plus(this)), _clicked_socket(nullptr) {
   for (auto p :
        {&_pen_default, &_pen_selected, &_pen_default, &_pen_selected}) {
     p->setWidth(0);
@@ -97,10 +98,19 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
 }
 
 void GraphicsNode::onOptionSelected() {
+
+  if (!_clicked_socket) {
+    return;
+  }
+
   QAction *selectedAction = qobject_cast<QAction *>(sender());
   if (selectedAction) {
-    qDebug() << "Selected option:" << selectedAction->text();
+    auto port = _clicked_socket->socket().port.lock();
+    port->type =
+        get_interface_type_by_name(selectedAction->text().toStdString());
   }
+
+  _clicked_socket = nullptr;
 }
 
 void GraphicsNode::setTitle(const QString &title) {
@@ -525,6 +535,7 @@ void GraphicsNode::propagateChanges() {
 
 void GraphicsNode::showInterfacePopUp(QGraphicsSceneMouseEvent *event) {
 
+  _clicked_socket = qobject_cast<GraphicsNodeSocket *>(sender());
   menu->exec(event->screenPos());
 }
 

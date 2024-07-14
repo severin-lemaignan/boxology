@@ -12,18 +12,31 @@
 
 #include "label.hpp"
 
-enum class InterfaceType { TOPIC, SERVICE, ACTION, PARAMETER, TF, UNKNOWN };
+enum class InterfaceType {
+  TOPIC,
+  SERVICE,
+  ACTION,
+  PARAMETER,
+  TF,
+  OTHER,
+  UNKNOWN
+};
 
 static const std::map<InterfaceType, std::string> INTERFACE_TYPE_NAMES{
-    {InterfaceType::TOPIC, "topic"},   {InterfaceType::SERVICE, "service"},
-    {InterfaceType::ACTION, "action"}, {InterfaceType::PARAMETER, "parameter"},
-    {InterfaceType::TF, "tf"},         {InterfaceType::UNKNOWN, "unknown"},
+    {InterfaceType::TOPIC, "topic"},
+    {InterfaceType::SERVICE, "service"},
+    {InterfaceType::ACTION, "action"},
+    {InterfaceType::PARAMETER, "parameter"},
+    {InterfaceType::TF, "tf"},
+    {InterfaceType::OTHER, "other"},
+    {InterfaceType::UNKNOWN, "unknown"},
 };
 
 static const std::map<InterfaceType, std::string> INTERFACE_TYPE_COLORS{
     {InterfaceType::TOPIC, "#662277"},  {InterfaceType::SERVICE, "#112233"},
     {InterfaceType::ACTION, "#992244"}, {InterfaceType::PARAMETER, "#117700"},
-    {InterfaceType::TF, "#114499"},     {InterfaceType::UNKNOWN, "111111"},
+    {InterfaceType::TF, "#114499"},     {InterfaceType::OTHER, "#994411"},
+    {InterfaceType::UNKNOWN, "111111"},
 };
 
 InterfaceType get_interface_type_by_name(const std::string &name);
