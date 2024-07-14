@@ -1,4 +1,5 @@
 #include "node_properties.hpp"
+#include "node.hpp"
 #include <QHeaderView>
 
 NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
@@ -34,7 +35,7 @@ NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
           &NodeProperties::onDoneButtonClicked);
 
   // Create sections
-  createTopicsSection();
+  createInputsSection();
   createServicesSection();
   createActionsSection();
   createParametersSection();
@@ -50,7 +51,7 @@ NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addLayout(formLayout);
-  mainLayout->addWidget(topicsGroup);
+  mainLayout->addWidget(inputsGroup);
   mainLayout->addWidget(servicesGroup);
   mainLayout->addWidget(actionsGroup);
   mainLayout->addWidget(parametersGroup);
@@ -64,54 +65,54 @@ NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
   onRosNodeCheckboxToggled(false);
 }
 
-void NodeProperties::createTopicsSection() {
-  topicsGroup = new QGroupBox("Topics", this);
-  topicsTable = new QTableWidget(0, 5, this);
-  topicsTable->setHorizontalHeaderLabels(
-      {"Name", "Datatype", "Description", "Sub", "Pub"});
-  topicsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+void NodeProperties::createInputsSection() {
+  inputsGroup = new QGroupBox("Subscribers and servers", this);
+  inputsTable = new QTableWidget(0, 4, this);
+  inputsTable->setHorizontalHeaderLabels(
+      {"Name", "Interface", "Datatype", "Description"});
+  inputsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  inputsTable->setSortingEnabled(true);
 
-  QPushButton *addTopicButton = new QPushButton("New", this);
-  connect(addTopicButton, &QPushButton::clicked, this,
-          &NodeProperties::addTopicRow);
+  QPushButton *addInputButton = new QPushButton("New", this);
+  connect(addInputButton, &QPushButton::clicked, this,
+          &NodeProperties::addInputRow);
 
-  QPushButton *removeTopicButton = new QPushButton("Remove selected", this);
-  connect(removeTopicButton, &QPushButton::clicked, this,
-          &NodeProperties::removeTopicRow);
+  QPushButton *removeInputButton = new QPushButton("Remove selected", this);
+  connect(removeInputButton, &QPushButton::clicked, this,
+          &NodeProperties::removeInputRow);
 
   QHBoxLayout *buttonLayout = new QHBoxLayout;
-  buttonLayout->addWidget(addTopicButton);
-  buttonLayout->addWidget(removeTopicButton);
+  buttonLayout->addWidget(addInputButton);
+  buttonLayout->addWidget(removeInputButton);
 
   QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(topicsTable);
+  layout->addWidget(inputsTable);
   layout->addLayout(buttonLayout);
-  topicsGroup->setLayout(layout);
+  inputsGroup->setLayout(layout);
 }
 
-void NodeProperties::addTopicRow() {
-  int row = topicsTable->rowCount();
-  topicsTable->insertRow(row);
+void NodeProperties::addInputRow() {
+  int row = inputsTable->rowCount();
+  inputsTable->insertRow(row);
 
   QTableWidgetItem *nameItem = new QTableWidgetItem();
   QTableWidgetItem *datatypeItem = new QTableWidgetItem();
   QTableWidgetItem *descriptionItem = new QTableWidgetItem();
-  QTableWidgetItem *subItem = new QTableWidgetItem();
-  subItem->setCheckState(Qt::Unchecked);
-  QTableWidgetItem *pubItem = new QTableWidgetItem();
-  pubItem->setCheckState(Qt::Unchecked);
 
-  topicsTable->setItem(row, 0, nameItem);
-  topicsTable->setItem(row, 1, datatypeItem);
-  topicsTable->setItem(row, 2, descriptionItem);
-  topicsTable->setItem(row, 3, subItem);
-  topicsTable->setItem(row, 4, pubItem);
+  inputsTable->setItem(row, 0, nameItem);
+  inputsTable->setItem(row, 2, datatypeItem);
+  inputsTable->setItem(row, 3, descriptionItem);
+  QComboBox *comboBox = new QComboBox();
+  for (const auto &entry : INTERFACE_TYPE_NAMES) {
+    comboBox->addItem(QString::fromStdString(entry.second));
+  }
+  inputsTable->setCellWidget(row, 1, comboBox);
 }
 
-void NodeProperties::removeTopicRow() {
-  int row = topicsTable->currentRow();
+void NodeProperties::removeInputRow() {
+  int row = inputsTable->currentRow();
   if (row >= 0) {
-    topicsTable->removeRow(row);
+    inputsTable->removeRow(row);
   }
 }
 
@@ -214,7 +215,7 @@ void NodeProperties::addParameterRow() {
 }
 
 void NodeProperties::onRosNodeCheckboxToggled(bool checked) {
-  topicsGroup->setEnabled(checked);
+  inputsGroup->setEnabled(checked);
   servicesGroup->setEnabled(checked);
   actionsGroup->setEnabled(checked);
   parametersGroup->setEnabled(checked);
@@ -222,22 +223,22 @@ void NodeProperties::onRosNodeCheckboxToggled(bool checked) {
 
 void NodeProperties::onDoneButtonClicked() { accept(); }
 
-QList<QMap<QString, QString>> NodeProperties::topics() const {
-  QList<QMap<QString, QString>> topics;
-  for (int row = 0; row < topicsTable->rowCount(); ++row) {
-    QMap<QString, QString> topic;
-    topic["name"] = topicsTable->item(row, 0)->text();
-    topic["datatype"] = topicsTable->item(row, 1)->text();
-    topic["description"] = topicsTable->item(row, 2)->text();
-    topic["sub"] = topicsTable->item(row, 3)->checkState() == Qt::Checked
+QList<QMap<QString, QString>> NodeProperties::inputs() const {
+  QList<QMap<QString, QString>> inputs;
+  for (int row = 0; row < inputsTable->rowCount(); ++row) {
+    QMap<QString, QString> input;
+    input["name"] = inputsTable->item(row, 0)->text();
+    input["datatype"] = inputsTable->item(row, 1)->text();
+    input["description"] = inputsTable->item(row, 2)->text();
+    input["sub"] = inputsTable->item(row, 3)->checkState() == Qt::Checked
                        ? "true"
                        : "false";
-    topic["pub"] = topicsTable->item(row, 4)->checkState() == Qt::Checked
+    input["pub"] = inputsTable->item(row, 4)->checkState() == Qt::Checked
                        ? "true"
                        : "false";
-    topics.append(topic);
+    inputs.append(input);
   }
-  return topics;
+  return inputs;
 }
 
 QList<QMap<QString, QString>> NodeProperties::services() const {

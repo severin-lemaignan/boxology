@@ -34,7 +34,7 @@ public:
   std::string docUrl() const { return docUrlText->text().toStdString(); };
   bool isRosNodeChecked() const { return rosNodeCheckbox->isChecked(); };
 
-  QList<QMap<QString, QString>> topics() const;
+  QList<QMap<QString, QString>> inputs() const;
   QList<QMap<QString, QString>> services() const;
   QList<QMap<QString, QString>> actions() const;
   QList<QMap<QString, QString>> parameters() const;
@@ -52,23 +52,23 @@ private:
   QCheckBox *rosNodeCheckbox;
   QPushButton *doneButton;
 
-  QGroupBox *topicsGroup;
+  QGroupBox *inputsGroup;
   QGroupBox *servicesGroup;
   QGroupBox *actionsGroup;
   QGroupBox *parametersGroup;
 
-  QTableWidget *topicsTable;
+  QTableWidget *inputsTable;
   QTableWidget *servicesTable;
   QTableWidget *actionsTable;
   QTableWidget *parametersTable;
 
-  void createTopicsSection();
+  void createInputsSection();
   void createServicesSection();
   void createActionsSection();
   void createParametersSection();
 
-  void addTopicRow();
-  void removeTopicRow();
+  void addInputRow();
+  void removeInputRow();
   void addServiceRow();
   void addActionRow();
   void addParameterRow();
