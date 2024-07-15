@@ -6,7 +6,9 @@
 #include <QDialog>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QItemDelegate>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -15,11 +17,32 @@
 #include "../label.hpp"
 #include "../node.hpp"
 
+class NonEmptyValidatingDelegate : public QItemDelegate {
+  Q_OBJECT
+
+public:
+  NonEmptyValidatingDelegate(QObject *parent = nullptr)
+      : QItemDelegate(parent) {}
+
+  void setModelData(QWidget *editor, QAbstractItemModel *model,
+                    const QModelIndex &index) const override {
+    QString value = static_cast<QLineEdit *>(editor)->text();
+
+    if (value.isEmpty()) {
+      QMessageBox::warning(nullptr, "Invalid Input",
+                           "This field cannot be empty.");
+      return;
+    }
+
+    QItemDelegate::setModelData(editor, model, index);
+  }
+};
+
 class NodeProperties : public QDialog {
   Q_OBJECT
 
 public:
-  NodeProperties(QWidget *parent = nullptr, ConstNodePtr node = nullptr);
+  NodeProperties(QWidget *parent = nullptr, NodePtr node = nullptr);
 
   std::string description() const {
     return descriptionEdit->text().toStdString();
@@ -34,9 +57,10 @@ public:
   std::string docUrl() const { return docUrlText->text().toStdString(); };
   bool isRosNodeChecked() const { return rosNodeCheckbox->isChecked(); };
 
+  void fieldsFromNode(ConstNodePtr node);
+
   QList<QMap<QString, QString>> inputs() const;
-  QList<QMap<QString, QString>> services() const;
-  QList<QMap<QString, QString>> actions() const;
+  QList<QMap<QString, QString>> outputs() const;
   QList<QMap<QString, QString>> parameters() const;
 
 private slots:
@@ -44,6 +68,8 @@ private slots:
   void onDoneButtonClicked();
 
 private:
+  NodePtr _node;
+
   QLineEdit *descriptionEdit;
   QLineEdit *repoUrlText;
   QLineEdit *docUrlText;
@@ -53,25 +79,23 @@ private:
   QPushButton *doneButton;
 
   QGroupBox *inputsGroup;
-  QGroupBox *servicesGroup;
-  QGroupBox *actionsGroup;
+  QGroupBox *outputsGroup;
   QGroupBox *parametersGroup;
 
   QTableWidget *inputsTable;
-  QTableWidget *servicesTable;
-  QTableWidget *actionsTable;
+  QTableWidget *outputsTable;
   QTableWidget *parametersTable;
 
   void createInputsSection();
-  void createServicesSection();
-  void createActionsSection();
+  void createOutputsSection();
   void createParametersSection();
 
   void addInputRow();
   void removeInputRow();
-  void addServiceRow();
-  void addActionRow();
+  void addOutputRow();
+  void removeOutputRow();
   void addParameterRow();
+  void removeParameterRow();
 };
 
 #endif // NODE_PROPERTIES_HPP

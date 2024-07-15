@@ -240,13 +240,17 @@ Architecture::load(const Json::Value &json, const boost::uuids::uuid root_uuid,
     for (auto p : n["ports"]) {
       InterfaceType type = get_interface_type_by_name(p["type"].asString());
 
-      node->createPort({p["name"].asString(),
-                        p["direction"].asString() == "in"
-                            ? Port::Direction::IN
-                            : Port::Direction::OUT,
-                        type});
+      auto port = node->createPort({p["name"].asString(),
+                                    p["direction"].asString() == "in"
+                                        ? Port::Direction::IN
+                                        : Port::Direction::OUT,
+                                    type});
+      port->datatype = p.get("datatype", "").asString();
+      port->description = p.get("description", "").asString();
     }
     node->name(n["name"].asString());
+    node->description(n.get("description", "").asString());
+    node->longDescription(n.get("long_description", "").asString());
     newnodes.insert(node);
   }
 

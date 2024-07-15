@@ -101,7 +101,7 @@ QSizeF GraphicsNodeSocket::getSize() const { return getMinimalSize(); }
 
 void GraphicsNodeSocket::onDeletion() {
   if (_edges.empty()) {
-    _socket.node.lock()->remove_port(_socket.port.lock());
+    _socket.node.lock()->removePort(_socket.port.lock());
   } else {
     auto ok = QMessageBox::warning(nullptr, "Port deletion",
                                    "This port is already connected. Are "
@@ -109,7 +109,7 @@ void GraphicsNodeSocket::onDeletion() {
                                    QMessageBox::Ok | QMessageBox::Cancel);
 
     if (ok == QMessageBox::Ok) {
-      _socket.node.lock()->remove_port(_socket.port.lock());
+      _socket.node.lock()->removePort(_socket.port.lock());
     }
   }
 }

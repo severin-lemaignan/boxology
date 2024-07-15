@@ -66,6 +66,8 @@ public:
   }
 
   std::string name;
+  std::string datatype;
+  std::string description;
   Direction direction;
   InterfaceType type;
 };
@@ -94,8 +96,23 @@ public:
   std::string name() const { return _name; }
   void name(const std::string &name);
 
+  std::string description() const { return _desc; }
+  void description(const std::string &desc) { _desc = desc; }
+
+  std::string longDescription() const { return _long_desc; }
+  void longDescription(const std::string &desc) { _long_desc = desc; }
+
+  std::string repoUrl() const { return _repo_url; }
+  void repoUrl(const std::string &url) { _repo_url = url; }
+
+  std::string docUrl() const { return _doc_url; }
+  void docUrl(const std::string &url) { _doc_url = url; }
+
   Label label() const { return _label; }
   void label(Label label);
+
+  NodeType type() const { return _type; }
+  void type(NodeType type);
 
   // geometry -- 100% optional -- may not be set -- only used for
   // visualization needs
@@ -109,7 +126,7 @@ public:
   void height(double height) { _height = height; }
 
   PortPtr createPort(const Port port);
-  void remove_port(PortPtr port);
+  void removePort(PortPtr port);
   PortPtr port(const std::string &name);
 
   const std::set<PortPtr> ports() const { return _ports; }
@@ -126,7 +143,12 @@ private:
   double _x, _y, _width, _height;
 
   std::string _name;
+  std::string _desc;
+  std::string _long_desc;
+  std::string _repo_url;
+  std::string _doc_url;
   Label _label;
+  NodeType _type;
   std::set<PortPtr> _ports;
 };
 

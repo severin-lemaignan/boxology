@@ -2,8 +2,8 @@
 #include "node.hpp"
 #include <QHeaderView>
 
-NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
-    : QDialog(parent) {
+NodeProperties::NodeProperties(QWidget *parent, NodePtr node)
+    : QDialog(parent), _node(node) {
 
   // Create the Description field
   descriptionEdit = new QLineEdit(this);
@@ -36,9 +36,10 @@ NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
 
   // Create sections
   createInputsSection();
-  createServicesSection();
-  createActionsSection();
+  createOutputsSection();
   createParametersSection();
+
+  fieldsFromNode(node);
 
   // Layout setup
   QFormLayout *formLayout = new QFormLayout;
@@ -52,8 +53,7 @@ NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addLayout(formLayout);
   mainLayout->addWidget(inputsGroup);
-  mainLayout->addWidget(servicesGroup);
-  mainLayout->addWidget(actionsGroup);
+  mainLayout->addWidget(outputsGroup);
   mainLayout->addWidget(parametersGroup);
   mainLayout->addWidget(doneButton);
 
@@ -61,17 +61,57 @@ NodeProperties::NodeProperties(QWidget *parent, ConstNodePtr node)
   setWindowTitle(QString::fromStdString(node->name() + " properties"));
 
   resize(800, 600);
+
   // Initially disable ROS sections
   onRosNodeCheckboxToggled(false);
 }
 
+void NodeProperties::fieldsFromNode(ConstNodePtr node) {
+
+  for (auto port : node->ports()) {
+    auto table =
+        (port->direction == Port::Direction::IN ? inputsTable : outputsTable);
+
+    int row = table->rowCount();
+    table->insertRow(row);
+
+    QTableWidgetItem *nameItem =
+        new QTableWidgetItem(QString::fromStdString(port->name));
+    QTableWidgetItem *datatypeItem =
+        new QTableWidgetItem(QString::fromStdString(port->datatype));
+    QTableWidgetItem *descriptionItem =
+        new QTableWidgetItem(QString::fromStdString(port->description));
+
+    QComboBox *comboBox = new QComboBox();
+    size_t idx = 0;
+    for (const auto &entry : INTERFACE_TYPE_NAMES) {
+      comboBox->addItem(QString::fromStdString(entry.second));
+      if (port->type == entry.first) {
+        comboBox->setCurrentIndex(idx);
+      }
+      idx += 1;
+    }
+
+    table->setItem(row, 0, nameItem);
+    table->setCellWidget(row, 1, comboBox);
+    table->setItem(row, 2, datatypeItem);
+    table->setItem(row, 3, descriptionItem);
+  }
+}
+
 void NodeProperties::createInputsSection() {
-  inputsGroup = new QGroupBox("Subscribers and servers", this);
+  inputsGroup = new QGroupBox("Inputs: Subscribers and servers", this);
   inputsTable = new QTableWidget(0, 4, this);
   inputsTable->setHorizontalHeaderLabels(
       {"Name", "Interface", "Datatype", "Description"});
   inputsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
   inputsTable->setSortingEnabled(true);
+
+  // ensure enought vertical space for 5 rows + header
+  inputsTable->setMinimumHeight(inputsTable->horizontalHeader()->height() * 6);
+
+  inputsTable->setItemDelegateForColumn(0,
+                                        new NonEmptyValidatingDelegate(this));
 
   QPushButton *addInputButton = new QPushButton("New", this);
   connect(addInputButton, &QPushButton::clicked, this,
@@ -116,71 +156,62 @@ void NodeProperties::removeInputRow() {
   }
 }
 
-// Implement similar methods for services, actions, and parameters
-void NodeProperties::createServicesSection() {
-  servicesGroup = new QGroupBox("Services", this);
-  servicesTable = new QTableWidget(0, 4, this);
-  servicesTable->setHorizontalHeaderLabels(
-      {"Name", "Datatype", "Description", "Call"});
-  servicesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+void NodeProperties::createOutputsSection() {
+  outputsGroup = new QGroupBox("Outputs: Publishers and callers", this);
+  outputsTable = new QTableWidget(0, 4, this);
+  outputsTable->setHorizontalHeaderLabels(
+      {"Name", "Interface", "Datatype", "Description"});
+  outputsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+  outputsTable->setSortingEnabled(true);
 
-  QPushButton *addServiceButton = new QPushButton("Add Service", this);
-  connect(addServiceButton, &QPushButton::clicked, this,
-          &NodeProperties::addServiceRow);
+  // ensure enought vertical space for 5 rows + header
+  outputsTable->setMinimumHeight(outputsTable->horizontalHeader()->height() *
+                                 6);
+
+  outputsTable->setItemDelegateForColumn(0,
+                                         new NonEmptyValidatingDelegate(this));
+
+  QPushButton *addOutputButton = new QPushButton("New", this);
+  connect(addOutputButton, &QPushButton::clicked, this,
+          &NodeProperties::addOutputRow);
+
+  QPushButton *removeOutputButton = new QPushButton("Remove selected", this);
+  connect(removeOutputButton, &QPushButton::clicked, this,
+          &NodeProperties::removeOutputRow);
+
+  QHBoxLayout *buttonLayout = new QHBoxLayout;
+  buttonLayout->addWidget(addOutputButton);
+  buttonLayout->addWidget(removeOutputButton);
 
   QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(servicesTable);
-  layout->addWidget(addServiceButton);
-  servicesGroup->setLayout(layout);
+  layout->addWidget(outputsTable);
+  layout->addLayout(buttonLayout);
+  outputsGroup->setLayout(layout);
 }
 
-void NodeProperties::addServiceRow() {
-  int row = servicesTable->rowCount();
-  servicesTable->insertRow(row);
+void NodeProperties::addOutputRow() {
+  int row = outputsTable->rowCount();
+  outputsTable->insertRow(row);
 
   QTableWidgetItem *nameItem = new QTableWidgetItem();
   QTableWidgetItem *datatypeItem = new QTableWidgetItem();
   QTableWidgetItem *descriptionItem = new QTableWidgetItem();
-  QTableWidgetItem *callItem = new QTableWidgetItem();
-  callItem->setCheckState(Qt::Unchecked);
 
-  servicesTable->setItem(row, 0, nameItem);
-  servicesTable->setItem(row, 1, datatypeItem);
-  servicesTable->setItem(row, 2, descriptionItem);
-  servicesTable->setItem(row, 3, callItem);
+  outputsTable->setItem(row, 0, nameItem);
+  outputsTable->setItem(row, 2, datatypeItem);
+  outputsTable->setItem(row, 3, descriptionItem);
+  QComboBox *comboBox = new QComboBox();
+  for (const auto &entry : INTERFACE_TYPE_NAMES) {
+    comboBox->addItem(QString::fromStdString(entry.second));
+  }
+  outputsTable->setCellWidget(row, 1, comboBox);
 }
 
-void NodeProperties::createActionsSection() {
-  actionsGroup = new QGroupBox("Actions", this);
-  actionsTable = new QTableWidget(0, 4, this);
-  actionsTable->setHorizontalHeaderLabels(
-      {"Name", "Datatype", "Description", "Trigger"});
-  actionsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-  QPushButton *addActionButton = new QPushButton("Add Action", this);
-  connect(addActionButton, &QPushButton::clicked, this,
-          &NodeProperties::addActionRow);
-
-  QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(actionsTable);
-  layout->addWidget(addActionButton);
-  actionsGroup->setLayout(layout);
-}
-
-void NodeProperties::addActionRow() {
-  int row = actionsTable->rowCount();
-  actionsTable->insertRow(row);
-
-  QTableWidgetItem *nameItem = new QTableWidgetItem();
-  QTableWidgetItem *datatypeItem = new QTableWidgetItem();
-  QTableWidgetItem *descriptionItem = new QTableWidgetItem();
-  QTableWidgetItem *triggerItem = new QTableWidgetItem();
-  triggerItem->setCheckState(Qt::Unchecked);
-
-  actionsTable->setItem(row, 0, nameItem);
-  actionsTable->setItem(row, 1, datatypeItem);
-  actionsTable->setItem(row, 2, descriptionItem);
-  actionsTable->setItem(row, 3, triggerItem);
+void NodeProperties::removeOutputRow() {
+  int row = outputsTable->currentRow();
+  if (row >= 0) {
+    outputsTable->removeRow(row);
+  }
 }
 
 void NodeProperties::createParametersSection() {
@@ -190,6 +221,9 @@ void NodeProperties::createParametersSection() {
       {"Name", "Datatype", "Description"});
   parametersTable->horizontalHeader()->setSectionResizeMode(
       QHeaderView::Stretch);
+
+  parametersTable->setItemDelegateForColumn(
+      0, new NonEmptyValidatingDelegate(this));
 
   QPushButton *addParameterButton = new QPushButton("Add Parameter", this);
   connect(addParameterButton, &QPushButton::clicked, this,
@@ -214,14 +248,67 @@ void NodeProperties::addParameterRow() {
   parametersTable->setItem(row, 2, descriptionItem);
 }
 
-void NodeProperties::onRosNodeCheckboxToggled(bool checked) {
-  inputsGroup->setEnabled(checked);
-  servicesGroup->setEnabled(checked);
-  actionsGroup->setEnabled(checked);
-  parametersGroup->setEnabled(checked);
+void NodeProperties::removeParameterRow() {
+  int row = parametersTable->currentRow();
+  if (row >= 0) {
+    parametersTable->removeRow(row);
+  }
 }
 
-void NodeProperties::onDoneButtonClicked() { accept(); }
+void NodeProperties::onRosNodeCheckboxToggled(bool checked) {
+  //  inputsGroup->setEnabled(checked);
+  //  outputsGroup->setEnabled(checked);
+  //  parametersGroup->setEnabled(checked);
+}
+
+void NodeProperties::onDoneButtonClicked() {
+
+  _node->description(descriptionEdit->text().toStdString());
+  _node->type(
+      get_node_type_by_name(categoryComboBox->currentText().toStdString()));
+  _node->label(get_label_by_name(domainComboBox->currentText().toStdString()));
+  _node->repoUrl(repoUrlText->text().toStdString());
+  _node->docUrl(docUrlText->text().toStdString());
+
+  std::set<std::string> port_names;
+
+  for (auto const &table : {inputsTable, outputsTable}) {
+    for (int row = 0; row < table->rowCount(); ++row) {
+
+      auto name = table->item(row, 0)->text().toStdString();
+      port_names.insert(name);
+
+      auto datatype = table->item(row, 1)->text().toStdString();
+      auto description = table->item(row, 2)->text().toStdString();
+
+      auto direction =
+          table == inputsTable ? Port::Direction::IN : Port::Direction::OUT;
+
+      auto port = _node->port(name);
+      if (!port) {
+        port = _node->createPort({name, direction, InterfaceType::UNKNOWN});
+      }
+
+      port->direction = direction;
+      port->datatype = datatype;
+      port->description = description;
+      port->type = get_interface_type_by_name(table->cellWidget(row, 1)
+                                                  ->property("currentText")
+                                                  .toString()
+                                                  .toStdString());
+    }
+  }
+
+  // finally, remove the ports that have been removed from the list
+  std::set<PortPtr> ports = _node->ports();
+  for (auto &p : ports) {
+    if (port_names.count(p->name) == 0) {
+      _node->removePort(p);
+    }
+  }
+
+  accept();
+}
 
 QList<QMap<QString, QString>> NodeProperties::inputs() const {
   QList<QMap<QString, QString>> inputs;
@@ -241,34 +328,22 @@ QList<QMap<QString, QString>> NodeProperties::inputs() const {
   return inputs;
 }
 
-QList<QMap<QString, QString>> NodeProperties::services() const {
-  QList<QMap<QString, QString>> services;
-  for (int row = 0; row < servicesTable->rowCount(); ++row) {
-    QMap<QString, QString> service;
-    service["name"] = servicesTable->item(row, 0)->text();
-    service["datatype"] = servicesTable->item(row, 1)->text();
-    service["description"] = servicesTable->item(row, 2)->text();
-    service["call"] = servicesTable->item(row, 3)->checkState() == Qt::Checked
-                          ? "true"
-                          : "false";
-    services.append(service);
+QList<QMap<QString, QString>> NodeProperties::outputs() const {
+  QList<QMap<QString, QString>> outputs;
+  for (int row = 0; row < outputsTable->rowCount(); ++row) {
+    QMap<QString, QString> output;
+    output["name"] = outputsTable->item(row, 0)->text();
+    output["datatype"] = outputsTable->item(row, 1)->text();
+    output["description"] = outputsTable->item(row, 2)->text();
+    output["sub"] = outputsTable->item(row, 3)->checkState() == Qt::Checked
+                        ? "true"
+                        : "false";
+    output["pub"] = outputsTable->item(row, 4)->checkState() == Qt::Checked
+                        ? "true"
+                        : "false";
+    outputs.append(output);
   }
-  return services;
-}
-
-QList<QMap<QString, QString>> NodeProperties::actions() const {
-  QList<QMap<QString, QString>> actions;
-  for (int row = 0; row < actionsTable->rowCount(); ++row) {
-    QMap<QString, QString> action;
-    action["name"] = actionsTable->item(row, 0)->text();
-    action["datatype"] = actionsTable->item(row, 1)->text();
-    action["description"] = actionsTable->item(row, 2)->text();
-    action["trigger"] = actionsTable->item(row, 3)->checkState() == Qt::Checked
-                            ? "true"
-                            : "false";
-    actions.append(action);
-  }
-  return actions;
+  return outputs;
 }
 
 QList<QMap<QString, QString>> NodeProperties::parameters() const {

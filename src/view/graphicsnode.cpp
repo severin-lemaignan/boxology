@@ -71,7 +71,7 @@ GraphicsNode::GraphicsNode(NodePtr node, QGraphicsObject *parent)
           &GraphicsNode::add_source);
 
   menu = new QMenu();
-  for (const auto iface : INTERFACE_TYPE_COLORS) {
+  for (const auto &iface : INTERFACE_TYPE_COLORS) {
 
     auto option = new QAction(
         createCircleIcon(QColor(QString::fromStdString(iface.second))),
@@ -611,6 +611,7 @@ void GraphicsNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
   auto node = _node.lock();
 
   NodeProperties dialog(nullptr, node);
+
   if (dialog.exec() == QDialog::Accepted) {
     auto desc = dialog.description();
     auto category = dialog.category();

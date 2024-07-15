@@ -37,7 +37,7 @@ NodePtr Node::duplicate() const {
   node->name(_name + " (copy)");
   node->label(_label);
 
-  for (const auto p : _ports) {
+  for (const auto &p : _ports) {
     node->createPort(*p);
   }
 
@@ -48,7 +48,7 @@ PortPtr Node::createPort(const Port port) {
   auto portPtr = make_shared<Port>(port);
 
   // check that we do not already have this port
-  for (auto p : _ports) {
+  for (const auto &p : _ports) {
     if (p == portPtr)
       return nullptr;
   }
@@ -58,14 +58,14 @@ PortPtr Node::createPort(const Port port) {
   return portPtr;
 }
 
-void Node::remove_port(PortPtr port) {
+void Node::removePort(PortPtr port) {
   _ports.erase(port);
 
   emit dirty();
 }
 
 PortPtr Node::port(const string &name) {
-  for (auto p : _ports) {
+  for (const auto &p : _ports) {
     if (p->name == name)
       return p;
   }
@@ -79,5 +79,10 @@ void Node::name(const std::string &name) {
 
 void Node::label(Label label) {
   _label = label;
+  emit dirty();
+}
+
+void Node::type(NodeType type) {
+  _type = type;
   emit dirty();
 }

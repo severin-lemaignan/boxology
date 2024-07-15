@@ -29,6 +29,8 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
   Json::Value jnode;
   jnode["uuid"] = boost::lexical_cast<std::string>(node->uuid);
   jnode["name"] = node->name();
+  jnode["decription"] = node->description();
+  jnode["long_decription"] = node->longDescription();
   jnode["label"] = LABEL_NAMES.at(node->label());
   jnode["position"].append(node->x());
   jnode["position"].append(node->y());
@@ -55,6 +57,8 @@ void JsonVisitor::onNode(shared_ptr<const Node> node) {
     jport["direction"] =
         (port->direction == Port::Direction::IN ? "in" : "out");
     jport["type"] = INTERFACE_TYPE_NAMES.at(port->type);
+    jport["datatype"] = port->datatype;
+    jport["description"] = port->description;
     jnode["ports"].append(jport);
   }
   arch["nodes"].append(jnode);
